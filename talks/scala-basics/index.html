@@ -1,0 +1,634 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Scala: Beyond the basics</title>
+
+<link rel="stylesheet" href="css/reveal.css">
+<link rel="stylesheet" href="css/extra.css">
+<link rel="stylesheet" href="css/theme/akka.css">
+
+<!-- Theme used for syntax highlighting of code -->
+<link rel="stylesheet" href="lib/css/zenburn.css">
+
+<!-- Printing and PDF exports -->
+<script>
+var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+document.getElementsByTagName( 'head' )[0].appendChild( link );
+</script>
+</head>
+<body>
+
+
+<div class="reveal">
+<div class="slides">
+<section data-background="#15a9ce">
+<h3><a href="#scala-beyond-the-basics" name="scala-beyond-the-basics" class="anchor"><span class="anchor-link"></span></a>Scala: Beyond the basics</h3>
+<h5><a href="#christopher-batey-chbatey-" name="christopher-batey-chbatey-" class="anchor"><span class="anchor-link"></span></a>Christopher Batey (@chbatey)</h5>
+<h5><a href="#software-engineer-on-akka-team" name="software-engineer-on-akka-team" class="anchor"><span class="anchor-link"></span></a>Software Engineer on Akka Team</h5><aside class="notes">
+<ul>
+  <li>Theme: relying on language and compiler</li>
+  <li>Example: HTTP request</li>
+  <li>Examples from Lightbend and Pre-lightbend</li>
+</ul></aside></section><section>
+<p><img src="images/akka_full_color.svg" alt="Akka logo" /></p>
+<p>Open Source toolkit for building Concurrent, Distributed, Resilient Message-Driven applications on the JVM</p><aside class="notes">
+<ul>
+  <li>Actor model + distributed systems tool kit</li>
+  <li>Written in Scala</li>
+  <li>Java and Scala API</li>
+  <li>Recent: Abstract type members</li>
+</ul></aside></section><section>
+<p>Agenda:</p>
+<ol>
+  <li>Programming language terminology</li>
+  <li>Function composition instead of layers</li>
+  <li>Abstracting over higher kinded types</li>
+  <li>Compile time implicits vs runtime reflection</li>
+</ol><aside class="notes">
+<ul>
+  <li>Jargon</li>
+  <li>Structuring apps, DI</li>
+  <li>Async programming with higher kinded types</li>
+  <li>Implicits wonderful but misused</li>
+  <li>
+  <p>Increasingly more complex</p></li>
+  <li>A huge use case becoming popular in Java, async programming</li>
+</ul></aside></section><section>
+<h2><a href="#1-programming-languages" name="1-programming-languages" class="anchor"><span class="anchor-link"></span></a>1.Programming Languages</h2><aside class="notes">
+<p>Starting off really simple Semantics vs syntax</p></aside></section><section>
+<h2><a href="#scala-is-a-hybrid-functional-oo-language" name="scala-is-a-hybrid-functional-oo-language" class="anchor"><span class="anchor-link"></span></a>Scala is a Hybrid Functional / OO language</h2><aside class="notes">
+<ul>
+  <li>Declarative vs imperative programming</li>
+  <li>Internal vs external iteration</li>
+  <li>Akka can be very functional/immutable and drop down to imperative</li>
+  <li>Vocal pure FP ppl who wish Scala was Haskell</li>
+  <li>Only using it as a &ldquo;better java&rdquo;. Maybe kotlin is a better?</li>
+  <li>Unique features. path dependent types, implicits</li>
+  <li>I used to say you wrote two kinds of Scala</li>
+</ul></aside></section><section>
+<h2><a href="#semantics-vs-syntax" name="semantics-vs-syntax" class="anchor"><span class="anchor-link"></span></a>Semantics vs Syntax</h2><aside class="notes">
+<ul>
+  <li>You can learn the semantics of a language in a discussion with someone</li>
+  <li>Syntax takes lots of typing</li>
+  <li>Unfamiliar syntax != complexity</li>
+  <li>Think how long you&rsquo;ve been using one language&rsquo;s syntax!</li>
+</ul></aside></section><section>
+<h2><a href="#unfamiliar-syntax-complexity" name="unfamiliar-syntax-complexity" class="anchor"><span class="anchor-link"></span></a>Unfamiliar syntax != complexity</h2><aside class="notes">
+<ul>
+  <li>Fight our natural reaction</li>
+</ul></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<p>What does this evaluate to in Java?</p>
+<pre class="prettyprint"><code class="language-java">if (x &gt; 0) {
+  true;
+} else {
+  false;
+}
+</code></pre><aside class="notes">
+<ul>
+  <li>Only code that does not compile</li>
+  <li>Control flow operators in java are statement based</li>
+</ul></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<pre class="prettyprint"><code class="language-java">boolean positive;
+if (x &gt; 0) {
+  positive = true;
+} else {
+  positive = false;
+}</code></pre><aside class="notes">
+<ul>
+  <li>Variables or values the default</li>
+</ul></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<pre class="prettyprint"><code class="language-java">boolean shouldAct;
+if (x &gt; 0) {
+  shouldAct = true;
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<p>What does this evaluate to in Scala?</p>
+<pre class="prettyprint"><code class="language-scala">if (x &gt; 0) {
+  true
+} else {
+  false
+}</code></pre><aside class="notes">
+<p>Huge ramifications Mutability</p></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<p>What does this evaluate to in Scala?</p>
+<pre class="prettyprint"><code class="language-scala">val positive = if (x &gt; 0) {
+  true
+} else {
+  false
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h3><a href="#expressions" name="expressions" class="anchor"><span class="anchor-link"></span></a>Expressions</h3>
+<pre class="prettyprint"><code class="language-scala">val positive = if (x &gt; 0) true else false</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<p><span><code>Statements have side effects</code></span></p>
+<p><span class="fragment"><code>Expressions evaluate to values</code></span></p><aside class="notes">
+<ul>
+  <li>Hrmm</li>
+</ul></aside></section><section>
+<h2><a href="#immutability" name="immutability" class="anchor"><span class="anchor-link"></span></a>Immutability</h2><aside class="notes">
+<p>A language&rsquo;s default for this is important simplicity is subjective</p></aside></section><section>
+<h2><a href="#referential-transparency" name="referential-transparency" class="anchor"><span class="anchor-link"></span></a>Referential transparency</h2>
+<pre class="prettyprint"><code class="language-scala">val x: Int = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val y = x * x</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val x = 4</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val x = { println(&quot;haha&quot;); 4}</code></pre><aside class="notes">
+<ul>
+  <li>Recent blog post</li>
+  <li>E.g hitting a database</li>
+  <li>Latency</li>
+  <li>Do i compose my software with functions or objects?</li>
+</ul></aside></section><section>
+<h1><a href="#function-composition" name="function-composition" class="anchor"><span class="anchor-link"></span></a>Function composition</h1>
+<p><a href="http://batey.info/fs-function-composition">http://batey.info/fs-function-composition</a></p><aside class="notes">
+<ul>
+  <li>FC allows us to compose our systems via separately functions</li>
+  <li>Functions that are tested independently</li>
+  <li>Functions that may be pure</li>
+  <li>They might be methods on objects mu haw ha</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">type WebRequest = HttpRequest =&gt; HttpResponse</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">case class Person(name: String)
+case class Customer(customerNumber: Int, p: Person)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">trait Serialiser {
+  def serialise(c: Customer): HttpResponse
+  def deserialie(input: HttpRequest): Person
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">class WebController(
+                     service: ApplicationService,
+                     serialiser: Serialiser) {
+  def register(p: HttpRequest): HttpResponse = {
+    val person = serialiser.deserialie(p)
+    val c = service.registerCustomer(person)
+    serialiser.serialise(c)
+  }
+}</code></pre><aside class="notes">
+<ul>
+  <li>Type alias</li>
+  <li>Realistic example</li>
+  <li>Case classes change the way people program</li>
+  <li>Being flexible with class location in files</li>
+  <li>See whole domain in a page</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">class ApplicationService(dataStore: CustomerRepo) {
+
+  def registerCustomer(p: Person): Customer = {
+    // validate them?
+    // Generate a unique customer number?
+    val c = Customer(1, p)
+    dataStore.saveCustomer(c)
+    c
+  }
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">trait CustomerRepo {
+  def saveCustomer(p: Customer): Unit
+}</code></pre><aside class="notes">
+<ul>
+  <li>Layered appraoch</li>
+  <li>DI</li>
+  <li>Mocking between abstraction layers</li>
+  <li>Repo function has a side effect</li>
+</ul></aside></section><section>
+<h2><a href="#do-it-yourself-wiring" name="do-it-yourself-wiring" class="anchor"><span class="anchor-link"></span></a>Do it yourself wiring</h2><aside class="notes">
+<ul>
+  <li>DI framework wire deps but not callsj</li>
+  <li>You then feel obliged to test it</li>
+  <li>Regardless of paradigm use language features rather than writing boiler plate</li>
+</ul></aside></section><section>
+<h4><a href="#three-language-features-to-avoid-this-" name="three-language-features-to-avoid-this-" class="anchor"><span class="anchor-link"></span></a>Three language features to avoid this:</h4>
+<ul>
+  <li>Function Composition</li>
+  <li>Currying</li>
+  <li>Partial Application</li>
+</ul></section><section>
+<pre class="prettyprint"><code class="language-java">public static int add(int x, int y) {
+  return x + y;
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">public static int add10(int x) {
+  return add(x, 10);
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">public static int multiply(int x, int y) {
+  return x * y;
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">public static int multiplyBy10(int x) {
+  return multiply(x, 10);
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">public static int addTenThenMultiplyByTen(int x) {
+  return multiplyBy10(add10(x));
+}</code></pre><aside class="notes">
+<ul>
+  <li>Wiring your self again</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">def add(x: Int, y: Int) = x + y</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def add10(x: Int) = add(x, 10)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def addCurried(x: Int)(y: Int): Int = x + y</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val whatTypeAmI = addCurried(10) _</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val whatTypeAmI: Int =&gt; Int = addCurried(10)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val add10Curried = (add _).curried(10)</code></pre></section><section>
+<pre class="prettyprint"><code class="language-scala">def add(x: Int)(y: Int): Int = x + y</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def multiply(x: Int)(y: Int): Int = x * y</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val add10multiply10Compose: Int =&gt; Int =
+    multiply(10) _ compose add(10)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val add10multiply10 = add(10) _ andThen multiply(10)</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#currying" name="currying" class="anchor"><span class="anchor-link"></span></a>Currying</h2>
+<ul>
+  <li>Each function a single argument</li>
+  <li>Enables partial application</li>
+</ul><aside class="notes">
+<p>Scala actually allows arbitrary parameter lists</p></aside></section><section>
+<h2><a href="#partial-application" name="partial-application" class="anchor"><span class="anchor-link"></span></a>Partial application</h2>
+<ul>
+  <li>Provide a subset of the parameters to get a new function</li>
+</ul><aside class="notes">
+<p>Why is this important? World is not made up of add and multiply function Need ways of massaging our functions so they compose</p></aside></section><section>
+<h2><a href="#function-composition" name="function-composition" class="anchor"><span class="anchor-link"></span></a>Function composition</h2>
+<p><span><code>f: String -&gt; Int</code></span></p>
+<p><span class="fragment"><code>g: Int -&gt; Banana</code></span></p>
+<p><span class="fragment"><code>g</code> compose <code>f</code></span></p>
+<p><span class="fragment"><code>f</code> andThen <code>g</code></span></p>
+<p><span class="fragment"><code>String -&gt; Banana</code></span></p></section><section>
+<pre class="prettyprint"><code class="language-scala">type WebRequest = HttpRequest =&gt; HttpResponse</code></pre>
+<pre class="prettyprint"><code class="language-scala">case class Person(name: String)
+case class Customer(customerNumber: Int, p: Person)</code></pre>
+<pre class="prettyprint"><code class="language-scala">trait Serialiser {
+  def serialise(c: Customer): HttpResponse
+  def deserialie(input: HttpRequest): Person
+}</code></pre>
+<pre class="prettyprint"><code class="language-scala">class WebController(
+                     service: ApplicationService,
+                     serialiser: Serialiser) {
+  def register(p: HttpRequest): HttpResponse = {
+    val person = serialiser.deserialie(p)
+    val c = service.registerCustomer(person)
+    serialiser.serialise(c)
+  }
+}</code></pre><aside class="notes">
+<p>Same code as before</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">class ApplicationService(dataStore: CustomerRepo) {
+
+  def registerCustomer(p: Person): Customer = {
+    // validate them?
+    // Generate a unique customer number?
+    val c = Customer(1, p)
+    dataStore.saveCustomer(c)
+    c
+  }
+}</code></pre>
+<pre class="prettyprint"><code class="language-scala">trait CustomerRepo {
+  def saveCustomer(p: Customer): Unit
+}</code></pre></section><section>
+<pre class="prettyprint"><code class="language-scala">type WebRequest = HttpRequest =&gt; HttpResponse</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val deSerialisePerson: HttpRequest =&gt; Person = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val createCustomer: Person =&gt; Customer = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val saveCustomer: Customer =&gt; Customer = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val serialiseCustomer: Customer =&gt; HttpResponse = ???</code></pre><aside class="notes">
+<p>This is what we want to get to Assuming implemented how do we structure our app now?</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val registerCustomer: WebRequest =
+  deSerialisePerson andThen
+    createCustomer andThen
+    saveCustomer andThen
+    serialiseCustomer</code></pre>
+<pre class="prettyprint"><code class="language-scala">type WebRequest = HttpRequest =&gt; HttpResponse</code></pre><aside class="notes">
+<ul>
+  <li>Completely independent</li>
+  <li>Don&rsquo;t depend on each other</li>
+  <li>Only the types have to line up</li>
+  <li>Are we done??</li>
+  <li>Func comp not always so easy</li>
+  <li>realistically we need DI as well e.g. where does out database connection come from?</li>
+</ul></aside></section><section>
+<h2><a href="#currying-partial-application-to-the-rescue" name="currying-partial-application-to-the-rescue" class="anchor"><span class="anchor-link"></span></a>Currying + Partial application to the rescue</h2><aside class="notes">
+<ul>
+  <li>Monadic ways as well.</li>
+  <li>Will link resources</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val databaseConnection = new DatabaseConnection</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">object DataAccess {
+  def saveCustomer(databaseConnection: DatabaseConnection)
+                  (c: Customer): Customer = ???
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val saveCustomer: Customer =&gt; Customer =
+  DataAccess.saveCustomer(dbConnection)</code></pre><aside class="notes">
+<ul>
+  <li>Objects as grouping functions. Static.</li>
+  <li>This has broken our function composition</li>
+  <li>Main can wire these things together</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val registerCustomer: WebRequest =
+  deSerialisePerson andThen
+    createCustomer andThen
+    saveCustomer andThen
+    serialiseCustomer</code></pre>
+<pre class="prettyprint"><code class="language-scala">type WebRequest = HttpRequest =&gt; HttpResponse</code></pre></section><section>
+<pre class="prettyprint"><code class="language-scala">class DataAccessClass(databaseConnection: DatabaseConnection) {
+  def saveCustomer(c: Customer): Customer = ???
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val dac = new DataAccessClass(dbConnection)
+val saveCustomer: Customer =&gt; Customer = dac.saveCustomer</code></pre><aside class="notes">
+<ul>
+  <li>Scala is a FP-OO hybrid</li>
+  <li>Think of classes as two argument lists: constructor + methods</li>
+  <li>If no member variables</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">object DatabaseAccessImplicit {
+  def saveCustomer(c: Customer)
+                  (implicit db: DatabaseConnection): Customer = ???
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val saveCustomer: Customer =&gt; Customer =
+  DatabaseAccessImplicit.saveCustomer</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">implicit val dbConnection = new DatabaseConnection</code></pre><aside class="notes">
+<p>Implicits have to be explicitly in scope This happens when we &ldquo;partially apply it&rdquo;</p></aside></section><section>
+<h2><a href="#section-summary" name="section-summary" class="anchor"><span class="anchor-link"></span></a>Section summary</h2>
+<ul>
+  <li>Techniques
+    <ul>
+      <li>Function Composition</li>
+      <li>Currying</li>
+      <li>Partial Application</li>
+    </ul>
+  </li>
+  <li>Benefits
+    <ul>
+      <li>Reduced need for mocking</li>
+      <li>Reduced need for a DI framework</li>
+    </ul>
+  </li>
+</ul><aside class="notes">
+<ul>
+  <li>Learning a language/compiler vs learning a reflection framework</li>
+</ul></aside></section><section>
+<h1><a href="#higher-kinded-types" name="higher-kinded-types" class="anchor"><span class="anchor-link"></span></a>Higher kinded types</h1><aside class="notes">
+<ul>
+  <li>Abstracting over them is an advanced feature</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-java">String
+int
+Person
+Customer
+</code></pre>
+<p>vs</p>
+<pre class="prettyprint"><code class="language-java">List&lt;T&gt;
+Iterable&lt;T&gt;
+</code></pre><aside class="notes">
+<p>Regular types vs types that need some more types to be types</p></aside></section><section>
+<pre class="prettyprint"><code class="language-java">List&lt;T&gt; :: T -&gt; List&lt;T&gt;
+String -&gt; List&lt;String&gt;
+</code></pre>
+<p>List is a type level function takes a type and produces a concrete type</p>
+<pre class="prettyprint"><code class="language-java">Map&lt;K, V&gt;
+</code></pre>
+<p>Map takes two types and produces a concrete type</p><aside class="notes">
+<ul>
+  <li>Java generics break this for compatibility</li>
+</ul></aside></section><section>
+<h2><a href="#abstracting-over-higher-kinded-types" name="abstracting-over-higher-kinded-types" class="anchor"><span class="anchor-link"></span></a>Abstracting over higher kinded types</h2><aside class="notes">
+<ul>
+  <li>Abstract over the inner type e.g. the T in List<T></li>
+  <li>How about the list?</li>
+  <li>Same code dealing with a List and an Optional</li>
+</ul></aside></section><section>
+<p>Abstract over a type:</p>
+<pre class="prettyprint"><code class="language-java">List&lt;A&gt;
+</code></pre>
+<p>Abstract over a type constructor:</p>
+<pre class="prettyprint"><code class="language-java">T&lt;Int&gt;
+</code></pre>
+<p>Why not both?</p>
+<pre class="prettyprint"><code class="language-java">T&lt;A&gt;
+</code></pre><aside class="notes">
+<p>Write a method that takes a List<Int> Or a Set<Int> With interfaces ^ Or a Optional<Int> Hrmm? ^^ What about a Future?</p></aside></section><section>
+<p><img src="images/say-what.jpg" alt="x" /></p><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#motivation" name="motivation" class="anchor"><span class="anchor-link"></span></a>Motivation</h2>
+<pre class="prettyprint fragment"><code class="language-scala">type WebRequest = HttpRequest =&gt; Future[HttpResponse]</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">type WebRequest2 = HttpRequest =&gt; Either[Error, HttpResponse]</code></pre><aside class="notes">
+<ul>
+  <li>My background is not in languages that support this</li>
+  <li>Async, not a thread per request</li>
+  <li>Not using exceptions. GOto with a different name</li>
+</ul></aside></section><section>
+<pre class="prettyprint fragment"><code class="language-scala">type WebRequest = HttpRequest =&gt; Future[HttpResponse]</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def serialiseCustomer: Customer =&gt; HttpResponse = ???
+def deSerialisePerson: HttpRequest =&gt; Person = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def createCustomer: Person =&gt; Future[Customer] = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def saveCustomer: Customer =&gt; Future[Customer] = ???</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val fstStep: HttpRequest =&gt; Future[Customer] =
+  deSerialisePerson andThen
+    createCustomer</code></pre><aside class="notes">
+<ul>
+  <li>Broken our function composition</li>
+  <li>DAMNNATIONS</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">def flatMap(f: A =&gt; Future[B]): Future[B]
+</code></pre>
+<pre class="prettyprint"><code class="language-scala">def map(f: A =&gt; B): Future[B]
+</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val customerSaved: HttpRequest =&gt; Future[Customer] = hr =&gt;
+  fstStep(hr).flatMap(saveCustomer)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val fullRequest: HttpRequest =&gt; Future[HttpResponse] = hr =&gt;
+  customerSaved(hr).map(serialiseCustomer)</code></pre><aside class="notes">
+<ul>
+  <li>Async</li>
+  <li>Not using exceptions</li>
+  <li>Popular libraries in Scala for doing this type of function composition</li>
+  <li>Very common pattern</li>
+  <li>Java&rsquo;s optional and completable future have these methods</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">f: A =&gt; Future[B]
+g: B =&gt; Future[C]
+
+g superCompose f : A =&gt; Future[C]
+
+</code></pre>
+<p><a href="http://eed3si9n.com/herding-cats/composing-monadic-functions.html">http://eed3si9n.com/herding-cats/composing-monadic-functions.html</a></p>
+<p><a href="https://underscore.io/books/scala-with-cats/">https://underscore.io/books/scala-with-cats/</a></p><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h3><a href="#ready-to-do-all-this-again-with-either-" name="ready-to-do-all-this-again-with-either-" class="anchor"><span class="anchor-link"></span></a>Ready to do all this again with Either?</h3></section><section>
+<pre class="prettyprint"><code class="language-scala">abstract class Abstracted[F[_] : Mappable] {
+  def serialiseCustomer: Customer =&gt; HttpResponse = ???
+  def deSerialisePerson: HttpRequest =&gt; Person = ???
+  def createCustomer: Person =&gt; F[Customer] = ???
+  def saveCustomer: Customer =&gt; F[Customer] = ???
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">trait Mappable[F[_]] {
+  def map[A, B](fa: F[A])(f: A =&gt; B): F[B]
+  def flatMap[A, B](fa: F[A])(f: A =&gt; F[B]): F[B]
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val first: HttpRequest =&gt; F[Customer] =
+  deSerialisePerson andThen
+    createCustomer</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val fullRequest: HttpRequest =&gt; F[HttpResponse] = hr =&gt;
+  first(hr)
+    .flatMap(saveCustomer)
+    .map(serialiseCustomer)
+</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val withAFuture = new Abstracted[Future] {}
+val whatTypeIsThis: HttpRequest =&gt; Future[HttpResponse] =
+  withAFuture.fullRequest</code></pre></section><section>
+<h3><a href="#how-useful-is-this-" name="how-useful-is-this-" class="anchor"><span class="anchor-link"></span></a>How useful is this?</h3>
+<ul>
+  <li>Ratpack Promise</li>
+  <li>Hystrix: RxJava Observable</li>
+  <li>Cassandra database driver: Guava Listenable Future</li>
+  <li>Java8&rsquo;s Completable Future</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h1><a href="#implicits" name="implicits" class="anchor"><span class="anchor-link"></span></a>Implicits</h1><aside class="notes">
+<ul>
+  <li>Each of these sections could be an hour</li>
+  <li>If any of that previous section didn&rsquo;t make sense
+    <ul>
+      <li>Takeaway: You can write code will work with different types of wrappers</li>
+      <li>We&rsquo;ll see how we can implicitly convert between the &ldquo;wrapper&rdquo; types</li>
+    </ul>
+  </li>
+  <li>
+  <p>Few optional sections</p></li>
+</ul></aside></section><section>
+<h2><a href="#implicits" name="implicits" class="anchor"><span class="anchor-link"></span></a>Implicits</h2>
+<p><span>Many sensible uses of implicits replace reflection</span> <span class="fragment">Reflection is more implicit than implicits!!</span></p><aside class="notes">
+<p>You learn how each implicit feature works once Rather than proprietary framework features</p></aside></section><section>
+<h2><a href="#implicit-type-conversions" name="implicit-type-conversions" class="anchor"><span class="anchor-link"></span></a>Implicit type conversions</h2>
+<pre class="prettyprint"><code class="language-scala">case class Cat(name: String)
+case class Dog(name: String, status: String)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def cleanDog(dog: Dog): Dog =
+  dog.copy(status = &quot;clean with hose pipe&quot;)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val ruby = Cat(&quot;Ruby&quot;)</code></pre><aside class="notes">
+<p>In a static language, no no no If this is too abstract, let&rsquo;s take a look at Ruby</p></aside></section><section>
+<img src="images/ruby1.jpeg" style="width: 500px;"/><aside class="notes">
+<p>Right mind Awww Consulted</p></aside></section><section>
+<img src="images/bella1.jpeg" style="width: 700px;"/><aside class="notes">
+<p>Not amused</p></aside></section><section>
+<h2><a href="#implicit-type-conversions" name="implicit-type-conversions" class="anchor"><span class="anchor-link"></span></a>Implicit type conversions</h2>
+<pre class="prettyprint"><code class="language-scala">case class Cat(name: String)
+case class Dog(name: String, status: String)</code></pre>
+<pre class="prettyprint"><code class="language-scala">def cleanDog(dog: Dog): Dog =
+  dog.copy(status = &quot;clean with hose pipe&quot;)</code></pre>
+<pre class="prettyprint"><code class="language-scala">val ruby = Cat(&quot;Ruby&quot;)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">cleanDog(ruby)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">implicit def catToDog(cat: Cat): Dog = Dog(cat.name, &quot;clean&quot;)</code></pre><aside class="notes">
+<ul>
+  <li>Could have a place inside embedded DSLs</li>
+</ul></aside></section><section>
+<h2><a href="#principled-type-conversions" name="principled-type-conversions" class="anchor"><span class="anchor-link"></span></a>Principled type conversions</h2></section><section>
+<pre class="prettyprint"><code class="language-scala">trait Mappable[F[_]] {
+  def map[A, B](fa: F[A])(f: A =&gt; B): F[B]
+  def flatMap[A, B](fa: F[A])(f: A =&gt; F[B]): F[B]
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">implicit def futureMappable = new Mappable[Future] {
+  def map[A, B](fa: Future[A])(f: A =&gt; B): Future[B] =
+    fa.map(f)
+  def flatMap[A, B](fa: Future[A])(f: A =&gt; Future[B]): Future[B] =
+    fa.flatMap(f)
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">implicit def completableFutureMappable= new Mappable[CompletableFuture] {
+  def map[A, B](fa: CompletableFuture[A])(f: A =&gt; B): CompletableFuture[B] =
+    fa.thenApply(a =&gt; f(a))
+  def flatMap[A, B](fa: CompletableFuture[A])(f: A =&gt; CompletableFuture[B]): CompletableFuture[B] =
+    fa.thenCompose(a =&gt; f(a))
+}</code></pre><aside class="notes">
+<ul>
+  <li>Trait that is only converted to implicitly.</li>
+  <li>Find all instances</li>
+</ul></aside></section><section>
+<h3><a href="#summary" name="summary" class="anchor"><span class="anchor-link"></span></a>Summary</h3>
+<ol>
+  <li>Programming Language</li>
+  <li>Function composition instead of layers</li>
+  <li>Abstracting over higher kinded types</li>
+  <li>Compile time implicits vs runtime reflection</li>
+</ol></section><section>
+<p>Guidelines for a successful Scala project</p>
+<ul>
+  <li>Be prepared to be a beginner</li>
+  <li>Pick a programming paradigm</li>
+  <li>Pick a style guideline</li>
+</ul><aside class="notes">
+<ul>
+  <li>Guide should dictate use of implicits</li>
+  <li>Wart remover</li>
+</ul></aside></section><section>
+<h2><a href="#thanks-for-listening-" name="thanks-for-listening-" class="anchor"><span class="anchor-link"></span></a>Thanks for listening!</h2></section><section>
+<h2><a href="#happy-hakking-" name="happy-hakking-" class="anchor"><span class="anchor-link"></span></a>Happy hAkking!</h2>
+<dl>
+  <dt>Slides &amp; Code
+  </dt>
+  <dd><a href="https://github.com/chbatey/scala-basics">github.com/chbatey/scala-basics</a></dd>
+  <dt>Akka</dt>
+  <dd><a href="https://akka.io">akka.io</a>, <a href="https://developer.lightbend.com/start">developer.lightbend.com/start</a></dd>
+  <dt>Tweet</dt>
+  <dd><a href="https://twitter.com/chbatey">@chbatey</a></dd>
+</dl></section><section>
+<h3><a href="#implicit-evidence" name="implicit-evidence" class="anchor"><span class="anchor-link"></span></a>Implicit evidence</h3>
+<pre class="prettyprint fragment"><code class="language-scala">trait Request[Req, Resp] {
+  def invoke(in: Req): Future[Resp]
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val liftedCall: Request[String, Int] =
+  RequestBuilder[String, Int]()
+    .withTimeout(10.seconds)
+    .withCircuitBreaker()
+    .build()</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">liftedCall.invoke(&quot;go go gadget go&quot;)</code></pre><aside class="notes">
+<ul>
+  <li>Grpc, single input type &ldquo;message&rdquo;</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val noParamRequest = new Request[Unit, String] {
+  def invoke(in: Unit): Future[String] = ???
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">trait NoParamRequest[Resp] {
+  def invoke(): Future[Resp]
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">trait Request[Req, Resp] {
+  def invoke(in: Req): Future[Resp]
+  def invoke()(implicit ev: Req =:= Unit): Future[Resp]
+}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">liftedCall.invoke()</code></pre>
+<p><span class="fragment"><code>Cannot prove that String =:= Unit. liftedCall.invoke()</code></span></p><aside class="notes">
+<p>Notes</p></aside></section>
+<p><span id="selectedLanguage">Scala</span></p>
+<script>
+  const selectedLanguage = document.getElementById('selectedLanguage').innerHTML.toLowerCase()
+  const hiddenLanguage = (selectedLanguage == "java") ? "scala" : "java"
+
+  console.log(selectedLanguage)
+  var javaFragments = document.getElementsByClassName('group-' + hiddenLanguage)
+  while (javaFragments.length > 0) {
+    javaFragments[0].remove()
+  }
+</script>
+</div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+// More info about config & dependencies:
+// - https://github.com/hakimel/reveal.js#configuration
+// - https://github.com/hakimel/reveal.js#dependencies
+Reveal.initialize({
+history: true,
+slideNumber: true,
+dependencies: [
+{ src: 'plugin/markdown/marked.js' },
+{ src: 'plugin/markdown/markdown.js' },
+{ src: 'plugin/notes/notes.js', async: true },
+{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+]
+});
+</script>
+<div class="footer" style="position: absolute; width: 100%; bottom: 0px; padding: 1.2em; background-image: url(lightbend-reverse.svg); height: 3em; background-color: #15a9ce; background-repeat: no-repeat; background-origin: content-box"></div>
+</body>
+</html>

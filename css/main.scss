@@ -1,0 +1,33 @@
+---
+---
+
+@import 'bootstrap/bootstrap';
+
+//Greyish 5E5A56
+//Orange DE7035
+//Background E4DFDA
+
+//body {
+//  background-color: #E4DFDA;
+//}
+
+//a {
+//  color: #5E5A56;
+//}
+
+.tubeytube {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden;
+}
+
+.tubeytube iframe, .tubeytube object, .tubeytube embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+

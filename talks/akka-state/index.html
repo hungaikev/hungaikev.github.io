@@ -1,0 +1,543 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>State of Akka</title>
+
+<link rel="stylesheet" href="css/reveal.css">
+<link rel="stylesheet" href="css/extra.css">
+<link rel="stylesheet" href="css/theme/akka.css">
+
+<!-- Theme used for syntax highlighting of code -->
+<link rel="stylesheet" href="lib/css/zenburn.css">
+
+<!-- Printing and PDF exports -->
+<script>
+var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+document.getElementsByTagName( 'head' )[0].appendChild( link );
+</script>
+</head>
+<body>
+
+
+<div class="reveal">
+<div class="slides">
+<section data-background="#15a9ce">
+<h3><a href="#state-of-akka" name="state-of-akka" class="anchor"><span class="anchor-link"></span></a>State of Akka</h3>
+<h5><a href="#christopher-batey-chbatey-" name="christopher-batey-chbatey-" class="anchor"><span class="anchor-link"></span></a>Christopher Batey (@chbatey)</h5>
+<h5><a href="#software-engineer-akka-team" name="software-engineer-akka-team" class="anchor"><span class="anchor-link"></span></a>Software Engineer - Akka team</h5><aside class="notes">
+<ul>
+  <li>Welcome</li>
+  <li>Last 6 months of dev</li>
+  <li>Some features ready, some not</li>
+</ul></aside></section><section>
+<h2><a href="#akka-toolkit" name="akka-toolkit" class="anchor"><span class="anchor-link"></span></a>Akka toolkit</h2>
+<p>Actor model</p>
+<p><span>Clustering</span></p>
+<p><span>Persistence (Event Sourcing)</span></p>
+<p><span>HTTP</span></p>
+<p><span>Streams</span></p><aside class="notes">
+<ul>
+  <li>Core; actor based concurrency</li>
+  <li>Distribution and location transparency</li>
+  <li>HTTP and streams, reactive streams</li>
+</ul></aside></section><section>
+<h2><a href="#new-in-akka" name="new-in-akka" class="anchor"><span class="anchor-link"></span></a>New in Akka</h2>
+<p><span class="fragment">Typed refinements</span></p>
+<p><span class="fragment">Multi DC</span></p>
+<p><span class="fragment">gRPC</span></p>
+<p><span class="fragment">Artery TCP</span></p>
+<p><span class="fragment">Stream Refs</span></p><aside class="notes">
+<ul>
+  <li>Typed: Been around for a while,close to the final API</li>
+  <li>MultiDC: Oldest feature, fully ready.</li>
+  <li>gRPC, in early release</li>
+  <li>Early realease, ready to be battle tested</li>
+  <li>Stream refs also fully ready</li>
+</ul></aside></section><section>
+<h2><a href="#akka-typed" name="akka-typed" class="anchor"><span class="anchor-link"></span></a>Akka Typed</h2><aside class="notes">
+<ul>
+  <li>Prototype</li>
+  <li>Runtime vs API</li>
+  <li>API may change</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">sealed trait LockProtocol
+final case object Lock extends LockProtocol
+final case object Unlock extends LockProtocol
+
+sealed trait LockStatus
+final case object Granted extends LockStatus
+final case class Taken(who: ActorRef) extends LockStatus</code></pre><aside class="notes">
+<ul>
+  <li>Look at untyped API</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">class MutableActor extends Actor with ActorLogging {
+
+  private var owner: Option[ActorRef] = None
+
+  def receive: Receive = {
+    case Lock if owner.isEmpty =&gt;
+      owner = Some(sender())
+      sender() ! Granted
+    case Lock =&gt;
+      sender() ! Taken(owner.get)
+    case Unlock =&gt;
+      require(owner.contains(sender()))
+      owner = None
+  }
+}</code></pre><aside class="notes">
+<ul>
+  <li>Can be hard to understand</li>
+  <li>State implicit</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">class BecomeActor extends Actor {
+  private val unlocked: Receive = {
+    case Lock =&gt;
+      sender() ! Granted
+      context.become(locked(sender()))
+  }
+  private def locked(who: ActorRef): Receive = {
+    case Lock =&gt;
+      sender() ! Taken(who)
+    case Unlock =&gt;
+      require(sender() == who)
+      context.become(unlocked)
+  }
+  override def receive: Receive = unlocked
+}</code></pre><aside class="notes">
+<ul>
+  <li>Next step iS FSM</li>
+</ul></aside></section><section>
+<h2><a href="#akka-typed" name="akka-typed" class="anchor"><span class="anchor-link"></span></a>Akka Typed</h2>
+<ul>
+  <li><code>ActorRef</code> becomes <code>ActorRef[T]</code></li>
+  <li>No more Actor trait</li>
+  <li>No more <code>sender()</code></li>
+  <li>No more <code>actorSelection</code></li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#akka-typed" name="akka-typed" class="anchor"><span class="anchor-link"></span></a>Akka Typed</h2>
+<ul>
+  <li>Send 0+ messages</li>
+  <li>Spawn 0+ children</li>
+  <li>Change its behavior</li>
+</ul><aside class="notes">
+<p>TODO</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">sealed trait LockProtocol
+case class Lock(ref: ActorRef[LockStatus]) extends LockProtocol
+case class Unlock(ref: ActorRef[LockStatus]) extends LockProtocol</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">sealed trait LockStatus
+case object Granted extends LockStatus
+case class Taken(who: ActorRef[LockStatus]) extends LockStatus
+case object Released extends LockStatus
+case object UnlockFailed extends LockStatus</code></pre><aside class="notes">
+<ul>
+  <li>Mandatory to have a single type of a top level type</li>
+  <li>Any responses become explicit</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">def locked(by: ActorRef[LockStatus]): Behavior[LockProtocol] =
+  Behaviors.receiveMessage[LockProtocol] {
+    case (Lock(who)) =&gt;
+      who ! Taken(by)
+      Behaviors.same
+    case (Unlock(who)) =&gt;
+      require(who == by)
+      who ! Released
+      unlocked
+  }</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val unlocked: Behavior[LockProtocol] =
+  Behaviors.receiveMessagePartial[LockProtocol] {
+    case (Lock(who)) =&gt;
+      who ! Granted
+      locked(who)
+  }</code></pre><aside class="notes">
+<ul>
+  <li>Explicit states</li>
+  <li>Behaviors.same</li>
+  <li>unlocked here is another</li>
+  <li>Using methods params used to store state</li>
+</ul></aside></section><section>
+<p><img src="images/AkkaTypedReceptionist.png" alt="dc" /></p><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#receptionist" name="receptionist" class="anchor"><span class="anchor-link"></span></a>Receptionist</h2>
+<pre class="prettyprint"><code class="language-scala">ActorRef[Receptionist.Command]
+</code></pre>
+<pre class="prettyprint"><code class="language-scala">case class Find[T] (...) extends Command
+case class Subscribe[T] (...) extends Command
+</code></pre>
+<pre class="prettyprint"><code class="language-scala">case class Listing[T](...) extends Command
+</code></pre><aside class="notes">
+<ul>
+  <li>Receptionist</li>
+  <li>Implemented with distributed data</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val topLevel = Behaviors.setup[NeedsLock] { ctx =&gt;
+  val lock = ctx.spawn(unlocked, &quot;lock-a&quot;)
+  ctx.system.receptionist !
+    Register(ServiceKey[LockProtocol](&quot;lock-a&quot;), lock)
+  needsLockInstance
+}</code></pre><aside class="notes">
+<ul>
+  <li>Setup is a factory, get the actor context</li>
+</ul></aside></section><section>
+<h2><a href="#ask" name="ask" class="anchor"><span class="anchor-link"></span></a>Ask</h2>
+<pre class="prettyprint"><code class="language-scala">initialCtx.ask(initialCtx.system.receptionist)(Find(key)) {
+  case Success(listing) if hasListing(key, listing) =&gt;
+    LockActorAvailable(listing.serviceInstances(key).head)
+  case _ =&gt;
+    LockNotAvailable
+}
+
+</code></pre>
+<pre class="prettyprint"><code class="language-scala">  def ask[Req, Res](
+    otherActor: ActorRef[Req])
+   (createRequest: ActorRef[Res] ⇒ Req)
+   (mapResponse: Try[Res] ⇒ T)
+</code></pre><aside class="notes">
+<ul>
+  <li>Ask needs to make the response type match requester&rsquo;s protocol</li>
+  <li>This is an actor asking an actor.</li>
+  <li>External asks can be typed to anything</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val needsLockInstance = Behaviors.setup[NeedsLock] { initialCtx =&gt;
+  val key = ServiceKey[LockProtocol](&quot;lock-a&quot;)
+  initialCtx.ask(initialCtx.system.receptionist)(Find(key)) {
+    case Success(listing) if hasListing(key, listing) =&gt;
+      LockActorAvailable(listing.serviceInstances(key).head)
+    case _ =&gt;
+      LockNotAvailable
+  }</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">Behaviors.receive[NeedsLock] {
+  case (ctx, LockActorAvailable(lockActor)) =&gt;
+    ctx.log.info(&quot;Lock actor is available, time to get it&quot;)
+    ctx.ask(lockActor)(Lock) {
+      case Success(l) =&gt; LockGranted
+      case Failure(t) =&gt; LockNotAvailable
+    }
+    needsLockGrant
+  case (ctx, LockNotAvailable) =&gt;
+    ctx.log.info(&quot;Oh noes, no lock actor&quot;)
+    Behaviors.stopped
+}</code></pre><aside class="notes">
+<p>TODO</p></aside></section><section>
+<h2><a href="#running" name="running" class="anchor"><span class="anchor-link"></span></a>Running</h2>
+<pre class="prettyprint"><code class="language-scala">val system = ActorSystem(topLevel, &quot;TopLevel&quot;)</code></pre><aside class="notes">
+<p>TODO</p></aside></section><section>
+<h2><a href="#persistence" name="persistence" class="anchor"><span class="anchor-link"></span></a>Persistence</h2></section><section>
+<h2><a href="#persistence" name="persistence" class="anchor"><span class="anchor-link"></span></a>Persistence</h2>
+<pre class="prettyprint"><code class="language-scala">case class Command(data: String)
+case class Event(data: String)
+case class State(events: List[String] = Nil)
+</code></pre>
+<pre class="prettyprint"><code class="language-scala">val behavior: Behavior[Command] =
+  PersistentBehaviors.receive[Command, Event, State](
+    persistenceId = &quot;abc&quot;,
+    initialState = State(),
+    commandHandler = (ctx, state, cmd) ⇒ ???,
+    eventHandler = (state, evt) ⇒ ???)
+</code></pre><aside class="notes">
+<ul>
+  <li>Auto snapshotting</li>
+  <li>Type safe event adapters</li>
+</ul></aside></section><section>
+<h2><a href="#command-handler" name="command-handler" class="anchor"><span class="anchor-link"></span></a>Command Handler</h2>
+<pre class="prettyprint"><code class="language-scala">val commandHandler: CommandHandler[Command, Event, State] =
+  CommandHandler.command {
+    case Cmd(data) ⇒ Effect.persist(Evt(data))
+  }
+</code></pre>
+<ul>
+  <li>Persist</li>
+  <li>PersistAll</li>
+  <li>Stop</li>
+  <li>Unhandled</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#event-handler" name="event-handler" class="anchor"><span class="anchor-link"></span></a>Event Handler</h2>
+<pre class="prettyprint"><code class="language-scala">val eventHandler: (State, Event) ⇒ (State) = {
+  case (state, Evt(data)) ⇒ state.copy(data :: state.events)
+}
+
+</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#persistence" name="persistence" class="anchor"><span class="anchor-link"></span></a>Persistence</h2>
+<ul>
+  <li>Automatic snapshotting e.g every 100 events</li>
+  <li>Typed event adapters</li>
+  <li>Tagging without an event adapter</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#typed" name="typed" class="anchor"><span class="anchor-link"></span></a>Typed</h2>
+<ul>
+  <li>Coexistence</li>
+  <li>Signals e.g. PostStop</li>
+  <li>New test kits</li>
+  <li>Streams</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#multi-dc" name="multi-dc" class="anchor"><span class="anchor-link"></span></a>Multi DC</h2>
+<p><span class="fragment">Running Akka cluster across DCs</span></p></section><aside class="notes">
+<ul>
+  <li>DC aware</li>
+  <li>Existing cluster can be run across DCs</li>
+  <li>Gossip and membership</li>
+  <li>Leader actions</li>
+</ul></aside><section>
+<h2><a href="#multi-dc" name="multi-dc" class="anchor"><span class="anchor-link"></span></a>Multi DC</h2>
+<p><span class="fragment">Membership management during partitions</span></p>
+<p><span class="fragment">Singletons and sharding</span></p>
+<p><span class="fragment">Distributed data</span></p><aside class="notes">
+<ul>
+  <li>Why do ppl use multi DCs?
+    <ul>
+      <li>Fault tolerance</li>
+      <li>Data locality</li>
+    </ul>
+  </li>
+</ul></aside></section><section>
+<p><img src="images/cluster-dc.png" alt="dc" /></p><aside class="notes">
+<ul>
+  <li>Failure detection</li>
+  <li>UnreachableDatacenter</li>
+</ul></aside></section><section>
+<h2><a href="#sharding-and-singletons" name="sharding-and-singletons" class="anchor"><span class="anchor-link"></span></a>Sharding and singletons</h2><aside class="notes">
+<ul>
+  <li>Run separately, one per DC</li>
+  <li>How to use the singleton or shard in a different DC?</li>
+</ul></aside></section><section>
+<h2><a href="#data-center-a" name="data-center-a" class="anchor"><span class="anchor-link"></span></a>Data Center A</h2>
+<pre class="prettyprint"><code class="language-scala">cluster.multi-data-center.self-data-center = &quot;a&quot;</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val clusterSingleton = ClusterSingleton(system)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val singleton: ActorRef[CounterCommand] =
+  clusterSingleton.spawn[CounterCommand](TypedCounter.counter(0),
+    &quot;cat-counter&quot;,
+    Props.empty,
+    ClusterSingletonSettings(system),
+    GoodByeCounter)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">singleton ! Increment
+singleton ! Increment
+val count: Future[Int] = singleton ? GetValue</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#data-center-b" name="data-center-b" class="anchor"><span class="anchor-link"></span></a>Data Center B</h2>
+<pre class="prettyprint"><code class="language-scala">cluster.multi-data-center.self-data-center = &quot;b&quot;</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val proxy = clusterSingleton.spawn[CounterCommand](
+  TypedCounter.counter(0),
+  &quot;cat-counter&quot;,
+  Props.empty,
+  ClusterSingletonSettings(system)
+    .withDataCenter(&quot;a&quot;)
+  ,
+  GoodByeCounter
+)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">proxy ! Increment
+proxy ! Increment
+val count: Future[Int] = proxy ? GetValue</code></pre><aside class="notes">
+<ul>
+  <li>Ask for akka typed</li>
+  <li>No mapTo</li>
+</ul></aside></section><section>
+<h2><a href="#artery" name="artery" class="anchor"><span class="anchor-link"></span></a>Artery</h2></section><section>
+<h2><a href="#artery" name="artery" class="anchor"><span class="anchor-link"></span></a>Artery</h2>
+<ul>
+  <li>Aeron based artery is UDP based</li>
+  <li>New TCP Artery uses Streams TCP</li>
+  <li>Supports TLS</li>
+</ul><aside class="notes">
+<ul>
+  <li>Requires full cluster restart</li>
+</ul></aside></section><section>
+<h2><a href="#artery-advantages" name="artery-advantages" class="anchor"><span class="anchor-link"></span></a>Artery advantages</h2>
+<ul>
+  <li>Control message stream</li>
+  <li>Large message stream</li>
+  <li>Mostly allocation free</li>
+  <li>Built in flight recorder</li>
+</ul></section><section>
+<h2><a href="#stream-refs" name="stream-refs" class="anchor"><span class="anchor-link"></span></a>Stream refs</h2>
+<p><span class="fragment">Reactive streams over the network</span></p><aside class="notes">
+<ul>
+  <li>Assume streams knowledge</li>
+</ul></aside></section><section>
+<p><img src="images/AkkaState-streamrefs.svg" alt="dc" /></p><aside class="notes">
+<ul>
+  <li>Cluster</li>
+</ul></aside></section><section>
+<p><img src="images/toomuchmail.jpg" alt="dc" /></p></section><section>
+<p><img src="images/backpressure-propagation.svg" alt="dc" /></p></section><section>
+<pre class="prettyprint"><code class="language-scala">val source = Source(1 to 100)
+val sourceRef: Future[SourceRef[Int]] =
+  source.runWith(StreamRefs.sourceRef())</code></pre><aside class="notes">
+<p>Hrmm</p></aside></section><section>
+<h2><a href="#sourceref" name="sourceref" class="anchor"><span class="anchor-link"></span></a>SourceRef</h2>
+<pre class="prettyprint"><code class="language-scala">trait SourceRef[T] {
+  def source: Source[T, NotUsed]
+}
+</code></pre></section><section>
+<pre class="prettyprint"><code class="language-scala">streamRef.runWith(Sink.foreach(println))</code></pre></section><section>
+<h2><a href="#under-the-hood" name="under-the-hood" class="anchor"><span class="anchor-link"></span></a>Under the hood</h2>
+<ul>
+  <li>Message ordering</li>
+  <li>Demand propagation</li>
+  <li>Subscription timeouts</li>
+</ul><aside class="notes">
+<ul>
+  <li>Messages are ordered</li>
+  <li>Demand redelivery</li>
+  <li>If subscription timeout the materialization will fail</li>
+  <li>
+  <p>TCP flow control,</p></li>
+  <li>serialization, TCP, connection pooling</li>
+  <li>Assigning ports</li>
+</ul></aside></section><section>
+<h2><a href="#akka-grpc" name="akka-grpc" class="anchor"><span class="anchor-link"></span></a>Akka gRPC</h2><aside class="notes">
+<ul>
+  <li>Very new</li>
+  <li>gRPC running on akka http</li>
+</ul></aside></section><section>
+<p><img src="images/grpc.svg" alt="dc" /></p><aside class="notes">
+<ul>
+  <li>Interface first</li>
+  <li>Language agnostic</li>
+  <li>Built on HTTP2</li>
+  <li>Streaming support</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-proto">service GreeterService {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+    rpc ItKeepsTalking (stream HelloRequest) returns (HelloReply) {}
+
+    rpc ItKeepsReplying (HelloRequest) returns (stream HelloReply) {}
+
+    rpc StreamHellos (stream HelloRequest) returns (stream HelloReply) {}
+}</code></pre><aside class="notes">
+<ul>
+  <li>Language agnostic</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">new StreamObserver[T]() {
+  override def onNext(summary: T): Unit = { ... }
+  override def onError(t: T): Unit = { ... }
+  override def onCompleted(): Unit = { ... }
+}
+</code></pre></section><aside class="notes">
+<ul>
+  <li>Not particularly composable</li>
+  <li>Usecase fits akka streams</li>
+</ul></aside><section>
+<h2><a href="#unary-calls" name="unary-calls" class="anchor"><span class="anchor-link"></span></a>Unary calls</h2>
+<pre class="prettyprint"><code class="language-proto">rpc SayHello (HelloRequest) returns (HelloReply) {}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def sayHello(in: HelloRequest): Future[HelloReply] =</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#client-streaming" name="client-streaming" class="anchor"><span class="anchor-link"></span></a>Client streaming</h2>
+<pre class="prettyprint"><code class="language-proto">rpc ItKeepsTalking (stream HelloRequest) returns (HelloReply) {}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">def itKeepsTalking(in: Source[HelloRequest, NotUsed]):
+                       Future[HelloReply] = {
+  in.runWith(Sink.foreach(println))
+    .map(_ =&gt; HelloReply(&quot;I have read your stream&quot;))
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#server-streaming" name="server-streaming" class="anchor"><span class="anchor-link"></span></a>Server streaming</h2>
+<pre class="prettyprint"><code class="language-proto">rpc ItKeepsReplying (HelloRequest) returns (stream HelloReply) {}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">override def itKeepsReplying(in: HelloRequest):
+                                 Source[HelloReply, NotUsed] = {
+  Source(List(HelloReply(s&quot;Hello&quot;), HelloReply(s&quot;Hello ${in.name}&quot;)))
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#stream-both-ways" name="stream-both-ways" class="anchor"><span class="anchor-link"></span></a>Stream both ways</h2>
+<pre class="prettyprint"><code class="language-proto">rpc StreamHellos (stream HelloRequest) returns (stream HelloReply) {}</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">override def streamHellos(in: Source[HelloRequest, NotUsed]):
+                              Source[HelloReply, NotUsed] = {
+  in.map(hr =&gt; HelloReply(s&quot;Hello ${hr.name}&quot;))
+}</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val service: HttpRequest =&gt; Future[HttpResponse] =
+  GreeterServiceHandler(new GreeterServiceImpl(mat))</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">Http2().bindAndHandleAsync(service, &quot;127.0.0.1&quot;, 8080, HttpConnectionContext(http2 = Always))
+  .foreach { binding =&gt;
+    println(s&quot;gRPC server bound to: ${binding.localAddress}&quot;)
+  }</code></pre><aside class="notes">
+<ul>
+  <li>Can be combined with other HTTP Routes</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val client = new GreeterServiceClient(new GrpcClientSettings(
+  &quot;127.0.0.1&quot;,
+  8080
+))</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val response: Future[HelloReply] =
+  client.sayHello(HelloRequest(&quot;chbatey&quot;))</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val clientStreaming: Future[HelloReply] =
+  client.itKeepsTalking(Source(List(
+    HelloRequest(&quot;chbatey&quot;),
+    HelloRequest(&quot;trevor&quot;))))</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val streamedResponse: Source[HelloReply, NotUsed] =
+  client.streamHellos(???)
+streamedResponse.runWith(Sink.foreach(println))</code></pre><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#grpc-summary" name="grpc-summary" class="anchor"><span class="anchor-link"></span></a>gRPC Summary</h2>
+<ul>
+  <li>Very new!</li>
+  <li>HTTP2 only works with bindAndHandleAsync</li>
+  <li>Client uses Netty, will use Akka HTTP client soon</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#summary" name="summary" class="anchor"><span class="anchor-link"></span></a>Summary</h2>
+<ul>
+  <li><span>Typed refinements</span></li>
+  <li><span>Multi DC</span></li>
+  <li><span>Artery TCP</span></li>
+  <li><span>Stream Refs</span></li>
+  <li><span>gRPC</span></li>
+</ul></section><section>
+<h2><a href="#happy-hakking-" name="happy-hakking-" class="anchor"><span class="anchor-link"></span></a>Happy hAkking!</h2>
+<dl>
+  <dt>Slides &amp; Code
+  </dt>
+  <dd><a href="https://github.com/chbatey/akka-talks">github.com/chbatey/akka-talks</a></dd>
+  <dt>Docs &amp; QuickStarts
+  </dt>
+  <dd><a href="https://akka.io">akka.io</a>, <a href="https://developer.lightbend.com/start">developer.lightbend.com/start</a></dd>
+  <dt>Community</dt>
+  <dd><a href="https://gitter.im/akka/akka">gitter.im/akka/akka</a></dd>
+  <dt>Tweet</dt>
+  <dd><a href="https://twitter.com/akkateam">@akkateam</a>, <a href="https://twitter.com/chbatey">@chbatey</a></dd>
+</dl></section><section>
+<h1><a href="#questions-" name="questions-" class="anchor"><span class="anchor-link"></span></a>Questions?</h1></section>
+<p><span id="selectedLanguage">Scala</span></p>
+<script>
+  const selectedLanguage = document.getElementById('selectedLanguage').innerHTML.toLowerCase()
+  const hiddenLanguage = (selectedLanguage == "java") ? "scala" : "java"
+
+  console.log(selectedLanguage)
+  var javaFragments = document.getElementsByClassName('group-' + hiddenLanguage)
+  while (javaFragments.length > 0) {
+    javaFragments[0].remove()
+  }
+</script>
+</div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+// More info about config & dependencies:
+// - https://github.com/hakimel/reveal.js#configuration
+// - https://github.com/hakimel/reveal.js#dependencies
+Reveal.initialize({
+history: true,
+slideNumber: true,
+dependencies: [
+{ src: 'plugin/markdown/marked.js' },
+{ src: 'plugin/markdown/markdown.js' },
+{ src: 'plugin/notes/notes.js', async: true },
+{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+]
+});
+</script>
+<div class="footer" style="position: absolute; width: 100%; bottom: 0px; padding: 1.2em; background-image: url(lightbend-reverse.svg); height: 3em; background-color: #15a9ce; background-repeat: no-repeat; background-origin: content-box"></div>
+</body>
+</html>

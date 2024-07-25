@@ -1,0 +1,676 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Asynchronous, flow controlled services with Akka Streams</title>
+
+<link rel="stylesheet" href="css/reveal.css">
+<link rel="stylesheet" href="css/extra.css">
+<link rel="stylesheet" href="css/theme/akka.css">
+
+<!-- Theme used for syntax highlighting of code -->
+<link rel="stylesheet" href="lib/css/zenburn.css">
+
+<!-- Printing and PDF exports -->
+<script>
+var link = document.createElement( 'link' );
+link.rel = 'stylesheet';
+link.type = 'text/css';
+link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+document.getElementsByTagName( 'head' )[0].appendChild( link );
+</script>
+</head>
+<body>
+
+
+<div class="reveal">
+<div class="slides">
+<section data-background="#15a9ce">
+<h3><a href="#asynchronous-flow-controlled-services-with-akka-streams" name="asynchronous-flow-controlled-services-with-akka-streams" class="anchor"><span class="anchor-link"></span></a>Asynchronous, flow controlled services with Akka Streams</h3>
+<h5><a href="#christopher-batey-chbatey-" name="christopher-batey-chbatey-" class="anchor"><span class="anchor-link"></span></a>Christopher Batey (@chbatey)</h5>
+<h5><a href="#software-engineer-akka-team" name="software-engineer-akka-team" class="anchor"><span class="anchor-link"></span></a>Software Engineer - Akka team</h5><aside class="notes">
+<ul>
+  <li>Me</li>
+  <li>Lightbend: Scala, Akka, Play</li>
+  <li>Responsive systems using async, resource efficient</li>
+  <li>Scalable systems that behave well under load</li>
+</ul></aside></section><section>
+<h2><a href="#akka-toolkit" name="akka-toolkit" class="anchor"><span class="anchor-link"></span></a>Akka toolkit</h2>
+<p>Actor model</p>
+<p><span class="fragment">Clustering</span></p>
+<p><span class="fragment">Persistence (Event Sourcing)</span></p>
+<p><span class="fragment">HTTP</span></p>
+<p><span class="fragment">Streams</span></p>
+<p><span class="fragment">gRPC</span></p><aside class="notes">
+<ul>
+  <li>Core; actor based concurrency</li>
+  <li>Distribution and location transparency</li>
+  <li>HTTP and streams, reactive streams</li>
+</ul></aside></section><section>
+<h2><a href="#responsive" name="responsive" class="anchor"><span class="anchor-link"></span></a>Responsive</h2>
+<ul>
+  <li>For a single request</li>
+  <li>Remain responsive under load</li>
+</ul><aside class="notes">
+<ul>
+  <li>2.5 mins</li>
+  <li>Hanging, crashing vs being slow</li>
+  <li>Capacity planned to 1000 concurrent requests</li>
+  <li>Sized your hear to 2GB</li>
+</ul></aside></section><section>
+<h2><a href="#scalable" name="scalable" class="anchor"><span class="anchor-link"></span></a>Scalable</h2>
+<ul>
+  <li>Single process scalability or resource efficiency</li>
+  <li>Multi node scalability</li>
+</ul><aside class="notes">
+<ul>
+  <li>Scalable for those who need it. E.g. 5TPS on a huge box</li>
+  <li>Scalable in process: Execution model appropriate</li>
+  <li>Resource efficiency</li>
+  <li>Scalable across machines</li>
+</ul></aside></section><section>
+<h2><a href="#asynchronous" name="asynchronous" class="anchor"><span class="anchor-link"></span></a>Asynchronous</h2>
+<ul>
+  <li>Programming model
+    <ul>
+      <li>CompletableFuture from the JDK</li>
+      <li>Scala Futures</li>
+      <li>Actors and Streams from Akka</li>
+      <li>Observables and Flowables from RxJava</li>
+    </ul>
+  </li>
+  <li>Network/IO
+    <ul>
+      <li>Network request use a Thread?</li>
+      <li>File system request use a Thread?</li>
+    </ul>
+  </li>
+</ul><aside class="notes">
+<ul>
+  <li>Typical synchronous thread per request programming model</li>
+  <li>How many threads do you need to service a 1000 concurrent requests?</li>
+  <li>Async programming model vs actually async all the way down</li>
+  <li>Reminder: Asynchrony is about scalability. NOT latency</li>
+</ul></aside></section><section>
+<h2><a href="#flow-control" name="flow-control" class="anchor"><span class="anchor-link"></span></a>Flow control</h2>
+<ul>
+  <li>Fast producers overload slow consumers?</li>
+  <li>How is demand signalled?</li>
+  <li>Rate of pulling data into memory from database?</li>
+</ul><aside class="notes">
+<ul>
+  <li>8 mins</li>
+  <li>Dealing with components that run at different speeds</li>
+  <li>Accepting connections vs how our database is responding</li>
+  <li>How quickly do we pull data from a database when it is unbounded?</li>
+  <li>Default is to not take it into consideration</li>
+  <li>Much more important when moving away from thread per request</li>
+  <li>Online television service, big football game</li>
+</ul></aside></section><section>
+<img src="Akka-Talks-Diagrams-1.svg" style="width: 1000px;"/></section><section>
+<img src="Akka-Talks-Diagrams-2.svg" style="width: 1000px;"/></section><section>
+<img src="Akka-Talks-Diagrams-3.svg" style="width: 1000px;"/></section><section>
+<h2><a href="#presentation-take-aways" name="presentation-take-aways" class="anchor"><span class="anchor-link"></span></a>Presentation take aways</h2>
+<ul>
+  <li>What does async give us?</li>
+  <li>What does flow control give us?</li>
+  <li>Flow control with Akka streams</li>
+  <li>Http Client -&gt; TCP -&gt; Http Server -&gt; TCP -&gt; Apache Cassandra (slow client)</li>
+</ul><aside class="notes">
+<ul>
+  <li>10 minutes</li>
+  <li>So far just asked a lot of questions</li>
+  <li>45 mins on the talk, then 15 mins of demo.</li>
+</ul></aside></section><section>
+<h2><a href="#use-case" name="use-case" class="anchor"><span class="anchor-link"></span></a>Use case</h2>
+<ul>
+  <li>HTTP Service, endpoints for:
+    <ul>
+      <li>User information from database</li>
+      <li>Getting user activity over a large time span</li>
+    </ul>
+  </li>
+</ul><aside class="notes">
+<ul>
+  <li>11 mins</li>
+  <li>Small request vs large request</li>
+  <li>Second is an unbounded response</li>
+  <li>Local Cassandra database with hundreds of millions of events, around .5 GB. Run with a small HEAP</li>
+</ul></aside></section><section>
+<h2><a href="#requirements" name="requirements" class="anchor"><span class="anchor-link"></span></a>Requirements</h2>
+<ul>
+  <li>Respond in a timely manner, even if it is a failure</li>
+  <li>Don&rsquo;t do any unnecessary work</li>
+  <li>Constant memory footprint</li>
+</ul><aside class="notes">
+<ul>
+  <li>Resource efficiency/scalability</li>
+  <li>Dont pull large amounts from database if the client isn&rsquo;t reading it</li>
+  <li>Don&rsquo;t continue computations</li>
+  <li>Easier if synchronous, as thead can become blocked</li>
+  <li>Small heap. Even when using libraries designed for this it is easy to accidently pull everything into memory</li>
+</ul></aside></section><section>
+<h2><a href="#execution-models" name="execution-models" class="anchor"><span class="anchor-link"></span></a>Execution Models</h2><aside class="notes">
+<ul>
+  <li>12 minutes</li>
+  <li>Time for code and details, then demo</li>
+  <li>Thread per request, hystrix</li>
+  <li>Future based programming</li>
+  <li>Akka stream based programming</li>
+</ul></aside></section><section>
+<h3><a href="#traditional-synchronous-model" name="traditional-synchronous-model" class="anchor"><span class="anchor-link"></span></a>Traditional synchronous model</h3>
+<pre class="prettyprint"><code class="language-java">class MyService {
+  public Result performTask(Task task) throws Exception {
+    // ... do work
+  }
+}</code></pre>
+<pre class="prettyprint"><code class="language-java">for (Task task: tasks) {
+  Result result = service.performTask(task);
+  // Handle result...
+}</code></pre><aside class="notes">
+<ul>
+  <li>Multiple tasks done after another?</li>
+  <li>Perhaps submit them to a thread pool? Very low level</li>
+  <li>Network vs compute</li>
+</ul></aside></section><section>
+<pre class="prettyprint group-scala"><code class="language-scala">def post(request: HttpRequest): HttpResponse = {
+  val userId = request.getQueryParam(&quot;userId&quot;)
+  val user: User = getUserFromDatabase(userId)
+
+  ExternalService.sendPresentToUser(user)
+
+  HttpResponse(200)
+}</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">HttpResponse post(HttpRequest request) {
+  String userId = request.getQueryParam(&quot;userId&quot;);
+  Domain.User user = getUserFromDatabase(userId);
+  ExternalService.sendPresentToUser(user);
+  return new HttpResponse(200);
+}</code></pre><aside class="notes">
+<ul>
+  <li>18m</li>
+  <li>JAX-RS, Spring</li>
+  <li>WOrks well for CPU bound tasks</li>
+  <li>Dropwizard with Jetty default # of threads is 1024</li>
+  <li>Probably got some annotations for serialisation</li>
+  <li>Inherently not scalable</li>
+</ul></aside></section><section>
+<pre class="prettyprint group-scala"><code class="language-scala">def post(request: HttpRequest): HttpResponse = {
+  // nice and quick
+  val userId = request.getQueryParam(&quot;userId&quot;)
+  // 5 millis to 10 seconds?
+  val user: User = getUserFromDatabase(userId)
+
+  // 5 millis to 10 seconds?
+  ExternalService.sendPresentToUser(user)
+
+  HttpResponse(200)
+}</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">private HttpResponse post(HttpRequest request) {
+  // nice and quick
+  String userId = request.getQueryParam(&quot;userId&quot;);
+  // 5 millis to 10 seconds?
+  Domain.User user = getUserFromDatabase(userId);
+
+  // 5 millis to 10 seconds?
+  ExternalService.sendPresentToUser(user);
+
+  return new HttpResponse(200);
+}</code></pre><aside class="notes">
+<ul>
+  <li>Very hard for sync to time a request out</li>
+  <li>TCP connection/receive timeouts</li>
+</ul></aside></section><section>
+<h2><a href="#asynchronous" name="asynchronous" class="anchor"><span class="anchor-link"></span></a>Asynchronous</h2>
+<pre class="prettyprint group-scala"><code class="language-scala">def request(request: HttpRequest): Future[HttpResponse] = ???</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">CompletableFuture&lt;HttpResponse&gt; post(HttpRequest request)</code></pre>
+<ul>
+  <li>Timeout independent to dependency times</li>
+  <li>Option not to block on IO</li>
+  <li>Works well for small responses that are ready to go</li>
+</ul><aside class="notes">
+<ul>
+  <li>Rather than</li>
+  <li>This function completes right away. Web framework then puts a callback on the future</li>
+  <li>How do we decide how many concurrent requests we can handle?</li>
+</ul></aside></section><section>
+<pre class="prettyprint group-scala"><code class="language-scala">def request(request: HttpRequest): Future[HttpResponse] =
+  for {
+    user &lt;- lookupUser(request.getQueryParam(&quot;userId&quot;))
+    _ &lt;- AsyncExternalService.sendPresentToUser(user)
+  } yield HttpResponse(200)</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">CompletableFuture&lt;HttpResponse&gt; request(HttpRequest request) {
+  return wf.lookupUser(request.getQueryParam(&quot;id&quot;))
+      .thenCompose(user -&gt; wf.sendPresentToUser(user))
+      .thenApply(v -&gt; new HttpResponse(200));
+}</code></pre><aside class="notes">
+<ul>
+  <li>thenCompose - chain on another async comp</li>
+  <li>thenApply - transform the result once it is complete</li>
+</ul></aside></section><section>
+<h2><a href="#akka-http" name="akka-http" class="anchor"><span class="anchor-link"></span></a>Akka HTTP</h2>
+<pre class="prettyprint group-scala"><code class="language-scala">path(&quot;user&quot; / Segment) { name =&gt;
+  get {
+    withRequestTimeout(500.millis) {
+      val user: Future[Option[User]] = DataAccess.lookupUser(name)
+      onComplete(user) {
+        case Success(None) =&gt; complete(StatusCodes.NotFound)
+        case Success(Some(u)) =&gt; complete(u)
+        case Failure(t) =&gt; complete(StatusCodes.InternalServerError, t.getMessage)
+      }
+    }
+  }
+}</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">get(() -&gt; {
+    CompletableFuture&lt;Optional&lt;User&gt;&gt; user =
+      dataAccess.lookupUser(id);
+    return onSuccess(user, (Optional&lt;User&gt; opUser) -&gt;
+      opUser.map(u -&gt; complete(u.serialise()))
+            .orElse(complete(StatusCodes.NOT_FOUND)));
+  }</code></pre></section><section>
+<h2><a href="#akka-http" name="akka-http" class="anchor"><span class="anchor-link"></span></a>Akka HTTP</h2>
+<pre class="prettyprint"><code class="language-scala">path(&quot;user&quot; / Segment) { name =&gt;
+  get {
+    withRequestTimeout(500.millis) {
+      val user: Future[Option[User]] = DataAccess.lookupUser(name)
+      onComplete(user) {
+        case Success(None) =&gt; complete(StatusCodes.NotFound)
+        case Success(Some(u)) =&gt; complete(u)
+        case Failure(t) =&gt; complete(StatusCodes.InternalServerError, t.getMessage)
+      }
+    }
+  }
+}</code></pre><aside class="notes">
+<ul>
+  <li>Future rather than a sync method call</li>
+  <li>We can easily add a timeout that Akka HTTP can handle</li>
+</ul></aside></section><section>
+<pre class="prettyprint group-scala"><code class="language-scala">def lookupUser(userId: UserId): Future[Option[User]] =
+  session.executeAsync(&quot;select * from users where user_id = ?&quot;, userId).asScala
+    .map((rs: ResultSet) =&gt; Option(rs.one())
+      .map(row =&gt; User(
+        row.getString(&quot;user_id&quot;),
+        row.getString(&quot;user_name&quot;),
+        row.getInt(&quot;age&quot;))))</code></pre>
+<pre class="prettyprint group-java"><code class="language-java">CompletableFuture&lt;Optional&lt;User&gt;&gt; lookupUser(String userId) {
+  CompletableFuture&lt;ResultSet&gt; rs = toCompletableFuture(
+    session.executeAsync(CQL, userId));
+
+  CompletableFuture&lt;Optional&lt;User&gt;&gt; user =
+    rs.thenApply((ResultSet rSet) -&gt;
+      Optional.ofNullable(rSet.one())
+        .map((Row row) -&gt; new User(
+          row.getString(&quot;user_id&quot;),
+          row.getString(&quot;user_name&quot;),
+          row.getInt(&quot;age&quot;)))
+    );
+
+  return user;
+}
+</code></pre><aside class="notes">
+<ul>
+  <li>Quick look at what an async call to a DB might look like</li>
+</ul></aside></section><section>
+<h2><a href="#responsiveness-under-load" name="responsiveness-under-load" class="anchor"><span class="anchor-link"></span></a>Responsiveness under load</h2><aside class="notes">
+<ul>
+  <li>25 mins</li>
+  <li>Recap:
+    <ul>
+      <li>Async allows us to use fewer threads</li>
+      <li>Async allows us to respond even if the request isn&rsquo;t fished</li>
+    </ul>
+  </li>
+  <li>HOWEVER:
+    <ul>
+      <li>A new problem, when do we stop taking in requests?</li>
+    </ul>
+  </li>
+</ul></aside></section><section>
+<h1><a href="#playing-fair" name="playing-fair" class="anchor"><span class="anchor-link"></span></a>Playing fair</h1><aside class="notes">
+<ul>
+  <li>Actors - how many messages</li>
+  <li>Futures - How many outstanding futures</li>
+</ul></aside></section><section data-background-video="images/fishermen.mp4">
+<h1><a href="#" name="" class="anchor"><span class="anchor-link"></span></a><span class="orange fragment">OutOfMemoryError</span></h1><aside class="notes">
+<ul>
+  <li>Reactive streams</li>
+</ul></aside></section><section>
+<h2><a href="#queueing-and-or-buffering" name="queueing-and-or-buffering" class="anchor"><span class="anchor-link"></span></a>Queueing and/or buffering</h2>
+<ul>
+  <li>Kafka between things?</li>
+</ul>
+<p><img src="pubsub-half.png" alt="queue" /></p></section><section>
+<h2><a href="#fast-publisher" name="fast-publisher" class="anchor"><span class="anchor-link"></span></a>Fast publisher</h2>
+<ul>
+  <li>Without the queue:
+    <ul>
+      <li>Down stream gets overwhelmed</li>
+      <li>Publisher has wasted resources</li>
+    </ul>
+  </li>
+</ul>
+<p><img src="pubsub-full.png" alt="queue" /></p><aside class="notes">
+<ul>
+  <li>Assumption that kafka never fills up</li>
+  <li>Can&rsquo;t do this for in memory, can&rsquo;t do this for requests between services</li>
+  <li>Would this work in memory?</li>
+  <li>Why produce data no one is ready to consume?</li>
+</ul></aside></section><section>
+<h2><a href="#reacting-to-failure" name="reacting-to-failure" class="anchor"><span class="anchor-link"></span></a>Reacting to failure</h2>
+<ul>
+  <li>Is the consumer slow or down?</li>
+  <li>Circuit breakers</li>
+</ul>
+<p><img src="circuit-breaker.png" alt="Circuit breaker" /></p></section><section>
+<h2><a href="#flow-control" name="flow-control" class="anchor"><span class="anchor-link"></span></a>Flow control</h2>
+<ul>
+  <li>Dynamically adjust the rate based on demand</li>
+</ul>
+<p><img src="demand.png" alt="queue" /></p><aside class="notes">
+<ul>
+  <li>Very abstract</li>
+  <li>Implementing this is a full time job</li>
+  <li>How does it work for Cassandra, Kafka?</li>
+</ul></aside></section><section>
+<h1><a href="#akka-streams" name="akka-streams" class="anchor"><span class="anchor-link"></span></a>Akka Streams</h1><aside class="notes">
+<ul>
+  <li>What is Akka streams for?</li>
+  <li>Async passing data.</li>
+  <li>Data might come from DB, in process computation</li>
+  <li>Flow control is built in</li>
+  <li>Alpakka</li>
+</ul></aside></section><section>
+<p><img src="images/stream-blocks.svg" alt="Source, Flow and Sink" /></p><aside class="notes">
+<ul>
+  <li>Async streaming pipeline</li>
+  <li>Akka HTTP treads HTTP as as stream</li>
+  <li>Data goes from a source to a sync</li>
+  <li>Demand goes the opposite way</li>
+  <li>Demand is the kind of things people used to build into Actors/Futures</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-java">Source.range(0, 20000000);</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">Flow.fromFunction(n -&gt; n.toString());</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">Sink.foreach(str -&gt; System.out.println(str));</code></pre><aside class="notes">
+<ul>
+  <li>Before we dive into the specifics, let&rsquo;s start with some small examples to get a feel</li>
+  <li>Not brought into memory</li>
+  <li>Sink receives each element then it can be garbage collected</li>
+  <li>Types coming next</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-java">Source&lt;Integer, NotUsed&gt; source =
+  Source.range(0, 20000000);</code></pre>
+<pre class="prettyprint"><code class="language-java">Flow&lt;Integer, String, NotUsed&gt; flow =
+  Flow.fromFunction(n -&gt; n.toString());</code></pre>
+<pre class="prettyprint"><code class="language-java">Sink&lt;String, CompletionStage&lt;Done&gt;&gt; sink =
+  Sink.foreach(str -&gt; System.out.println(str));</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">RunnableGraph&lt;NotUsed&gt; runnable =
+  source.via(flow).to(sink);</code></pre>
+<pre class="prettyprint fragment"><code class="language-java">ActorSystem system = ActorSystem.create();
+Materializer materializer = ActorMaterializer.create(system);
+
+runnable.run(materializer);</code></pre><aside class="notes">
+<ul>
+  <li>All just reuseable recipes</li>
+  <li>Implemented under the covers using actors</li>
+  <li>Flow control built in</li>
+</ul></aside></section><section>
+<pre class="prettyprint"><code class="language-scala">val source = Source(0 to 20000000)</code></pre>
+<pre class="prettyprint"><code class="language-scala">val flow = Flow[Int].map(_.toString())</code></pre>
+<pre class="prettyprint"><code class="language-scala">val sink = Sink.foreach[String](println(_))</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">val runnable = source.via(flow).to(sink)</code></pre>
+<pre class="prettyprint fragment"><code class="language-scala">implicit val system = ActorSystem()
+implicit val mat = ActorMaterializer()
+
+runnable.run()</code></pre><aside class="notes">
+<p>b</p></aside></section><section>
+<p>Java:</p>
+<pre class="prettyprint"><code class="language-java">Source.range(0, 20000000)
+  .map(Object::toString)
+  .runForeach(System.out::println, materializer);</code></pre>
+<p>Scala:</p>
+<pre class="prettyprint"><code class="language-scala">Source(0 to 20000000)
+  .map(_.toString)
+  .runForeach(println)</code></pre><aside class="notes">
+<ul>
+  <li>Effort has gone into making the Java/Scala API very similar</li>
+</ul></aside></section><section>
+<h2><a href="#materialization" name="materialization" class="anchor"><span class="anchor-link"></span></a>Materialization</h2>
+<pre class="prettyprint group-java"><code class="language-java">RunnableGraph&lt;NotUsed&gt; graph = Source.range(0, 20000000)
+  .map(Object::toString)
+  .to(Sink.foreach(str -&gt; System.out.println(str)));
+
+ActorSystem system = ActorSystem.create();
+Materializer materializer = ActorMaterializer.create(system);
+
+NotUsed n1 = graph.run(materializer);
+NotUsed n2 = graph.run(materializer);</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">val graph = Source(0 to 20000000)
+  .map(_.toString)
+  .to(Sink.foreach(println))
+
+implicit val system = ActorSystem()
+implicit val materializer = ActorMaterializer()
+
+val n1: NotUsed = graph.run()
+val n2: NotUsed = graph.run()</code></pre><aside class="notes">
+<ul>
+  <li>Run multiple times</li>
+  <li>E.g. each time a request comes into your app</li>
+</ul></aside></section><section>
+<h2><a href="#actor-materialization" name="actor-materialization" class="anchor"><span class="anchor-link"></span></a>Actor materialization</h2>
+<pre class="prettyprint group-java"><code class="language-java">Source.range(1, 3)
+  .map(x -&gt; x + 1)
+  .map(x -&gt; x * 2)
+  .to(Sink.reduce((x, y) -&gt; x + y));</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">Source(1 to 3)
+  .map(x =&gt; x + 1)
+  .map(x =&gt; x * 2)
+  .to(Sink.reduce[Int](_ + _))</code></pre>
+<p><img src="images/stream-unfused.svg" alt="Source, Flow and Sink" /></p><aside class="notes">
+<ul>
+  <li>Each stage in your pipeline can become an actor</li>
+  <li>Fusing. Single actor</li>
+  <li>Downside is there is no parallelism as elements go through stream</li>
+</ul></aside></section><section>
+<h1><a href="#fusing" name="fusing" class="anchor"><span class="anchor-link"></span></a>Fusing</h1>
+<pre class="prettyprint group-java"><code class="language-java">Source.range(1, 3)
+  .map(x -&gt; x + 1).async()
+  .map(x -&gt; x * 2)
+  .to(Sink.reduce((x, y) -&gt; x + y));</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">Source(1 to 3)
+  .map(x =&gt; x + 1).async
+  .map(x =&gt; x * 2)
+  .to(Sink.reduce[Int](_ + _))</code></pre>
+<p><img src="images/stream-async.svg" alt="Source, Flow and Sink" /></p></section><section>
+<h1><a href="#fusing" name="fusing" class="anchor"><span class="anchor-link"></span></a>Fusing</h1>
+<pre class="prettyprint group-java"><code class="language-java">Source.range(1, 3)
+  .map(x -&gt; x + 1)
+  .mapAsync(5, n -&gt; CompletableFuture.completedFuture(n * 2))
+  .to(Sink.reduce((x, y) -&gt; x + y));</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">Source(1 to 3)
+  .map(x =&gt; x + 1)
+  .mapAsync(5)(n =&gt; Future.successful(n * 2))
+  .to(Sink.reduce[Int](_ + _))</code></pre>
+<p><img src="images/stream-async.svg" alt="Source, Flow and Sink" /></p><aside class="notes">
+<ul>
+  <li>Also happens when using an async comp in a state mapAsync</li>
+</ul></aside></section><section>
+<h2><a href="#backpressure-propagation" name="backpressure-propagation" class="anchor"><span class="anchor-link"></span></a>Backpressure propagation</h2>
+<p>Demand is signalled across async boundaries</p>
+<p><img src="images/backpressure-propagation.svg" alt="Backpressure across async boundary" /></p><aside class="notes">
+<ul>
+  <li>Where does the flow control come in?</li>
+  <li>Upstream stages are not allowwed to do anything until downstream</li>
+</ul></aside></section><section>
+<h2><a href="#backpressure-propagation" name="backpressure-propagation" class="anchor"><span class="anchor-link"></span></a>Backpressure propagation</h2>
+<p>Thanks to Reactive Streams, across different libraries:</p>
+<p><img src="images/backpressure-propagation-across-libs.svg" alt="Backpressure across async boundary" /></p></section><section>
+<h2><a href="#backpressure-propagation" name="backpressure-propagation" class="anchor"><span class="anchor-link"></span></a>Backpressure propagation</h2>
+<p>Often also possible across external protocols, i.e. TCP:</p>
+<p><img src="images/tcp-window-initial.png" alt="TCP window" /></p>
+<p><span class="fragment"><img src="images/tcp-window-1.png" alt="TCP window" /></span></p><aside class="notes">
+<ul>
+  <li>Demo will show the flow control in Akka streams going into TCP</li>
+</ul></aside></section><section>
+<h2><a href="#backpressure-propagation" name="backpressure-propagation" class="anchor"><span class="anchor-link"></span></a>Backpressure propagation</h2>
+<p>Can be seen in e.g. wireshark:</p>
+<p><img src="images/wireshark-fullwindow-2.png" alt="Wireshark backpressure" /></p><aside class="notes">
+<p>Akka streams backpressure translating to TCP bacck pressurej</p></aside></section><section>
+<h2><a href="#tcp-windowing" name="tcp-windowing" class="anchor"><span class="anchor-link"></span></a>TCP windowing</h2>
+<p><img src="ss.png" alt="SS" /></p><aside class="notes">
+<ul>
+  <li>Window fills up, client stops sending</li>
+  <li>Heart beats to know when it can start sending again</li>
+</ul></aside></section><section>
+<h2><a href="#putting-it-all-together" name="putting-it-all-together" class="anchor"><span class="anchor-link"></span></a>Putting it all together</h2>
+<p>HTTP Client -&gt; TCP -&gt; Server -&gt; HTTP Server -&gt; TCP -&gt; Apache Cassandra</p><aside class="notes">
+<ul>
+  <li>35min</li>
+  <li>Goal not to teach you Akka HTTP</li>
+  <li>But to show you the benefits of using a library which adheres to flow control</li>
+</ul></aside></section><section>
+<h2><a href="#putting-it-all-together" name="putting-it-all-together" class="anchor"><span class="anchor-link"></span></a>Putting it all together</h2>
+<ul>
+  <li>Akka HTTP client</li>
+  <li>Akka HTTP server</li>
+  <li>Alpakka</li>
+</ul><aside class="notes">
+<p>Notes</p></aside></section><section>
+<h2><a href="#akka-client" name="akka-client" class="anchor"><span class="anchor-link"></span></a>Akka Client</h2>
+<pre class="prettyprint group-java"><code class="language-scala">val response: Future[HttpResponse] = Http().singleRequest(
+  HttpRequest(uri = s&quot;http://localhost:8080/user/tracking/$userId&quot;)
+)</code></pre>
+<pre class="prettyprint group-java"><code class="language-scala">response.map {
+  case HttpResponse(StatusCodes.OK, headers, entity, _) =&gt;
+    val response: Source[ByteString, _] = entity.dataBytes
+    response.via(Framing.delimiter(
+      ByteString(&quot;\n&quot;), maximumFrameLength = 100))
+      .map(_.utf8String.parseJson.convertTo[Event])
+      .mapMaterializedValue(_ =&gt; NotUsed)
+}</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">val response: Future[HttpResponse] = Http().singleRequest(
+  HttpRequest(uri = s&quot;http://localhost:8080/user/tracking/$userId&quot;)
+)</code></pre>
+<pre class="prettyprint group-scala"><code class="language-scala">response.map {
+  case HttpResponse(StatusCodes.OK, headers, entity, _) =&gt;
+    val response: Source[ByteString, _] = entity.dataBytes
+    response.via(Framing.delimiter(
+      ByteString(&quot;\n&quot;), maximumFrameLength = 100))
+      .map(_.utf8String.parseJson.convertTo[Event])
+      .mapMaterializedValue(_ =&gt; NotUsed)
+}</code></pre><aside class="notes">
+<ul>
+  <li>Important thing to note here is that the entity is a Source</li>
+  <li>There is a marshalling toolkit</li>
+  <li>Remember the rule, source can&rsquo;t produce data uness sink demands it</li>
+  <li>Until you start consuming the source with a sink, nothing happens (apart from TCP buffers fill up)</li>
+</ul></aside></section><section>
+<h2><a href="#akka-server" name="akka-server" class="anchor"><span class="anchor-link"></span></a>Akka Server</h2>
+<pre class="prettyprint"><code class="language-scala">val bound: Future[Http.ServerBinding] =
+    Http().bindAndHandle(route, &quot;localhost&quot;, 8080)
+</code></pre>
+<pre class="prettyprint"><code class="language-scala"> def bindAndHandle(
+    handler:   Flow[HttpRequest, HttpResponse, Any],
+    interface: String,
+    port: Int)
+</code></pre></section><section>
+<h2><a href="#akka-server" name="akka-server" class="anchor"><span class="anchor-link"></span></a>Akka Server</h2>
+<pre class="prettyprint group-scala"><code class="language-scala">val streamingRoute = path(&quot;user&quot; / &quot;tracking&quot; / Segment) { name: String =&gt;
+  val source: Source[Event, NotUsed] =
+    DataAccess.lookupEvents(name)
+  val asJson: Source[ByteString, NotUsed] = source.map(e =&gt;
+    ByteString(s&quot;${e.toJson.toString()}\n&quot;,
+      StandardCharsets.UTF_8))
+
+  complete(HttpEntity(ContentTypes.`application/json`, asJson))
+}</code></pre>
+<pre class="prettyprint group-java"><code class="language-scala">val streamingRoute = path(&quot;user&quot; / &quot;tracking&quot; / Segment) { name: String =&gt;
+  val source: Source[Event, NotUsed] =
+    DataAccess.lookupEvents(name)
+  val asJson: Source[ByteString, NotUsed] = source.map(e =&gt;
+    ByteString(s&quot;${e.toJson.toString()}\n&quot;,
+      StandardCharsets.UTF_8))
+
+  complete(HttpEntity(ContentTypes.`application/json`, asJson))
+}</code></pre><aside class="notes">
+<ul>
+  <li>You provide a source</li>
+  <li>Data is not pulled from the source UNTIL there is space in the TCP send buffer</li>
+  <li>IF the buffer fills up, we stop reuquesting</li>
+  <li>Meaning that we should stop pulling data from the database</li>
+  <li>Compare that to the sync model</li>
+</ul></aside></section><section>
+<h2><a href="#cassandra-source" name="cassandra-source" class="anchor"><span class="anchor-link"></span></a>Cassandra Source</h2>
+<pre class="prettyprint"><code class="language-scala">CassandraSource(new SimpleStatement(
+      &quot;select * from user_tracking where user_id = ?&quot;, userId))(session)
+     .map(row =&gt; Event(
+       row.getString(&quot;user_id&quot;),
+       UUIDs.unixTimestamp(row.getUUID(&quot;time&quot;)),
+       row.getString(&quot;event&quot;)))
+</code></pre><aside class="notes">
+<p>This source is built into Alpakka that listens to demand and only pulls rows from the database when you request them</p></aside></section><section>
+<h1><a href="#demo-time" name="demo-time" class="anchor"><span class="anchor-link"></span></a>Demo time</h1></section><section>
+<h2><a href="#demo-summary" name="demo-summary" class="anchor"><span class="anchor-link"></span></a>Demo summary</h2>
+<ul>
+  <li>HTTP slow client
+    <ul>
+      <li>Client makes request for a large payload</li>
+      <li>TCP buffers fill up</li>
+      <li>Server <em>stops</em> getting data from database</li>
+      <li>Client then demands more</li>
+      <li>Everything starts flowing</li>
+    </ul>
+  </li>
+</ul></section><section>
+<img src="alpakkadocs.png" style="width: 800px;"/></section><section>
+<h2><a href="#happy-hakking-" name="happy-hakking-" class="anchor"><span class="anchor-link"></span></a>Happy hAkking!</h2>
+<dl>
+  <dt>Slides &amp; Code
+  </dt>
+  <dd><a href="https://github.com/chbatey/akka-streams-flow-control-example">github.com/chbatey/akka-streams-flow-control-example</a></dd>
+  <dt>Docs &amp; QuickStarts
+  </dt>
+  <dd><a href="https://akka.io">akka.io</a>, <a href="https://developer.lightbend.com/start">developer.lightbend.com/start</a></dd>
+  <dt>Community</dt>
+  <dd><a href="https://gitter.im/akka/akka">gitter.im/akka/akka</a></dd>
+  <dt>Tweet</dt>
+  <dd><a href="https://twitter.com/akkateam">@akkateam</a>, <a href="https://twitter.com/chbatey">@chbatey</a></dd>
+</dl></section><section>
+<h1><a href="#questions-" name="questions-" class="anchor"><span class="anchor-link"></span></a>Questions?</h1></section>
+<p><span id="selectedLanguage">Java</span></p>
+<script>
+  const selectedLanguage = document.getElementById('selectedLanguage').innerHTML.toLowerCase()
+  const hiddenLanguage = (selectedLanguage == "Java") ? "java" : "scala"
+
+  console.log(selectedLanguage)
+  var javaFragments = document.getElementsByClassName('group-' + hiddenLanguage)
+  while (javaFragments.length > 0) {
+    javaFragments[0].remove()
+  }
+</script>
+</div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+// More info about config & dependencies:
+// - https://github.com/hakimel/reveal.js#configuration
+// - https://github.com/hakimel/reveal.js#dependencies
+Reveal.initialize({
+history: true,
+slideNumber: true,
+dependencies: [
+{ src: 'plugin/markdown/marked.js' },
+{ src: 'plugin/markdown/markdown.js' },
+{ src: 'plugin/notes/notes.js', async: true },
+{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+]
+});
+</script>
+<div class="footer" style="position: absolute; width: 100%; bottom: 0px; padding: 1.2em; background-image: url(lightbend-reverse.svg); height: 3em; background-color: #15a9ce; background-repeat: no-repeat; background-origin: content-box"></div>
+</body>
+</html>
