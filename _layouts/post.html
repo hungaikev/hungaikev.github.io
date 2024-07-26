@@ -47,6 +47,18 @@ layout: default
       </div>
     </div>
 
+    <br>
+
+    <!-- Add Tags to the bottom of the post. -->
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="post-tags">
+          {% for tag in page.tags %}
+          <a href="{{ site.baseurl }}/tags/{{ tag }}" class="btn btn-outline-secondary btn-sm">{{ tag }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
  <!-- Add Disqus comments. 
   <div id="disqus_thread"></div>
   <script type="text/javascript">
