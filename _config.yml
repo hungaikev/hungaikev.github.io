@@ -8,20 +8,31 @@
 # Site settings
 title: Hungai Amuhinda 
 description: > # this means to ignore newlines until "baseurl:"
-  Hungai Amuhinda's Website
+  Hungai Amuhinda's Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.hungaikev.in" # the base hostname & protocol for your site
 twitter_username: hungai
 github_username:  hungaikev
+linkedin_username: hungai-amuhinda
 permalink: none
 author: Hungai Amuhinda
 
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-paginate
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-include-cache
+  - jekyll-archives
+  - jekyll-analytics
 
 # Build settings
 markdown: kramdown
 
 sass:
   sass_dir: css
+
+
+tag_page_layout: tag_page
+tag_page_dir: tag
