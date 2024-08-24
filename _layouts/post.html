@@ -1,83 +1,142 @@
 ---
 layout: default
 ---
+<div class="post">
 
-<!-- Page Header -->
-{% if page.background %}
-<header class="masthead" style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
-  {% else %}
-  <header class="masthead">
+<div class="post-header-container {% if page.cover %}has-cover{% endif %}" {% if page.cover %}style="background-image: url({{ page.cover | prepend: site.baseurl }});"{% endif %}>
+  <div class="scrim {% if page.cover %}has-cover{% endif %}">
+    <header class="post-header">
+      <h1 class="title">{{ page.title }}</h1>
+      <p class="info">by <strong>{{ page.author }}</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+{% unless page.cover %} {% include page_divider.html %} {% endunless %}
+
+<section class="post-meta">
+  <div class="post-date">{{ page.date | date: "%B %-d, %Y" }}</div>
+  <div class="post-categories">
+  {% if page.categories.size > 0 %}in {% for cat in page.categories %}
+    {% if site.jekyll-archives %}
+    <a href="{{ site.baseurl }}/category/{{ cat }}">{{ cat | capitalize }}</a>{% if forloop.last == false %}, {% endif %}
+    {% else %}
+    <a href="{{ site.baseurl }}/posts/#{{ cat }}">{{ cat | capitalize }}</a>{% if forloop.last == false %}, {% endif %}
     {% endif %}
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="post-heading">
-            <h1>{{ page.title }}</h1>
-            {% if page.subtitle %}
-            <h2 class="subheading">{{ page.subtitle }}</h2>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+  {% endfor %}{% endif %}
+  </div>
+</section>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
+<article class="post-content">
+  {{ content }}
+</article>
 
-        {{ content }}
+{% if site.jekyll-archives %}
+{% if page.tags.size > 0 %}
+<section class="tags">
+  <strong>Tags:</strong> {% for tag in page.tags %}<a href="{{ site.baseurl }}/tag/{{ tag }}">{{ tag }}</a>{% if forloop.last == false %},&nbsp;{% endif %}{% endfor %}
+</section>
+{% endif %}
+{% endif %}
 
-        <hr>
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></strong></p>
+</section>
 
-        <div class="clearfix">
+<section class="share">
+  <span>Share: </span>
+  {% for social in site.social %}
+    {% capture full_url %}{{ site.url }}{{ site.baseurl }}{{ page.url }}{% endcapture %}
+    {% if social.name == "Twitter" and social.share == true %}
+      <a href="//twitter.com/share?text={{ page.title | cgi_escape }}&url={{ full_url | cgi_escape}}&via={{social.username}}"
+        onclick="window.open(this.href, '{{ social.icon }}-share', 'width=550,height=255');return false;">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "Facebook" and social.share == true %}
+      <a href="//www.facebook.com/sharer.php?t={{ page.title | cgi_escape }}&u={{ full_url | cgi_escape}}"
+        onclick="window.open(this.href, '{{ social.icon }}-share', 'width=550,height=255');return false;">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "Google+" and social.share == true %}
+      <a href="//plus.google.com/share?title={{ page.title | cgi_escape }}&url={{ full_url | cgi_escape}}"
+        onclick="window.open(this.href, '{{ social.icon }}-share', 'width=550,height=255');return false;">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "LinkedIn" and social.share == true %}
+      <a href="//www.linkedin.com/shareArticle?mini=true&url={{ full_url | cgi_escape}}"
+        onclick="window.open(this.href, '{{ social.icon }}-share', 'width=550,height=255');return false;">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "Pinterest" and social.share == true %}
+      <a href="//www.pinterest.com/pin/create/button/?description={{ page.title | cgi_escape }}&url={{ full_url | cgi_escape}}&media={{ site.url }}{% if page.cover %}{{ page.cover | prepend: site.baseurl  }}{% elsif site.cover %}{{ site.cover | prepend: site.baseurl }}{% else %}{{ site.logo | prepend: site.baseurl }}{% endif %}"
+        onclick="window.open(this.href, '{{ social.icon }}-share', 'width=550,height=255');return false;">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "Reddit" and social.share == true %}
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('{{ full_url }}') + '&title={{page.title}}'; return false">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }}-square fa-lg"></i>
+      </a>
+    {% endif %}
+    {% if social.name == "Hacker News" and social.share == true %}
+      <a href="//news.ycombinator.com/submitlink" onclick="window.location = '//news.ycombinator.com/submitlink?u=' + encodeURIComponent('{{ full_url }}') + '&t={{page.title}}'; return false">
+        <i class="fa fa-{{ social.icon | remove_first: '-square' }} fa-lg"></i>
+      </a>
+    {% endif %}
+  {% endfor %}
+</section>
+{% if site.inter_post_navigation == true %}
+	<section class="post-navigation">
+		<span class="prev-post">
+			{% if page.previous.url %}
+				<a href="{{page.previous.url | prepend: site.baseurl}}">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">{{page.previous.title}}</span>
+				</a>
+			{% endif %}
+		</span>
+		<span class="next-post">
+			{% if page.next.url %}
+				<a href="{{page.next.url | prepend: site.baseurl}}">
+					<span class="page-number">{{page.next.title}}</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			{% endif %}
+		</span>
+	</section>
+{% endif %}
 
-          {% if page.previous.url %}
-          <a class="btn btn-primary float-left" href="{{ page.previous.url | prepend: site.baseurl | replace: '//', '/' }}" data-toggle="tooltip" data-placement="top" title="{{ page.previous.title }}">&larr; Previous<span class="d-none d-md-inline">
-              Post</span></a>
-          {% endif %}
-          {% if page.next.url %}
-          <a class="btn btn-primary float-right" href="{{ page.next.url | prepend: site.baseurl | replace: '//', '/' }}" data-toggle="tooltip" data-placement="top" title="{{ page.next.title }}">Next<span class="d-none d-md-inline">
-              Post</span> &rarr;</a>
-          {% endif %}
-
-        </div>
-
-      </div>
-    </div>
-
-    <br>
-
-    <!-- Add Tags to the bottom of the post. -->
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="post-tags">
-          {% for tag in page.tags %}
-          <a href="{{ site.baseurl }}/tags/{{ tag }}" class="btn btn-outline-secondary btn-sm">{{ tag }}</a>
-          {% endfor %}
-        </div>
-      </div>
-
- <!-- Add Disqus comments. 
+{% if site.disqus_shortname %}
+{% unless page.disqus_disabled %}
+<section class="disqus">
   <div id="disqus_thread"></div>
   <script type="text/javascript">
-      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-      var disqus_shortname = 'chbatey'; // required: replace example with your forum shortname
-      var disqus_identifier = "{{ page.id }}";
+    var disqus_shortname = '{{ site.disqus_shortname }}';
 
-      /* * * DON'T EDIT BELOW THIS LINE * * */
-      (function() {
-          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
   </script>
   <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+{% endunless %}
+{% endif %}
 
-
-
-  </div> -->
-
-
+</div>
+</div>

@@ -2,26 +2,32 @@
 layout: page
 permalink: /about/
 title: About
+main_nav: true
 ---
 
-As a software engineer of over 12 years I have worked with countless programming languages
-and technologies. I specialise in what are traditionally multiple distinct roles:
+## About Me
 
-* Platform engineer
-* Site Reliability Engineer
-* Backend engineer
-* Engineering Manager
-* Technical Lead
-* Chief Technology Officer
+With over 12 years of experience as a software engineer, I have worked extensively with a wide range of programming languages and technologies. My expertise spans multiple traditionally distinct roles, allowing me to provide comprehensive solutions across various domains.
 
-As an engineer I've deployed 100s of JVM services to production. 
+### My Specializations
 
-I've also worked as a Platform Engineer and SRE, having deployed Kubernetes to production starting 
-with version 0.8.
+- **Platform Engineer**
+- **Site Reliability Engineer (SRE)**
+- **Backend Engineer**
+- **Engineering Manager**
+- **Technical Lead**
+- **Chief Technology Officer (CTO)**
 
-Knowledge in these two areas allow me to work on the design and implementation of full systems, from 
-the infrastructure, database selection, all the way to tuning the application in production.
+### Professional Experience
 
-If you want to work with me [then get in touch](mailto:hungaikevin@gmail.com?subject=Work)
+As an engineer, I have successfully deployed hundreds of JVM services to production, ensuring high performance and reliability. My role as a Platform Engineer and SRE has included deploying Kubernetes to production, starting from version 0.8, and continuously optimizing it to meet the evolving needs of the industry.
 
-You can also reach me on twitter at [@hungai](https://twitter.com/hungai).
+### Comprehensive Skill Set
+
+My deep knowledge in platform engineering and site reliability enables me to design and implement complete systems. From infrastructure setup and database selection to fine-tuning applications in production, I cover every aspect to ensure seamless operation and robust performance.
+
+### Let's Work Together
+
+If you are interested in collaborating with me, please [get in touch via email](mailto:hungaikevin@gmail.com?subject=Work). You can also connect with me on Twitter at [@hungai](https://twitter.com/hungai).
+
+I look forward to turning your challenges into opportunities!

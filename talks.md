@@ -1,6 +1,7 @@
 ---
 layout: page
 permalink: /talks/
+main_nav: true
 title: Talks
 ---
 
