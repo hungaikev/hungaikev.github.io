@@ -27,7 +27,7 @@ logo: "/assets/logo.png"
 lang: en
 timezone: Africa/Nairobi
 email: hungaikevin@gmail.com
-ga_tracking_id:
+ga_tracking_id: G-F8PDQT4FG5
 
 # Build settings
 markdown: kramdown
