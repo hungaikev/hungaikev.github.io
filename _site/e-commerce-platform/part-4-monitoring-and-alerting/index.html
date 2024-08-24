@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Implementing an Order Processing System: Part 4 - Monitoring and Alerting</title>
+  <meta name="description" content="Set up robust monitoring and alerting for an e-commerce platform, including custom metrics, Grafana dashboards, and alerting rules.">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Set up robust monitoring and alerting for an e-commerce platform, including custom metrics, Grafana dashboards, and alerting rules." />
+  <meta property="og:url" content="https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/">
+  <meta property="og:site_name" content="Hungai Amuhinda" />
+  <meta property="og:title" content="Implementing an Order Processing System: Part 4 - Monitoring and Alerting" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://www.hungaikev.in/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Implementing an Order Processing System: Part 4 - Monitoring and Alerting">
+  <meta name="twitter:description" content="Set up robust monitoring and alerting for an e-commerce platform, including custom metrics, Grafana dashboards, and alerting rules.">
+  <meta name="twitter:image" content="https://www.hungaikev.in/assets/logo.png">
+  <meta name="twitter:url" content="https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/">
+	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="https://www.hungaikev.in/feed.xml" />
+	
+	<!-- Tooltips -->
+	<script type="text/javascript">
+		window.tooltips = []
+	</script>
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="Hungai Amuhinda">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Implementing an Order Processing System: Part 4 - Monitoring and Alerting</h1>
+      <p class="info">by <strong>Hungai Amuhinda</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">August 4, 2024</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/E-commerce Platform">E-commerce platform</a>, 
+    
+  
+    
+    <a href="/category/DevOps">Devops</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+
+<p>Welcome to the fourth installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our project, explored advanced Temporal workflows, and delved into advanced database operations. Today, we’re focusing on an equally crucial aspect of any production-ready system: monitoring and alerting.</p>
+
+<h3 id="recap-of-previous-posts">Recap of Previous Posts</h3>
+
+<ol>
+  <li>In Part 1, we set up our project structure and implemented a basic CRUD API.</li>
+  <li>In Part 2, we expanded our use of Temporal, implementing complex workflows and exploring advanced concepts.</li>
+  <li>In Part 3, we focused on advanced database operations, including optimization, sharding, and ensuring consistency in distributed systems.</li>
+</ol>
+
+<h3 id="importance-of-monitoring-and-alerting-in-microservices-architecture">Importance of Monitoring and Alerting in Microservices Architecture</h3>
+
+<p>In a microservices architecture, especially one handling complex processes like order management, effective monitoring and alerting are crucial. They allow us to:</p>
+
+<ol>
+  <li>Understand the behavior and performance of our system in real-time</li>
+  <li>Quickly identify and diagnose issues before they impact users</li>
+  <li>Make data-driven decisions for scaling and optimization</li>
+  <li>Ensure the reliability and availability of our services</li>
+</ol>
+
+<h3 id="overview-of-prometheus-and-its-ecosystem">Overview of Prometheus and its Ecosystem</h3>
+
+<p>Prometheus is an open-source systems monitoring and alerting toolkit. It’s become a standard in the cloud-native world due to its powerful features and extensive ecosystem. Key components include:</p>
+
+<ol>
+  <li><strong>Prometheus Server</strong>: Scrapes and stores time series data</li>
+  <li><strong>Client Libraries</strong>: Allow easy instrumentation of application code</li>
+  <li><strong>Alertmanager</strong>: Handles alerts from Prometheus server</li>
+  <li><strong>Pushgateway</strong>: Allows ephemeral and batch jobs to expose metrics</li>
+  <li><strong>Exporters</strong>: Allow third-party systems to expose metrics to Prometheus</li>
+</ol>
+
+<p>We’ll also be using Grafana, a popular open-source platform for monitoring and observability, to create dashboards and visualize our Prometheus data.</p>
+
+<h3 id="goals-for-this-part-of-the-series">Goals for this Part of the Series</h3>
+
+<p>By the end of this post, you’ll be able to:</p>
+
+<ol>
+  <li>Set up Prometheus to monitor our order processing system</li>
+  <li>Implement custom metrics in our Go services</li>
+  <li>Create informative dashboards using Grafana</li>
+  <li>Set up alerting rules to notify us of potential issues</li>
+  <li>Monitor database performance and Temporal workflows effectively</li>
+</ol>
+
+<p>Let’s dive in!</p>
+
+<h2 id="2-theoretical-background-and-concepts">2. Theoretical Background and Concepts</h2>
+
+<p>Before we start implementing, let’s review some key concepts that will be crucial for our monitoring and alerting setup.</p>
+
+<h3 id="observability-in-distributed-systems">Observability in Distributed Systems</h3>
+
+<p>Observability refers to the ability to understand the internal state of a system by examining its outputs. In distributed systems like our order processing system, observability typically encompasses three main pillars:</p>
+
+<ol>
+  <li><strong>Metrics</strong>: Numerical representations of data measured over intervals of time</li>
+  <li><strong>Logs</strong>: Detailed records of discrete events within the system</li>
+  <li><strong>Traces</strong>: Representations of causal chains of events across components</li>
+</ol>
+
+<p>In this post, we’ll focus primarily on metrics, though we’ll touch on how these can be integrated with logs and traces.</p>
+
+<h3 id="prometheus-architecture">Prometheus Architecture</h3>
+
+<p>Prometheus follows a pull-based architecture:</p>
+
+<ol>
+  <li><strong>Data Collection</strong>: Prometheus scrapes metrics from instrumented jobs via HTTP</li>
+  <li><strong>Data Storage</strong>: Metrics are stored in a time-series database on the local storage</li>
+  <li><strong>Querying</strong>: PromQL allows flexible querying of this data</li>
+  <li><strong>Alerting</strong>: Prometheus can trigger alerts based on query results</li>
+  <li><strong>Visualization</strong>: While Prometheus has a basic UI, it’s often paired with Grafana for richer visualizations</li>
+</ol>
+
+<h3 id="metrics-types-in-prometheus">Metrics Types in Prometheus</h3>
+
+<p>Prometheus offers four core metric types:</p>
+
+<ol>
+  <li><strong>Counter</strong>: A cumulative metric that only goes up (e.g., number of requests processed)</li>
+  <li><strong>Gauge</strong>: A metric that can go up and down (e.g., current memory usage)</li>
+  <li><strong>Histogram</strong>: Samples observations and counts them in configurable buckets (e.g., request durations)</li>
+  <li><strong>Summary</strong>: Similar to histogram, but calculates configurable quantiles over a sliding time window</li>
+</ol>
+
+<h3 id="introduction-to-promql">Introduction to PromQL</h3>
+
+<p>PromQL (Prometheus Query Language) is a powerful functional language for querying Prometheus data. It allows you to select and aggregate time series data in real time. Key features include:</p>
+
+<ul>
+  <li>Instant vector selectors</li>
+  <li>Range vector selectors</li>
+  <li>Offset modifier</li>
+  <li>Aggregation operators</li>
+  <li>Binary operators</li>
+</ul>
+
+<p>We’ll see examples of PromQL queries as we build our dashboards and alerts.</p>
+
+<h3 id="overview-of-grafana">Overview of Grafana</h3>
+
+<p>Grafana is a multi-platform open source analytics and interactive visualization web application. It provides charts, graphs, and alerts for the web when connected to supported data sources, of which Prometheus is one. Key features include:</p>
+
+<ul>
+  <li>Flexible dashboard creation</li>
+  <li>Wide range of visualization options</li>
+  <li>Alerting capabilities</li>
+  <li>User authentication and authorization</li>
+  <li>Plugin system for extensibility</li>
+</ul>
+
+<p>Now that we’ve covered these concepts, let’s start implementing our monitoring and alerting system.</p>
+
+<h2 id="3-setting-up-prometheus-for-our-order-processing-system">3. Setting Up Prometheus for Our Order Processing System</h2>
+
+<p>Let’s begin by setting up Prometheus to monitor our order processing system.</p>
+
+<h3 id="installing-and-configuring-prometheus">Installing and Configuring Prometheus</h3>
+
+<p>First, let’s add Prometheus to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">prometheus</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">prom/prometheus:v2.30.3</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./prometheus:/etc/prometheus</span>
+      <span class="pi">-</span> <span class="s">prometheus_data:/prometheus</span>
+    <span class="na">command</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">--config.file=/etc/prometheus/prometheus.yml'</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">--storage.tsdb.path=/prometheus'</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">--web.console.libraries=/usr/share/prometheus/console_libraries'</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">--web.console.templates=/usr/share/prometheus/consoles'</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9090:9090</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="c1"># ... other volumes ...</span>
+  <span class="na">prometheus_data</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+
+<p>Next, create a <code class="language-plaintext highlighter-rouge">prometheus.yml</code> file in the <code class="language-plaintext highlighter-rouge">./prometheus</code> directory:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">scrape_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">evaluation_interval</span><span class="pi">:</span> <span class="s">15s</span>
+
+<span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">prometheus'</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">localhost:9090'</span><span class="pi">]</span>
+
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">order_processing_api'</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">order_processing_api:8080'</span><span class="pi">]</span>
+
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">postgres'</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">postgres_exporter:9187'</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<p>This configuration tells Prometheus to scrape metrics from itself, our order processing API, and a Postgres exporter (which we’ll set up later).</p>
+
+<h3 id="implementing-prometheus-exporters-for-our-go-services">Implementing Prometheus Exporters for Our Go Services</h3>
+
+<p>To expose metrics from our Go services, we’ll use the Prometheus client library. First, add it to your <code class="language-plaintext highlighter-rouge">go.mod</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go get github.com/prometheus/client_golang
+</code></pre></div></div>
+
+<p>Now, let’s modify our main Go file to expose metrics:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"net/http"</span>
+
+    <span class="s">"github.com/gin-gonic/gin"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus/promhttp"</span>
+<span class="p">)</span>
+
+<span class="k">var</span> <span class="p">(</span>
+    <span class="n">httpRequestsTotal</span> <span class="o">=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewCounterVec</span><span class="p">(</span>
+        <span class="n">prometheus</span><span class="o">.</span><span class="n">CounterOpts</span><span class="p">{</span>
+            <span class="n">Name</span><span class="o">:</span> <span class="s">"http_requests_total"</span><span class="p">,</span>
+            <span class="n">Help</span><span class="o">:</span> <span class="s">"Total number of HTTP requests"</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"method"</span><span class="p">,</span> <span class="s">"endpoint"</span><span class="p">,</span> <span class="s">"status"</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">httpRequestDuration</span> <span class="o">=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewHistogramVec</span><span class="p">(</span>
+        <span class="n">prometheus</span><span class="o">.</span><span class="n">HistogramOpts</span><span class="p">{</span>
+            <span class="n">Name</span><span class="o">:</span>    <span class="s">"http_request_duration_seconds"</span><span class="p">,</span>
+            <span class="n">Help</span><span class="o">:</span>    <span class="s">"Duration of HTTP requests in seconds"</span><span class="p">,</span>
+            <span class="n">Buckets</span><span class="o">:</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">DefBuckets</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"method"</span><span class="p">,</span> <span class="s">"endpoint"</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">prometheus</span><span class="o">.</span><span class="n">MustRegister</span><span class="p">(</span><span class="n">httpRequestsTotal</span><span class="p">)</span>
+    <span class="n">prometheus</span><span class="o">.</span><span class="n">MustRegister</span><span class="p">(</span><span class="n">httpRequestDuration</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">r</span> <span class="o">:=</span> <span class="n">gin</span><span class="o">.</span><span class="n">Default</span><span class="p">()</span>
+
+    <span class="c">// Middleware to record metrics</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span><span class="k">func</span><span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">gin</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">timer</span> <span class="o">:=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewTimer</span><span class="p">(</span><span class="n">httpRequestDuration</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Request</span><span class="o">.</span><span class="n">Method</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">FullPath</span><span class="p">()))</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span>
+        <span class="n">timer</span><span class="o">.</span><span class="n">ObserveDuration</span><span class="p">()</span>
+        <span class="n">httpRequestsTotal</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Request</span><span class="o">.</span><span class="n">Method</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">FullPath</span><span class="p">(),</span> <span class="kt">string</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Writer</span><span class="o">.</span><span class="n">Status</span><span class="p">()))</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    <span class="p">})</span>
+
+    <span class="c">// Expose metrics endpoint</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/metrics"</span><span class="p">,</span> <span class="n">gin</span><span class="o">.</span><span class="n">WrapH</span><span class="p">(</span><span class="n">promhttp</span><span class="o">.</span><span class="n">Handler</span><span class="p">()))</span>
+
+    <span class="c">// ... rest of your routes ...</span>
+
+    <span class="n">r</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s">":8080"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This code sets up two metrics:</p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">http_requests_total</code>: A counter that tracks the total number of HTTP requests</li>
+  <li><code class="language-plaintext highlighter-rouge">http_request_duration_seconds</code>: A histogram that tracks the duration of HTTP requests</li>
+</ol>
+
+<h3 id="setting-up-service-discovery-for-dynamic-environments">Setting Up Service Discovery for Dynamic Environments</h3>
+
+<p>For more dynamic environments, Prometheus supports various service discovery mechanisms. For example, if you’re running on Kubernetes, you might use the Kubernetes SD configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">kubernetes-pods'</span>
+    <span class="na">kubernetes_sd_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">role</span><span class="pi">:</span> <span class="s">pod</span>
+    <span class="na">relabel_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__meta_kubernetes_pod_annotation_prometheus_io_scrape</span><span class="pi">]</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">keep</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__meta_kubernetes_pod_annotation_prometheus_io_path</span><span class="pi">]</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">replace</span>
+        <span class="na">target_label</span><span class="pi">:</span> <span class="s">__metrics_path__</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="s">(.+)</span>
+</code></pre></div></div>
+
+<p>This configuration will automatically discover and scrape metrics from pods with the appropriate annotations.</p>
+
+<h3 id="configuring-retention-and-storage-for-prometheus-data">Configuring Retention and Storage for Prometheus Data</h3>
+
+<p>Prometheus stores data in a time-series database on the local filesystem. You can configure retention time and storage size in the Prometheus configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">scrape_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">evaluation_interval</span><span class="pi">:</span> <span class="s">15s</span>
+
+<span class="na">storage</span><span class="pi">:</span>
+  <span class="na">tsdb</span><span class="pi">:</span>
+    <span class="na">retention.time</span><span class="pi">:</span> <span class="s">15d</span>
+    <span class="na">retention.size</span><span class="pi">:</span> <span class="s">50GB</span>
+
+<span class="c1"># ... rest of the configuration ...</span>
+</code></pre></div></div>
+
+<p>This configuration sets a retention period of 15 days and a maximum storage size of 50GB.</p>
+
+<p>In the next section, we’ll dive into defining and implementing custom metrics for our order processing system.</p>
+
+<h2 id="4-defining-and-implementing-custom-metrics">4. Defining and Implementing Custom Metrics</h2>
+
+<p>Now that we have Prometheus set up and basic HTTP metrics implemented, let’s define and implement custom metrics specific to our order processing system.</p>
+
+<h3 id="designing-a-metrics-schema-for-our-order-processing-system">Designing a Metrics Schema for Our Order Processing System</h3>
+
+<p>When designing metrics, it’s important to think about what insights we want to gain from our system. For our order processing system, we might want to track:</p>
+
+<ol>
+  <li>Order creation rate</li>
+  <li>Order processing time</li>
+  <li>Order status distribution</li>
+  <li>Payment processing success/failure rate</li>
+  <li>Inventory update operations</li>
+  <li>Shipping arrangement time</li>
+</ol>
+
+<p>Let’s implement these metrics:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">metrics</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus/promauto"</span>
+<span class="p">)</span>
+
+<span class="k">var</span> <span class="p">(</span>
+    <span class="n">OrdersCreated</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewCounter</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">CounterOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span> <span class="s">"orders_created_total"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span> <span class="s">"The total number of created orders"</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="n">OrderProcessingTime</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewHistogram</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">HistogramOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span>    <span class="s">"order_processing_seconds"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span>    <span class="s">"Time taken to process an order"</span><span class="p">,</span>
+        <span class="n">Buckets</span><span class="o">:</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">LinearBuckets</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">30</span><span class="p">,</span> <span class="m">10</span><span class="p">),</span> <span class="c">// 0-300 seconds, 30-second buckets</span>
+    <span class="p">})</span>
+
+    <span class="n">OrderStatusGauge</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewGaugeVec</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">GaugeOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span> <span class="s">"orders_by_status"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span> <span class="s">"Number of orders by status"</span><span class="p">,</span>
+    <span class="p">},</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"status"</span><span class="p">})</span>
+
+    <span class="n">PaymentProcessed</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewCounterVec</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">CounterOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span> <span class="s">"payments_processed_total"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span> <span class="s">"The total number of processed payments"</span><span class="p">,</span>
+    <span class="p">},</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"status"</span><span class="p">})</span>
+
+    <span class="n">InventoryUpdates</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewCounter</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">CounterOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span> <span class="s">"inventory_updates_total"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span> <span class="s">"The total number of inventory updates"</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="n">ShippingArrangementTime</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewHistogram</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">HistogramOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span>    <span class="s">"shipping_arrangement_seconds"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span>    <span class="s">"Time taken to arrange shipping"</span><span class="p">,</span>
+        <span class="n">Buckets</span><span class="o">:</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">LinearBuckets</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">60</span><span class="p">,</span> <span class="m">5</span><span class="p">),</span> <span class="c">// 0-300 seconds, 60-second buckets</span>
+    <span class="p">})</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="implementing-application-specific-metrics-in-our-go-services">Implementing Application-Specific Metrics in Our Go Services</h3>
+
+<p>Now that we’ve defined our metrics, let’s implement them in our service:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"time"</span>
+
+    <span class="s">"github.com/yourusername/order-processing-system/metrics"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">createOrder</span><span class="p">(</span><span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">startTime</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    
+    <span class="c">// Order creation logic...</span>
+    
+    <span class="n">metrics</span><span class="o">.</span><span class="n">OrdersCreated</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    <span class="n">metrics</span><span class="o">.</span><span class="n">OrderProcessingTime</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">startTime</span><span class="p">)</span><span class="o">.</span><span class="n">Seconds</span><span class="p">())</span>
+    <span class="n">metrics</span><span class="o">.</span><span class="n">OrderStatusGauge</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"pending"</span><span class="p">)</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">processPayment</span><span class="p">(</span><span class="n">payment</span> <span class="n">Payment</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Payment processing logic...</span>
+    
+    <span class="k">if</span> <span class="n">paymentSuccessful</span> <span class="p">{</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">PaymentProcessed</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"success"</span><span class="p">)</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">PaymentProcessed</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"failure"</span><span class="p">)</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">updateInventory</span><span class="p">(</span><span class="n">item</span> <span class="n">Item</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Inventory update logic...</span>
+    
+    <span class="n">metrics</span><span class="o">.</span><span class="n">InventoryUpdates</span><span class="o">.</span><span class="n">Inc</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">arrangeShipping</span><span class="p">(</span><span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">startTime</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    
+    <span class="c">// Shipping arrangement logic...</span>
+    
+    <span class="n">metrics</span><span class="o">.</span><span class="n">ShippingArrangementTime</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">startTime</span><span class="p">)</span><span class="o">.</span><span class="n">Seconds</span><span class="p">())</span>
+    
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="best-practices-for-naming-and-labeling-metrics">Best Practices for Naming and Labeling Metrics</h3>
+
+<p>When naming and labeling metrics, consider these best practices:</p>
+
+<ol>
+  <li>Use a consistent naming scheme (e.g., <code class="language-plaintext highlighter-rouge">&lt;namespace&gt;_&lt;subsystem&gt;_&lt;name&gt;</code>)</li>
+  <li>Use clear, descriptive names</li>
+  <li>Include units in the metric name (e.g., <code class="language-plaintext highlighter-rouge">_seconds</code>, <code class="language-plaintext highlighter-rouge">_bytes</code>)</li>
+  <li>Use labels to differentiate instances of a metric, but be cautious of high cardinality</li>
+  <li>Keep the number of labels manageable</li>
+</ol>
+
+<h3 id="instrumenting-key-components-api-endpoints-database-operations-temporal-workflows">Instrumenting Key Components: API Endpoints, Database Operations, Temporal Workflows</h3>
+
+<p>For API endpoints, we’ve already implemented basic instrumentation. For database operations, we can add metrics like this:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">GetOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">id</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">startTime</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">DBOperationDuration</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"GetOrder"</span><span class="p">)</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">startTime</span><span class="p">)</span><span class="o">.</span><span class="n">Seconds</span><span class="p">())</span>
+    <span class="p">}()</span>
+    
+    <span class="c">// Existing GetOrder logic...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>For Temporal workflows, we can add metrics in our activity implementations:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">ProcessOrderActivity</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">startTime</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">WorkflowActivityDuration</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"ProcessOrder"</span><span class="p">)</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">startTime</span><span class="p">)</span><span class="o">.</span><span class="n">Seconds</span><span class="p">())</span>
+    <span class="p">}()</span>
+    
+    <span class="c">// Existing ProcessOrder logic...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="5-creating-dashboards-with-grafana">5. Creating Dashboards with Grafana</h2>
+
+<p>Now that we have our metrics set up, let’s visualize them using Grafana.</p>
+
+<h3 id="installing-and-configuring-grafana">Installing and Configuring Grafana</h3>
+
+<p>First, let’s add Grafana to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">grafana</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">grafana/grafana:8.2.2</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">3000:3000</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">grafana_data:/var/lib/grafana</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="c1"># ... other volumes ...</span>
+  <span class="na">grafana_data</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+
+<h3 id="connecting-grafana-to-our-prometheus-data-source">Connecting Grafana to Our Prometheus Data Source</h3>
+
+<ol>
+  <li>Access Grafana at <code class="language-plaintext highlighter-rouge">http://localhost:3000</code> (default credentials are admin/admin)</li>
+  <li>Go to Configuration &gt; Data Sources</li>
+  <li>Click “Add data source” and select Prometheus</li>
+  <li>Set the URL to <code class="language-plaintext highlighter-rouge">http://prometheus:9090</code> (this is the Docker service name)</li>
+  <li>Click “Save &amp; Test”</li>
+</ol>
+
+<h3 id="designing-effective-dashboards-for-our-order-processing-system">Designing Effective Dashboards for Our Order Processing System</h3>
+
+<p>Let’s create a dashboard for our order processing system:</p>
+
+<ol>
+  <li>Click “Create” &gt; “Dashboard”</li>
+  <li>Add a new panel</li>
+</ol>
+
+<p>For our first panel, let’s create a graph of order creation rate:</p>
+
+<ol>
+  <li>In the query editor, enter: <code class="language-plaintext highlighter-rouge">rate(orders_created_total[5m])</code></li>
+  <li>Set the panel title to “Order Creation Rate”</li>
+  <li>Under Settings, set the unit to “orders/second”</li>
+</ol>
+
+<p>Let’s add another panel for order processing time:</p>
+
+<ol>
+  <li>Add a new panel</li>
+  <li>Query: <code class="language-plaintext highlighter-rouge">histogram_quantile(0.95, rate(order_processing_seconds_bucket[5m]))</code></li>
+  <li>Title: “95th Percentile Order Processing Time”</li>
+  <li>Unit: “seconds”</li>
+</ol>
+
+<p>For order status distribution:</p>
+
+<ol>
+  <li>Add a new panel</li>
+  <li>Query: <code class="language-plaintext highlighter-rouge">orders_by_status</code></li>
+  <li>Visualization: Pie Chart</li>
+  <li>Title: “Order Status Distribution”</li>
+</ol>
+
+<p>Continue adding panels for other metrics we’ve defined.</p>
+
+<h3 id="implementing-variable-templating-for-flexible-dashboards">Implementing Variable Templating for Flexible Dashboards</h3>
+
+<p>Grafana allows us to create variables that can be used across the dashboard. Let’s create a variable for time range:</p>
+
+<ol>
+  <li>Go to Dashboard Settings &gt; Variables</li>
+  <li>Click “Add variable”</li>
+  <li>Name: <code class="language-plaintext highlighter-rouge">time_range</code></li>
+  <li>Type: Interval</li>
+  <li>Values: 5m,15m,30m,1h,6h,12h,24h,7d</li>
+</ol>
+
+<p>Now we can use this in our queries like this: <code class="language-plaintext highlighter-rouge">rate(orders_created_total[$time_range])</code></p>
+
+<h3 id="best-practices-for-dashboard-design-and-organization">Best Practices for Dashboard Design and Organization</h3>
+
+<ol>
+  <li>Group related panels together</li>
+  <li>Use consistent color schemes</li>
+  <li>Include a description for each panel</li>
+  <li>Use appropriate visualizations for each metric type</li>
+  <li>Consider creating separate dashboards for different aspects of the system (e.g., Orders, Inventory, Shipping)</li>
+</ol>
+
+<p>In the next section, we’ll set up alerting rules to notify us of potential issues in our system.</p>
+
+<h2 id="6-implementing-alerting-rules">6. Implementing Alerting Rules</h2>
+
+<p>Now that we have our metrics and dashboards set up, let’s implement alerting to proactively notify us of potential issues in our system.</p>
+
+<h3 id="designing-an-alerting-strategy-for-our-system">Designing an Alerting Strategy for Our System</h3>
+
+<p>When designing alerts, consider the following principles:</p>
+
+<ol>
+  <li>Alert on symptoms, not causes</li>
+  <li>Ensure alerts are actionable</li>
+  <li>Avoid alert fatigue by only alerting on critical issues</li>
+  <li>Use different severity levels for different types of issues</li>
+</ol>
+
+<p>For our order processing system, we might want to alert on:</p>
+
+<ol>
+  <li>High error rate in order processing</li>
+  <li>Slow order processing time</li>
+  <li>Unusual spike or drop in order creation rate</li>
+  <li>Low inventory levels</li>
+  <li>High rate of payment failures</li>
+</ol>
+
+<h3 id="implementing-prometheus-alerting-rules">Implementing Prometheus Alerting Rules</h3>
+
+<p>Let’s create an <code class="language-plaintext highlighter-rouge">alerts.yml</code> file in our Prometheus configuration directory:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">groups</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">order_processing_alerts</span>
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">HighOrderProcessingErrorRate</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(order_processing_errors_total[5m]) / rate(orders_created_total[5m]) &gt; </span><span class="m">0.05</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">High order processing error rate</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Error</span><span class="nv"> </span><span class="s">rate</span><span class="nv"> </span><span class="s">is</span><span class="nv">  </span><span class="s">over</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">last</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">SlowOrderProcessing</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">histogram_quantile(0.95, rate(order_processing_seconds_bucket[5m])) &gt; </span><span class="m">300</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">10m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Slow order processing</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">95th</span><span class="nv"> </span><span class="s">percentile</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">order</span><span class="nv"> </span><span class="s">processing</span><span class="nv"> </span><span class="s">time</span><span class="nv"> </span><span class="s">is</span><span class="nv">  </span><span class="s">over</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">last</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">UnusualOrderRate</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">abs(rate(orders_created_total[1h]) - rate(orders_created_total[1h] offset 1d)) &gt; (rate(orders_created_total[1h] offset 1d) * 0.3)</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">30m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Unusual order creation rate</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Order</span><span class="nv"> </span><span class="s">creation</span><span class="nv"> </span><span class="s">rate</span><span class="nv"> </span><span class="s">has</span><span class="nv"> </span><span class="s">changed</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">30%</span><span class="nv"> </span><span class="s">compared</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">same</span><span class="nv"> </span><span class="s">time</span><span class="nv"> </span><span class="s">yesterday"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">LowInventory</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">inventory_level &lt; </span><span class="m">10</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Low inventory level</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Inventory</span><span class="nv"> </span><span class="s">level</span><span class="nv"> </span><span class="s">for</span><span class="nv">  </span><span class="s">is</span><span class="nv"> </span><span class="s">"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">HighPaymentFailureRate</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(payments_processed_total{status="failure"}[15m]) / rate(payments_processed_total[15m]) &gt; </span><span class="m">0.1</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">15m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">High payment failure rate</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Payment</span><span class="nv"> </span><span class="s">failure</span><span class="nv"> </span><span class="s">rate</span><span class="nv"> </span><span class="s">is</span><span class="nv">  </span><span class="s">over</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">last</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">minutes"</span>
+</code></pre></div></div>
+
+<p>Update your <code class="language-plaintext highlighter-rouge">prometheus.yml</code> to include this alerts file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">rule_files</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s2">"</span><span class="s">alerts.yml"</span>
+</code></pre></div></div>
+
+<h3 id="setting-up-alertmanager-for-alert-routing-and-grouping">Setting Up Alertmanager for Alert Routing and Grouping</h3>
+
+<p>Now, let’s set up Alertmanager to handle our alerts. Add Alertmanager to your <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">alertmanager</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">prom/alertmanager:v0.23.0</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9093:9093</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./alertmanager:/etc/alertmanager</span>
+    <span class="na">command</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">--config.file=/etc/alertmanager/alertmanager.yml'</span>
+</code></pre></div></div>
+
+<p>Create an <code class="language-plaintext highlighter-rouge">alertmanager.yml</code> in the <code class="language-plaintext highlighter-rouge">./alertmanager</code> directory:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">route</span><span class="pi">:</span>
+  <span class="na">group_by</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">alertname'</span><span class="pi">]</span>
+  <span class="na">group_wait</span><span class="pi">:</span> <span class="s">30s</span>
+  <span class="na">group_interval</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">repeat_interval</span><span class="pi">:</span> <span class="s">1h</span>
+  <span class="na">receiver</span><span class="pi">:</span> <span class="s1">'</span><span class="s">email-notifications'</span>
+
+<span class="na">receivers</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">email-notifications'</span>
+  <span class="na">email_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">to</span><span class="pi">:</span> <span class="s1">'</span><span class="s">team@example.com'</span>
+    <span class="na">from</span><span class="pi">:</span> <span class="s1">'</span><span class="s">alertmanager@example.com'</span>
+    <span class="na">smarthost</span><span class="pi">:</span> <span class="s1">'</span><span class="s">smtp.example.com:587'</span>
+    <span class="na">auth_username</span><span class="pi">:</span> <span class="s1">'</span><span class="s">alertmanager@example.com'</span>
+    <span class="na">auth_identity</span><span class="pi">:</span> <span class="s1">'</span><span class="s">alertmanager@example.com'</span>
+    <span class="na">auth_password</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+</code></pre></div></div>
+
+<p>Update your <code class="language-plaintext highlighter-rouge">prometheus.yml</code> to point to Alertmanager:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">alerting</span><span class="pi">:</span>
+  <span class="na">alertmanagers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">static_configs</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">alertmanager:9093</span>
+</code></pre></div></div>
+
+<h3 id="configuring-notification-channels">Configuring Notification Channels</h3>
+
+<p>In the Alertmanager configuration above, we’ve set up email notifications. You can also configure other channels like Slack, PagerDuty, or custom webhooks.</p>
+
+<h3 id="implementing-alert-severity-levels-and-escalation-policies">Implementing Alert Severity Levels and Escalation Policies</h3>
+
+<p>In our alerts, we’ve used <code class="language-plaintext highlighter-rouge">severity</code> labels. We can use these in Alertmanager to implement different routing or notification strategies based on severity:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">route</span><span class="pi">:</span>
+  <span class="na">group_by</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">alertname'</span><span class="pi">]</span>
+  <span class="na">group_wait</span><span class="pi">:</span> <span class="s">30s</span>
+  <span class="na">group_interval</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">repeat_interval</span><span class="pi">:</span> <span class="s">1h</span>
+  <span class="na">receiver</span><span class="pi">:</span> <span class="s1">'</span><span class="s">email-notifications'</span>
+  <span class="na">routes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">match</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+    <span class="na">receiver</span><span class="pi">:</span> <span class="s1">'</span><span class="s">pagerduty-critical'</span>
+  <span class="pi">-</span> <span class="na">match</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">receiver</span><span class="pi">:</span> <span class="s1">'</span><span class="s">slack-warnings'</span>
+
+<span class="na">receivers</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">email-notifications'</span>
+  <span class="na">email_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">to</span><span class="pi">:</span> <span class="s1">'</span><span class="s">team@example.com'</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">pagerduty-critical'</span>
+  <span class="na">pagerduty_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">service_key</span><span class="pi">:</span> <span class="s1">'</span><span class="s">&lt;your-pagerduty-service-key&gt;'</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">slack-warnings'</span>
+  <span class="na">slack_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">api_url</span><span class="pi">:</span> <span class="s1">'</span><span class="s">&lt;your-slack-webhook-url&gt;'</span>
+    <span class="na">channel</span><span class="pi">:</span> <span class="s1">'</span><span class="s">#alerts'</span>
+</code></pre></div></div>
+
+<h2 id="7-monitoring-database-performance">7. Monitoring Database Performance</h2>
+
+<p>Monitoring database performance is crucial for maintaining a responsive and reliable system. Let’s set up monitoring for our PostgreSQL database.</p>
+
+<h3 id="implementing-the-postgres-exporter-for-prometheus">Implementing the Postgres Exporter for Prometheus</h3>
+
+<p>First, add the Postgres exporter to your <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">postgres_exporter</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">wrouesnel/postgres_exporter:latest</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">DATA_SOURCE_NAME</span><span class="pi">:</span> <span class="s2">"</span><span class="s">postgresql://user:password@postgres:5432/dbname?sslmode=disable"</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9187:9187</span>
+</code></pre></div></div>
+
+<p>Make sure to replace <code class="language-plaintext highlighter-rouge">user</code>, <code class="language-plaintext highlighter-rouge">password</code>, and <code class="language-plaintext highlighter-rouge">dbname</code> with your actual PostgreSQL credentials.</p>
+
+<h3 id="key-metrics-to-monitor-for-postgres-performance">Key Metrics to Monitor for Postgres Performance</h3>
+
+<p>Some important PostgreSQL metrics to monitor include:</p>
+
+<ol>
+  <li>Number of active connections</li>
+  <li>Database size</li>
+  <li>Query execution time</li>
+  <li>Cache hit ratio</li>
+  <li>Replication lag (if using replication)</li>
+  <li>Transaction rate</li>
+  <li>Tuple operations (inserts, updates, deletes)</li>
+</ol>
+
+<h3 id="creating-a-database-performance-dashboard-in-grafana">Creating a Database Performance Dashboard in Grafana</h3>
+
+<p>Let’s create a new dashboard for database performance:</p>
+
+<ol>
+  <li>Create a new dashboard in Grafana</li>
+  <li>Add a panel for active connections:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">pg_stat_activity_count{datname="your_database_name"}</code></li>
+      <li>Title: “Active Connections”</li>
+    </ul>
+  </li>
+  <li>Add a panel for database size:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">pg_database_size_bytes{datname="your_database_name"}</code></li>
+      <li>Title: “Database Size”</li>
+      <li>Unit: bytes(IEC)</li>
+    </ul>
+  </li>
+  <li>Add a panel for query execution time:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">rate(pg_stat_database_xact_commit{datname="your_database_name"}[5m]) + rate(pg_stat_database_xact_rollback{datname="your_database_name"}[5m])</code></li>
+      <li>Title: “Transactions per Second”</li>
+    </ul>
+  </li>
+  <li>Add a panel for cache hit ratio:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">pg_stat_database_blks_hit{datname="your_database_name"} / (pg_stat_database_blks_hit{datname="your_database_name"} + pg_stat_database_blks_read{datname="your_database_name"})</code></li>
+      <li>Title: “Cache Hit Ratio”</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="setting-up-alerts-for-database-issues">Setting Up Alerts for Database Issues</h3>
+
+<p>Let’s add some database-specific alerts to our <code class="language-plaintext highlighter-rouge">alerts.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">HighDatabaseConnections</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">pg_stat_activity_count &gt; </span><span class="m">100</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">High number of database connections</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">There</span><span class="nv"> </span><span class="s">are</span><span class="nv">  </span><span class="s">active</span><span class="nv"> </span><span class="s">database</span><span class="nv"> </span><span class="s">connections"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">LowCacheHitRatio</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read) &lt; </span><span class="m">0.9</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">15m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Low database cache hit ratio</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Cache</span><span class="nv"> </span><span class="s">hit</span><span class="nv"> </span><span class="s">ratio</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">"</span>
+</code></pre></div></div>
+
+<h2 id="8-monitoring-temporal-workflows">8. Monitoring Temporal Workflows</h2>
+
+<p>Monitoring Temporal workflows is essential for ensuring the reliability and performance of our order processing system.</p>
+
+<h3 id="implementing-temporal-metrics-in-our-go-services">Implementing Temporal Metrics in Our Go Services</h3>
+
+<p>Temporal provides a metrics client that we can use to expose metrics to Prometheus. Let’s update our Temporal worker to include metrics:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"go.temporal.io/sdk/client"</span>
+    <span class="s">"go.temporal.io/sdk/worker"</span>
+    <span class="s">"go.temporal.io/sdk/contrib/prometheus"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">// ... other setup ...</span>
+
+    <span class="c">// Create Prometheus metrics handler</span>
+    <span class="n">metricsHandler</span> <span class="o">:=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewPrometheusMetricsHandler</span><span class="p">()</span>
+
+    <span class="c">// Create Temporal client with metrics</span>
+    <span class="n">c</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">client</span><span class="o">.</span><span class="n">NewClient</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">Options</span><span class="p">{</span>
+        <span class="n">MetricsHandler</span><span class="o">:</span> <span class="n">metricsHandler</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatalln</span><span class="p">(</span><span class="s">"Unable to create Temporal client"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">c</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+    <span class="c">// Create worker with metrics</span>
+    <span class="n">w</span> <span class="o">:=</span> <span class="n">worker</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">"order-processing-task-queue"</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">Options</span><span class="p">{</span>
+        <span class="n">MetricsHandler</span><span class="o">:</span> <span class="n">metricsHandler</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="c">// ... register workflows and activities ...</span>
+
+    <span class="c">// Run the worker</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">InterruptCh</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatalln</span><span class="p">(</span><span class="s">"Unable to start worker"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="key-metrics-to-monitor-for-temporal-workflows">Key Metrics to Monitor for Temporal Workflows</h3>
+
+<p>Important Temporal metrics to monitor include:</p>
+
+<ol>
+  <li>Workflow start rate</li>
+  <li>Workflow completion rate</li>
+  <li>Workflow execution time</li>
+  <li>Activity success/failure rate</li>
+  <li>Activity execution time</li>
+  <li>Task queue latency</li>
+</ol>
+
+<h3 id="creating-a-temporal-workflow-dashboard-in-grafana">Creating a Temporal Workflow Dashboard in Grafana</h3>
+
+<p>Let’s create a dashboard for Temporal workflows:</p>
+
+<ol>
+  <li>Create a new dashboard in Grafana</li>
+  <li>Add a panel for workflow start rate:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">rate(temporal_workflow_start_total[5m])</code></li>
+      <li>Title: “Workflow Start Rate”</li>
+    </ul>
+  </li>
+  <li>Add a panel for workflow completion rate:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">rate(temporal_workflow_completed_total[5m])</code></li>
+      <li>Title: “Workflow Completion Rate”</li>
+    </ul>
+  </li>
+  <li>Add a panel for workflow execution time:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">histogram_quantile(0.95, rate(temporal_workflow_execution_time_bucket[5m]))</code></li>
+      <li>Title: “95th Percentile Workflow Execution Time”</li>
+      <li>Unit: seconds</li>
+    </ul>
+  </li>
+  <li>Add a panel for activity success rate:
+    <ul>
+      <li>Query: <code class="language-plaintext highlighter-rouge">rate(temporal_activity_success_total[5m]) / (rate(temporal_activity_success_total[5m]) + rate(temporal_activity_fail_total[5m]))</code></li>
+      <li>Title: “Activity Success Rate”</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="setting-up-alerts-for-workflow-issues">Setting Up Alerts for Workflow Issues</h3>
+
+<p>Let’s add some Temporal-specific alerts to our <code class="language-plaintext highlighter-rouge">alerts.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">HighWorkflowFailureRate</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(temporal_workflow_failed_total[15m]) / rate(temporal_workflow_completed_total[15m]) &gt; </span><span class="m">0.05</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">15m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">High workflow failure rate</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Workflow</span><span class="nv"> </span><span class="s">failure</span><span class="nv"> </span><span class="s">rate</span><span class="nv"> </span><span class="s">is</span><span class="nv">  </span><span class="s">over</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">last</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">minutes"</span>
+
+  <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">LongRunningWorkflow</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">histogram_quantile(0.95, rate(temporal_workflow_execution_time_bucket[1h])) &gt; </span><span class="m">3600</span>
+    <span class="na">for</span><span class="pi">:</span> <span class="s">30m</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Long-running workflows detected</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">95th</span><span class="nv"> </span><span class="s">percentile</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">workflow</span><span class="nv"> </span><span class="s">execution</span><span class="nv"> </span><span class="s">time</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">over</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">hour"</span>
+</code></pre></div></div>
+
+<p>These alerts will help you detect issues with your Temporal workflows, such as high failure rates or unexpectedly long-running workflows.</p>
+
+<p>In the next sections, we’ll cover some advanced Prometheus techniques and discuss testing and validation of our monitoring setup.</p>
+
+<h2 id="9-advanced-prometheus-techniques">9. Advanced Prometheus Techniques</h2>
+
+<p>As our monitoring system grows more complex, we can leverage some advanced Prometheus techniques to improve its efficiency and capabilities.</p>
+
+<h3 id="using-recording-rules-for-complex-queries-and-aggregations">Using Recording Rules for Complex Queries and Aggregations</h3>
+
+<p>Recording rules allow you to precompute frequently needed or computationally expensive expressions and save their result as a new set of time series. This can significantly speed up the evaluation of dashboards and alerts.</p>
+
+<p>Let’s add some recording rules to our Prometheus configuration. Create a <code class="language-plaintext highlighter-rouge">rules.yml</code> file:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">groups</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">example_recording_rules</span>
+  <span class="na">interval</span><span class="pi">:</span> <span class="s">5m</span>
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">record</span><span class="pi">:</span> <span class="s">job:order_processing_rate:5m</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(orders_created_total[5m])</span>
+
+  <span class="pi">-</span> <span class="na">record</span><span class="pi">:</span> <span class="s">job:order_processing_error_rate:5m</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(order_processing_errors_total[5m]) / rate(orders_created_total[5m])</span>
+
+  <span class="pi">-</span> <span class="na">record</span><span class="pi">:</span> <span class="s">job:payment_success_rate:5m</span>
+    <span class="na">expr</span><span class="pi">:</span> <span class="s">rate(payments_processed_total{status="success"}[5m]) / rate(payments_processed_total[5m])</span>
+</code></pre></div></div>
+
+<p>Add this file to your Prometheus configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">rule_files</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s2">"</span><span class="s">alerts.yml"</span>
+  <span class="pi">-</span> <span class="s2">"</span><span class="s">rules.yml"</span>
+</code></pre></div></div>
+
+<p>Now you can use these precomputed metrics in your dashboards and alerts, which can be especially helpful for complex queries that you use frequently.</p>
+
+<h3 id="implementing-push-gateway-for-batch-jobs-and-short-lived-processes">Implementing Push Gateway for Batch Jobs and Short-Lived Processes</h3>
+
+<p>The Pushgateway allows you to push metrics from jobs that can’t be scraped, such as batch jobs or serverless functions. Let’s add a Pushgateway to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">pushgateway</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">prom/pushgateway</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9091:9091</span>
+</code></pre></div></div>
+
+<p>Now, you can push metrics to the Pushgateway from your batch jobs or short-lived processes. Here’s an example using the Go client:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus/push"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">runBatchJob</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">// Define a counter for the batch job</span>
+    <span class="n">batchJobCounter</span> <span class="o">:=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewCounter</span><span class="p">(</span><span class="n">prometheus</span><span class="o">.</span><span class="n">CounterOpts</span><span class="p">{</span>
+        <span class="n">Name</span><span class="o">:</span> <span class="s">"batch_job_processed_total"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span> <span class="s">"Total number of items processed by the batch job"</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="c">// Run your batch job and update the counter</span>
+    <span class="c">// ...</span>
+
+    <span class="c">// Push the metric to the Pushgateway</span>
+    <span class="n">pusher</span> <span class="o">:=</span> <span class="n">push</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"http://pushgateway:9091"</span><span class="p">,</span> <span class="s">"batch_job"</span><span class="p">)</span>
+    <span class="n">pusher</span><span class="o">.</span><span class="n">Collector</span><span class="p">(</span><span class="n">batchJobCounter</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">pusher</span><span class="o">.</span><span class="n">Push</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Could not push to Pushgateway: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Don’t forget to add the Pushgateway as a target in your Prometheus configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="c1"># ... other configs ...</span>
+
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">pushgateway'</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">pushgateway:9091'</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<h3 id="federated-prometheus-setups-for-large-scale-systems">Federated Prometheus Setups for Large-Scale Systems</h3>
+
+<p>For large-scale systems, you might need to set up Prometheus federation, where one Prometheus server scrapes data from other Prometheus servers. This allows you to aggregate metrics from multiple Prometheus instances.</p>
+
+<p>Here’s an example configuration for a federated Prometheus setup:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">federate'</span>
+    <span class="na">scrape_interval</span><span class="pi">:</span> <span class="s">15s</span>
+    <span class="na">honor_labels</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">metrics_path</span><span class="pi">:</span> <span class="s1">'</span><span class="s">/federate'</span>
+    <span class="na">params</span><span class="pi">:</span>
+      <span class="s1">'</span><span class="s">match[]'</span><span class="err">:</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">{job="order_processing_api"}'</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">{job="postgres_exporter"}'</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">prometheus-1:9090'</span>
+        <span class="pi">-</span> <span class="s1">'</span><span class="s">prometheus-2:9090'</span>
+</code></pre></div></div>
+
+<p>This configuration allows a higher-level Prometheus server to scrape specific metrics from other Prometheus servers.</p>
+
+<h3 id="using-exemplars-for-tracing-integration">Using Exemplars for Tracing Integration</h3>
+
+<p>Exemplars allow you to link metrics to trace data, providing a way to drill down from a high-level metric to a specific trace. This is particularly useful when integrating Prometheus with distributed tracing systems like Jaeger or Zipkin.</p>
+
+<p>To use exemplars, you need to enable them in your Prometheus configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">scrape_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">evaluation_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">exemplar_storage</span><span class="pi">:</span>
+    <span class="na">enable</span><span class="pi">:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<p>Then, when instrumenting your code, you can add exemplars to your metrics:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus/promauto"</span>
+<span class="p">)</span>
+
+<span class="k">var</span> <span class="p">(</span>
+    <span class="n">orderProcessingDuration</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewHistogramVec</span><span class="p">(</span>
+        <span class="n">prometheus</span><span class="o">.</span><span class="n">HistogramOpts</span><span class="p">{</span>
+            <span class="n">Name</span><span class="o">:</span>    <span class="s">"order_processing_duration_seconds"</span><span class="p">,</span>
+            <span class="n">Help</span><span class="o">:</span>    <span class="s">"Duration of order processing in seconds"</span><span class="p">,</span>
+            <span class="n">Buckets</span><span class="o">:</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">DefBuckets</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"status"</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">processOrder</span><span class="p">(</span><span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">start</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="c">// Process the order...</span>
+    <span class="n">duration</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+
+    <span class="n">orderProcessingDuration</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">Status</span><span class="p">)</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">Seconds</span><span class="p">(),</span>
+        <span class="n">prometheus</span><span class="o">.</span><span class="n">Labels</span><span class="p">{</span>
+            <span class="s">"traceID"</span><span class="o">:</span> <span class="n">getCurrentTraceID</span><span class="p">(),</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This allows you to link from a spike in order processing duration directly to the trace of a slow order, greatly aiding in debugging and performance analysis.</p>
+
+<h2 id="10-testing-and-validation">10. Testing and Validation</h2>
+
+<p>Ensuring the reliability of your monitoring system is crucial. Let’s explore some strategies for testing and validating our Prometheus setup.</p>
+
+<h3 id="unit-testing-metric-instrumentation">Unit Testing Metric Instrumentation</h3>
+
+<p>When unit testing your Go code, you can use the <code class="language-plaintext highlighter-rouge">prometheus/testutil</code> package to verify that your metrics are being updated correctly:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"testing"</span>
+
+    <span class="s">"github.com/prometheus/client_golang/prometheus/testutil"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">TestOrderProcessing</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Process an order</span>
+    <span class="n">processOrder</span><span class="p">(</span><span class="n">Order</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span> <span class="n">Status</span><span class="o">:</span> <span class="s">"completed"</span><span class="p">})</span>
+
+    <span class="c">// Check if the metric was updated</span>
+    <span class="n">expected</span> <span class="o">:=</span> <span class="s">`
+        # HELP order_processing_duration_seconds Duration of order processing in seconds
+        # TYPE order_processing_duration_seconds histogram
+        order_processing_duration_seconds_bucket{status="completed",le="0.005"} 1
+        order_processing_duration_seconds_bucket{status="completed",le="0.01"} 1
+        # ... other buckets ...
+        order_processing_duration_seconds_sum{status="completed"} 0.001
+        order_processing_duration_seconds_count{status="completed"} 1
+    `</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">testutil</span><span class="o">.</span><span class="n">CollectAndCompare</span><span class="p">(</span><span class="n">orderProcessingDuration</span><span class="p">,</span> <span class="n">strings</span><span class="o">.</span><span class="n">NewReader</span><span class="p">(</span><span class="n">expected</span><span class="p">));</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"unexpected collecting result:</span><span class="se">\n</span><span class="s">%s"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="integration-testing-for-prometheus-scraping">Integration Testing for Prometheus Scraping</h3>
+
+<p>To test that Prometheus is correctly scraping your metrics, you can set up an integration test that starts your application, waits for Prometheus to scrape it, and then queries Prometheus to verify the metrics:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestPrometheusIntegration</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Start your application</span>
+    <span class="k">go</span> <span class="n">startApp</span><span class="p">()</span>
+
+    <span class="c">// Wait for Prometheus to scrape (adjust the sleep time as needed)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="m">30</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+
+    <span class="c">// Query Prometheus</span>
+    <span class="n">client</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">api</span><span class="o">.</span><span class="n">NewClient</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">Config</span><span class="p">{</span>
+        <span class="n">Address</span><span class="o">:</span> <span class="s">"http://localhost:9090"</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Error creating client: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">v1api</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="n">NewAPI</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">cancel</span> <span class="o">:=</span> <span class="n">context</span><span class="o">.</span><span class="n">WithTimeout</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="m">10</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">cancel</span><span class="p">()</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">warnings</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">v1api</span><span class="o">.</span><span class="n">Query</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"order_processing_duration_seconds_count"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Error querying Prometheus: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">warnings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Logf</span><span class="p">(</span><span class="s">"Warnings: %v"</span><span class="p">,</span> <span class="n">warnings</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Check the result</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Vector</span><span class="p">)</span><span class="o">.</span><span class="n">Len</span><span class="p">()</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"Expected non-empty result"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="load-testing-and-observing-metrics-under-stress">Load Testing and Observing Metrics Under Stress</h3>
+
+<p>It’s important to verify that your monitoring system performs well under load. You can use tools like <code class="language-plaintext highlighter-rouge">hey</code> or <code class="language-plaintext highlighter-rouge">vegeta</code> to generate load on your system while observing your metrics:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hey <span class="nt">-n</span> 10000 <span class="nt">-c</span> 100 http://localhost:8080/orders
+</code></pre></div></div>
+
+<p>While the load test is running, observe your Grafana dashboards and check that your metrics are updating as expected and that Prometheus is able to keep up with the increased load.</p>
+
+<h3 id="validating-alerting-rules-and-notification-channels">Validating Alerting Rules and Notification Channels</h3>
+
+<p>To test your alerting rules, you can temporarily adjust the thresholds to trigger alerts, or use Prometheus’s API to manually fire alerts:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="nt">-d</span> <span class="s1">'{
+  "alerts": [
+    {
+      "labels": {
+        "alertname": "HighOrderProcessingErrorRate",
+        "severity": "critical"
+      },
+      "annotations": {
+        "summary": "High order processing error rate"
+      }
+    }
+  ]
+}'</span> http://localhost:9093/api/v1/alerts
+</code></pre></div></div>
+
+<p>This will send a test alert to your Alertmanager, allowing you to verify that your notification channels are working correctly.</p>
+
+<h2 id="11-challenges-and-considerations">11. Challenges and Considerations</h2>
+
+<p>As you implement and scale your monitoring system, keep these challenges and considerations in mind:</p>
+
+<h3 id="managing-cardinality-in-high-dimensional-data">Managing Cardinality in High-Dimensional Data</h3>
+
+<p>High cardinality can lead to performance issues in Prometheus. Be cautious when adding labels to metrics, especially labels with many possible values (like user IDs or IP addresses). Instead, consider using histogram metrics or reducing the cardinality by grouping similar values.</p>
+
+<h3 id="scaling-prometheus-for-large-scale-systems">Scaling Prometheus for Large-Scale Systems</h3>
+
+<p>For large-scale systems, consider:</p>
+<ul>
+  <li>Using the Pushgateway for batch jobs</li>
+  <li>Implementing federation for large-scale setups</li>
+  <li>Using remote storage solutions for long-term storage of metrics</li>
+</ul>
+
+<h3 id="ensuring-monitoring-system-reliability-and-availability">Ensuring Monitoring System Reliability and Availability</h3>
+
+<p>Your monitoring system is critical infrastructure. Consider:</p>
+<ul>
+  <li>Implementing high availability for Prometheus and Alertmanager</li>
+  <li>Monitoring your monitoring system (meta-monitoring)</li>
+  <li>Regularly backing up your Prometheus data</li>
+</ul>
+
+<h3 id="security-considerations-for-metrics-and-alerting">Security Considerations for Metrics and Alerting</h3>
+
+<p>Ensure that:</p>
+<ul>
+  <li>Access to Prometheus and Grafana is properly secured</li>
+  <li>Sensitive information is not exposed in metrics or alerts</li>
+  <li>TLS is used for all communications in your monitoring stack</li>
+</ul>
+
+<h3 id="dealing-with-transient-issues-and-flapping-alerts">Dealing with Transient Issues and Flapping Alerts</h3>
+
+<p>To reduce alert noise:</p>
+<ul>
+  <li>Use appropriate time windows in your alert rules</li>
+  <li>Implement alert grouping in Alertmanager</li>
+  <li>Consider using alert inhibition for related alerts</li>
+</ul>
+
+<h2 id="12-next-steps-and-preview-of-part-5">12. Next Steps and Preview of Part 5</h2>
+
+<p>In this post, we’ve covered comprehensive monitoring and alerting for our order processing system using Prometheus and Grafana. We’ve set up custom metrics, created informative dashboards, implemented alerting, and explored advanced techniques and considerations.</p>
+
+<p>In the next part of our series, we’ll focus on distributed tracing and logging. We’ll cover:</p>
+
+<ol>
+  <li>Implementing distributed tracing with OpenTelemetry</li>
+  <li>Setting up centralized logging with the ELK stack</li>
+  <li>Correlating logs, traces, and metrics for effective debugging</li>
+  <li>Implementing log aggregation and analysis</li>
+  <li>Best practices for logging in a microservices architecture</li>
+</ol>
+
+<p>Stay tuned as we continue to enhance our order processing system, focusing next on gaining deeper insights into our distributed system’s behavior and performance!</p>
+
+<hr />
+
+<h1>Need Help?</h1>
+<p>Are you facing challenging problems, or need an external perspective on a new idea or project? I can help! Whether you're looking to build a technology proof of concept before making a larger investment, or you need guidance on difficult issues, I'm here to assist.</p>
+
+<h2>Services Offered:</h2>
+<ul>
+    <li><strong>Problem-Solving:</strong> Tackling complex issues with innovative solutions.</li>
+    <li><strong>Consultation:</strong> Providing expert advice and fresh viewpoints on your projects.</li>
+    <li><strong>Proof of Concept:</strong> Developing preliminary models to test and validate your ideas.</li>
+</ul>
+
+<p>If you're interested in working with me, please reach out via email at <a href="mailto:hungaikevin@gmail.com">hungaikevin@gmail.com</a>.</p>
+
+<p>Let's turn your challenges into opportunities!</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Golang">Golang</a>,&nbsp;<a href="/tag/Prometheus">Prometheus</a>,&nbsp;<a href="/tag/Grafana">Grafana</a>,&nbsp;<a href="/tag/Monitoring">Monitoring</a>,&nbsp;<a href="/tag/Alerting">Alerting</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+4+-+Monitoring+and+Alerting&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-4-monitoring-and-alerting%2F&via=Hungai"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Implementing+an+Order+Processing+System%3A+Part+4+-+Monitoring+and+Alerting&u=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-4-monitoring-and-alerting%2F"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-4-monitoring-and-alerting%2F"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+4+-+Monitoring+and+Alerting&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-4-monitoring-and-alerting%2F"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+4+-+Monitoring+and+Alerting&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-4-monitoring-and-alerting%2F&media=https://www.hungaikev.in/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/') + '&title=Implementing an Order Processing System: Part 4 - Monitoring and Alerting'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Hungai Amuhinda</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username"></span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/Hungai" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">Hungai</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/hungaikev" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">hungaikev</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/hungai-amuhinda/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Hungai Amuhinda</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Hungai Amuhinda's Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+<script src="//unpkg.com/popper.js@1"></script>
+<script src="//unpkg.com/tippy.js@5"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+
+	// Enable tooltips via Tippy.js
+	if (Array.isArray(window.tooltips)) {
+		window.tooltips.forEach(function(tooltip) {
+			var selector = tooltip[0];
+			var config = tooltip[1];
+			tippy(selector, config);
+		})
+	}
+});
+
+</script>
+
+
+
+
+
+
+  </body>
+
+</html>

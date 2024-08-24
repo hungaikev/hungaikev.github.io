@@ -1,5 +1,5 @@
 ### Jekyll template
-_site/
+#_site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
@@ -112,7 +112,7 @@ go.work
 .DS_Store
 
 # Compiled site
-_site
+# _site
 .jekyll-cache/
 
 # Sass garbage
