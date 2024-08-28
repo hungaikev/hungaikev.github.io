@@ -63,11 +63,11 @@ jekyll-archives:
 
 # Category descriptions (for archive pages)
 descriptions:
-  - cat: jekyll
-    desc: "Posts describing Jekyll setup techniques."
+  - cat: temporal
+    desc: "Posts related to temporal workflow and data processing."
 
-  - cat: dummy
-    desc: "Just some placeholder posts, lorem ipsum and the rest."
+  - cat: golang
+    desc: "Posts related to the Go programming language."
 
 # Social icons and sharing options
 #
