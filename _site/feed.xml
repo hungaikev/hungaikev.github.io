@@ -4,18 +4,18 @@
     <title>Hungai Amuhinda</title>
     <description>Hungai Amuhinda&apos;s Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 </description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 28 Aug 2024 14:34:31 +0300</pubDate>
-    <lastBuildDate>Wed, 28 Aug 2024 14:34:31 +0300</lastBuildDate>
+    <link>https://www.hungaikev.in/</link>
+    <atom:link href="https://www.hungaikev.in/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Wed, 28 Aug 2024 14:38:22 +0300</pubDate>
+    <lastBuildDate>Wed, 28 Aug 2024 14:38:22 +0300</lastBuildDate>
     <generator>Jekyll v4.3.3</generator>
     
       <item>
         <title>Implementing an Order Processing System: Part 6 - Production Readiness and Scalability</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome to the sixth and final installment of our series on implementing a sophisticated order processing system! Throughout this series, we’ve built a robust, microservices-based...</description>
         <pubDate>Tue, 06 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
         
         <category>Golang</category>
         
@@ -38,8 +38,8 @@
         <title>Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome to the fifth installment of our series on implementing a sophisticated order processing system! In our previous posts, we’ve covered everything from setting up...</description>
         <pubDate>Mon, 05 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
         
         <category>Golang</category>
         
@@ -62,8 +62,8 @@
         <title>Implementing an Order Processing System: Part 4 - Monitoring and Alerting</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome to the fourth installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our...</description>
         <pubDate>Sun, 04 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
         
         <category>Golang</category>
         
@@ -86,8 +86,8 @@
         <title>Implementing an Order Processing System: Part 3 - Advanced Database Operations</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome to the third installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our...</description>
         <pubDate>Sat, 03 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</guid>
         
         <category>Golang</category>
         
@@ -110,8 +110,8 @@
         <title>Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome back to our series on implementing a sophisticated order processing system! In our previous post, we laid the foundation for our project, setting up...</description>
         <pubDate>Fri, 02 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
         
         <category>Golang</category>
         
@@ -132,8 +132,8 @@
         <title>Implementing an Order Processing System: Part 1 - Setting Up the Foundation</title>
         <description>&lt;h2 id=&quot;1-introduction-and-goals&quot;&gt;1. Introduction and Goals&lt;/h2&gt; &lt;p&gt;Welcome to the first part of our comprehensive blog series on implementing a sophisticated order processing system using Temporal for microservice orchestration. In this series,...</description>
         <pubDate>Thu, 01 Aug 2024 15:00:00 +0300</pubDate>
-        <link>http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</link>
-        <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
+        <link>https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</link>
+        <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
         
         <category>Golang</category>
         
