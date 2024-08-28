@@ -40,6 +40,9 @@ pagination:
   enabled: true
   per_page: 5
   permalink: "/page/:num/"
+  title: ':title - page :num of :max'
+  limit: 0
+  sort_field: 'date'
   sort_reverse: true
 
 # Archive settings (see https://github.com/jekyll/jekyll-archives/)
