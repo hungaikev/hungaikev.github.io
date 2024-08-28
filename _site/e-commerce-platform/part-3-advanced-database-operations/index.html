@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Implementing an Order Processing System: Part 3 - Advanced Database Operations</title>
+  <meta name="description" content="Implement advanced database operations, including complex queries, database sharding, and ensuring data consistency in a distributed e-commerce system.">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Implement advanced database operations, including complex queries, database sharding, and ensuring data consistency in a distributed e-commerce system." />
+  <meta property="og:url" content="https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/">
+  <meta property="og:site_name" content="Hungai Amuhinda" />
+  <meta property="og:title" content="Implementing an Order Processing System: Part 3 - Advanced Database Operations" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://www.hungaikev.in/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Implementing an Order Processing System: Part 3 - Advanced Database Operations">
+  <meta name="twitter:description" content="Implement advanced database operations, including complex queries, database sharding, and ensuring data consistency in a distributed e-commerce system.">
+  <meta name="twitter:image" content="https://www.hungaikev.in/assets/logo.png">
+  <meta name="twitter:url" content="https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/">
+	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="https://www.hungaikev.in/feed.xml" />
+	
+	<!-- Tooltips -->
+	<script type="text/javascript">
+		window.tooltips = []
+	</script>
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="Hungai Amuhinda">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Implementing an Order Processing System: Part 3 - Advanced Database Operations</h1>
+      <p class="info">by <strong>Hungai Amuhinda</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">August 3, 2024</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/E-commerce Platform">E-commerce platform</a>, 
+    
+  
+    
+    <a href="/category/Database Management">Database management</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+
+<p>Welcome to the third installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our project and explored advanced Temporal workflows. Today, we’re diving deep into the world of database operations using sqlc, a powerful tool that generates type-safe Go code from SQL.</p>
+
+<h3 id="recap-of-previous-posts">Recap of Previous Posts</h3>
+
+<p>In Part 1, we set up our project structure, implemented a basic CRUD API, and integrated with a Postgres database. In Part 2, we expanded our use of Temporal, implementing complex workflows, handling long-running processes, and exploring advanced concepts like the Saga pattern.</p>
+
+<h3 id="importance-of-efficient-database-operations-in-microservices">Importance of Efficient Database Operations in Microservices</h3>
+
+<p>In a microservices architecture, especially one handling complex processes like order management, efficient database operations are crucial. They directly impact the performance, scalability, and reliability of our system. Poor database design or inefficient queries can become bottlenecks, leading to slow response times and poor user experience.</p>
+
+<h3 id="overview-of-sqlc-and-its-benefits">Overview of sqlc and its Benefits</h3>
+
+<p>sqlc is a tool that generates type-safe Go code from SQL. Here are some key benefits:</p>
+
+<ol>
+  <li><strong>Type Safety</strong>: sqlc generates Go code that is fully type-safe, catching many errors at compile-time rather than runtime.</li>
+  <li><strong>Performance</strong>: The generated code is efficient and avoids unnecessary allocations.</li>
+  <li><strong>SQL-First</strong>: You write standard SQL, which is then translated into Go code. This allows you to leverage the full power of SQL.</li>
+  <li><strong>Maintainability</strong>: Changes to your schema or queries are immediately reflected in the generated Go code, ensuring your code and database stay in sync.</li>
+</ol>
+
+<h3 id="goals-for-this-part-of-the-series">Goals for this Part of the Series</h3>
+
+<p>By the end of this post, you’ll be able to:</p>
+
+<ol>
+  <li>Implement complex database queries and transactions using sqlc</li>
+  <li>Optimize database performance through efficient indexing and query design</li>
+  <li>Implement batch operations for handling large datasets</li>
+  <li>Manage database migrations in a production environment</li>
+  <li>Implement database sharding for improved scalability</li>
+  <li>Ensure data consistency in a distributed system</li>
+</ol>
+
+<p>Let’s dive in!</p>
+
+<h2 id="2-theoretical-background-and-concepts">2. Theoretical Background and Concepts</h2>
+
+<p>Before we start implementing, let’s review some key concepts that will be crucial for our advanced database operations.</p>
+
+<h3 id="sql-performance-optimization-techniques">SQL Performance Optimization Techniques</h3>
+
+<p>Optimizing SQL performance involves several techniques:</p>
+
+<ol>
+  <li><strong>Proper Indexing</strong>: Creating the right indexes can dramatically speed up query execution.</li>
+  <li><strong>Query Optimization</strong>: Structuring queries efficiently, using appropriate joins, and avoiding unnecessary subqueries.</li>
+  <li><strong>Data Denormalization</strong>: In some cases, strategically duplicating data can improve read performance.</li>
+  <li><strong>Partitioning</strong>: Dividing large tables into smaller, more manageable chunks.</li>
+</ol>
+
+<h3 id="database-transactions-and-isolation-levels">Database Transactions and Isolation Levels</h3>
+
+<p>Transactions ensure that a series of database operations are executed as a single unit of work. Isolation levels determine how transaction integrity is visible to other users and systems. Common isolation levels include:</p>
+
+<ol>
+  <li><strong>Read Uncommitted</strong>: Lowest isolation level, allows dirty reads.</li>
+  <li><strong>Read Committed</strong>: Prevents dirty reads, but non-repeatable reads can occur.</li>
+  <li><strong>Repeatable Read</strong>: Prevents dirty and non-repeatable reads, but phantom reads can occur.</li>
+  <li><strong>Serializable</strong>: Highest isolation level, prevents all above phenomena.</li>
+</ol>
+
+<h3 id="database-sharding-and-partitioning">Database Sharding and Partitioning</h3>
+
+<p>Sharding is a method of horizontally partitioning data across multiple databases. It’s a key technique for scaling databases to handle large amounts of data and high traffic loads. Partitioning, on the other hand, is dividing a table into smaller pieces within the same database instance.</p>
+
+<h3 id="batch-operations">Batch Operations</h3>
+
+<p>Batch operations allow us to perform multiple database operations in a single query. This can significantly improve performance when dealing with large datasets by reducing the number of round trips to the database.</p>
+
+<h3 id="database-migration-strategies">Database Migration Strategies</h3>
+
+<p>Database migrations are a way to manage changes to your database schema over time. Effective migration strategies allow you to evolve your schema while minimizing downtime and ensuring data integrity.</p>
+
+<p>Now that we’ve covered these concepts, let’s start implementing advanced database operations in our order processing system.</p>
+
+<h2 id="3-implementing-complex-database-queries-and-transactions">3. Implementing Complex Database Queries and Transactions</h2>
+
+<p>Let’s start by implementing some complex queries and transactions using sqlc. We’ll focus on our order processing system, adding some more advanced querying capabilities.</p>
+
+<p>First, let’s update our schema to include a new table for order items:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- migrations/000002_add_order_items.up.sql</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">order_items</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">order_id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">REFERENCES</span> <span class="n">orders</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">product_id</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">quantity</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">price</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Now, let’s define some complex queries in our sqlc query file:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- queries/orders.sql</span>
+
+<span class="c1">-- name: GetOrderWithItems :many</span>
+<span class="k">SELECT</span> <span class="n">o</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> 
+       <span class="n">json_agg</span><span class="p">(</span><span class="n">json_build_object</span><span class="p">(</span>
+           <span class="s1">'id'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+           <span class="s1">'product_id'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">product_id</span><span class="p">,</span>
+           <span class="s1">'quantity'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">quantity</span><span class="p">,</span>
+           <span class="s1">'price'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">price</span>
+       <span class="p">))</span> <span class="k">AS</span> <span class="n">items</span>
+<span class="k">FROM</span> <span class="n">orders</span> <span class="n">o</span>
+<span class="k">JOIN</span> <span class="n">order_items</span> <span class="n">oi</span> <span class="k">ON</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">oi</span><span class="p">.</span><span class="n">order_id</span>
+<span class="k">WHERE</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+
+<span class="c1">-- name: CreateOrderWithItems :one</span>
+<span class="k">WITH</span> <span class="n">new_order</span> <span class="k">AS</span> <span class="p">(</span>
+    <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">orders</span> <span class="p">(</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">total_amount</span><span class="p">)</span>
+    <span class="k">VALUES</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">,</span> <span class="err">$</span><span class="mi">2</span><span class="p">,</span> <span class="err">$</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">RETURNING</span> <span class="n">id</span>
+<span class="p">)</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">order_items</span> <span class="p">(</span><span class="n">order_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
+<span class="k">SELECT</span> <span class="n">new_order</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="k">unnest</span><span class="p">(</span><span class="err">$</span><span class="mi">4</span><span class="p">::</span><span class="nb">int</span><span class="p">[]),</span> <span class="k">unnest</span><span class="p">(</span><span class="err">$</span><span class="mi">5</span><span class="p">::</span><span class="nb">int</span><span class="p">[]),</span> <span class="k">unnest</span><span class="p">(</span><span class="err">$</span><span class="mi">6</span><span class="p">::</span><span class="nb">decimal</span><span class="p">[])</span>
+<span class="k">FROM</span> <span class="n">new_order</span>
+<span class="n">RETURNING</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">new_order</span><span class="p">);</span>
+
+<span class="c1">-- name: UpdateOrderStatus :exec</span>
+<span class="k">UPDATE</span> <span class="n">orders</span>
+<span class="k">SET</span> <span class="n">status</span> <span class="o">=</span> <span class="err">$</span><span class="mi">2</span><span class="p">,</span> <span class="n">updated_at</span> <span class="o">=</span> <span class="k">CURRENT_TIMESTAMP</span>
+<span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These queries demonstrate some more advanced SQL techniques:</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">GetOrderWithItems</code> uses a JOIN and json aggregation to fetch an order with all its items in a single query.</li>
+  <li><code class="language-plaintext highlighter-rouge">CreateOrderWithItems</code> uses a CTE (Common Table Expression) and array unnesting to insert an order and its items in a single transaction.</li>
+  <li><code class="language-plaintext highlighter-rouge">UpdateOrderStatus</code> is a simple update query, but we’ll use it to demonstrate transaction handling.</li>
+</ol>
+
+<p>Now, let’s generate our Go code:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sqlc generate
+</code></pre></div></div>
+
+<p>This will create Go functions for each of our queries. Let’s use these in our application:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">db</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"context"</span>
+    <span class="s">"database/sql"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">Store</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="o">*</span><span class="n">Queries</span>
+    <span class="n">db</span> <span class="o">*</span><span class="n">sql</span><span class="o">.</span><span class="n">DB</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewStore</span><span class="p">(</span><span class="n">db</span> <span class="o">*</span><span class="n">sql</span><span class="o">.</span><span class="n">DB</span><span class="p">)</span> <span class="o">*</span><span class="n">Store</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">Store</span><span class="p">{</span>
+        <span class="n">Queries</span><span class="o">:</span> <span class="n">New</span><span class="p">(</span><span class="n">db</span><span class="p">),</span>
+        <span class="n">db</span><span class="o">:</span>      <span class="n">db</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">CreateOrderWithItemsTx</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">arg</span> <span class="n">CreateOrderWithItemsParams</span><span class="p">)</span> <span class="p">(</span><span class="kt">int64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">tx</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">BeginTx</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="m">0</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">tx</span><span class="o">.</span><span class="n">Rollback</span><span class="p">()</span>
+
+    <span class="n">qtx</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">WithTx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="n">orderId</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">qtx</span><span class="o">.</span><span class="n">CreateOrderWithItems</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="m">0</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Commit</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="m">0</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">orderId</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">UpdateOrderStatusTx</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">id</span> <span class="kt">int64</span><span class="p">,</span> <span class="n">status</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">tx</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">BeginTx</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">tx</span><span class="o">.</span><span class="n">Rollback</span><span class="p">()</span>
+
+    <span class="n">qtx</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">WithTx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">qtx</span><span class="o">.</span><span class="n">UpdateOrderStatus</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">UpdateOrderStatusParams</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="n">id</span><span class="p">,</span> <span class="n">Status</span><span class="o">:</span> <span class="n">status</span><span class="p">});</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Simulate some additional operations that might be part of this transaction</span>
+    <span class="c">// For example, updating inventory, sending notifications, etc.</span>
+
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Commit</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this code:</p>
+
+<ol>
+  <li>We’ve created a <code class="language-plaintext highlighter-rouge">Store</code> struct that wraps our sqlc <code class="language-plaintext highlighter-rouge">Queries</code> and adds transaction support.</li>
+  <li><code class="language-plaintext highlighter-rouge">CreateOrderWithItemsTx</code> demonstrates how to use a transaction to ensure that both the order and its items are created atomically.</li>
+  <li><code class="language-plaintext highlighter-rouge">UpdateOrderStatusTx</code> shows how we might update an order’s status as part of a larger transaction that could involve other operations.</li>
+</ol>
+
+<p>These examples demonstrate how to use sqlc to implement complex queries and handle transactions effectively. In the next section, we’ll look at how to optimize the performance of these database operations.</p>
+
+<h2 id="4-optimizing-database-performance">4. Optimizing Database Performance</h2>
+
+<p>Optimizing database performance is crucial for maintaining a responsive and scalable system. Let’s explore some techniques to improve the performance of our order processing system.</p>
+
+<h3 id="analyzing-query-performance-with-explain">Analyzing Query Performance with EXPLAIN</h3>
+
+<p>PostgreSQL’s EXPLAIN command is a powerful tool for understanding and optimizing query performance. Let’s use it to analyze our <code class="language-plaintext highlighter-rouge">GetOrderWithItems</code> query:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXPLAIN</span> <span class="k">ANALYZE</span>
+<span class="k">SELECT</span> <span class="n">o</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> 
+       <span class="n">json_agg</span><span class="p">(</span><span class="n">json_build_object</span><span class="p">(</span>
+           <span class="s1">'id'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+           <span class="s1">'product_id'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">product_id</span><span class="p">,</span>
+           <span class="s1">'quantity'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">quantity</span><span class="p">,</span>
+           <span class="s1">'price'</span><span class="p">,</span> <span class="n">oi</span><span class="p">.</span><span class="n">price</span>
+       <span class="p">))</span> <span class="k">AS</span> <span class="n">items</span>
+<span class="k">FROM</span> <span class="n">orders</span> <span class="n">o</span>
+<span class="k">JOIN</span> <span class="n">order_items</span> <span class="n">oi</span> <span class="k">ON</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">oi</span><span class="p">.</span><span class="n">order_id</span>
+<span class="k">WHERE</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This will provide us with a query plan and execution statistics. Based on the results, we can identify potential bottlenecks and optimize our query.</p>
+
+<h3 id="implementing-and-using-database-indexes-effectively">Implementing and Using Database Indexes Effectively</h3>
+
+<p>Indexes can dramatically improve query performance, especially for large tables. Let’s add some indexes to our schema:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- migrations/000003_add_indexes.up.sql</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_order_items_order_id</span> <span class="k">ON</span> <span class="n">order_items</span><span class="p">(</span><span class="n">order_id</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_orders_customer_id</span> <span class="k">ON</span> <span class="n">orders</span><span class="p">(</span><span class="n">customer_id</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">idx_orders_status</span> <span class="k">ON</span> <span class="n">orders</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>These indexes will speed up our JOIN operations and filtering by customer_id or status.</p>
+
+<h3 id="optimizing-data-types-and-schema-design">Optimizing Data Types and Schema Design</h3>
+
+<p>Choosing the right data types can impact both storage efficiency and query performance. For example, using <code class="language-plaintext highlighter-rouge">BIGSERIAL</code> instead of <code class="language-plaintext highlighter-rouge">SERIAL</code> for <code class="language-plaintext highlighter-rouge">id</code> fields allows for a larger range of values, which can be important for high-volume systems.</p>
+
+<h3 id="handling-large-datasets-efficiently">Handling Large Datasets Efficiently</h3>
+
+<p>When dealing with large datasets, it’s important to implement pagination to avoid loading too much data at once. Let’s add a paginated query for fetching orders:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- name: ListOrdersPaginated :many</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">orders</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">created_at</span> <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="err">$</span><span class="mi">1</span> <span class="k">OFFSET</span> <span class="err">$</span><span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In our Go code, we can use this query like this:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">ListOrdersPaginated</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span> <span class="kt">int32</span><span class="p">)</span> <span class="p">([]</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">Queries</span><span class="o">.</span><span class="n">ListOrdersPaginated</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">ListOrdersPaginatedParams</span><span class="p">{</span>
+        <span class="n">Limit</span><span class="o">:</span> <span class="n">limit</span><span class="p">,</span>
+        <span class="n">Offset</span><span class="o">:</span> <span class="n">offset</span><span class="p">,</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="caching-strategies-for-frequently-accessed-data">Caching Strategies for Frequently Accessed Data</h3>
+
+<p>For data that’s frequently accessed but doesn’t change often, implementing a caching layer can significantly reduce database load. Here’s a simple example using an in-memory cache:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"context"</span>
+    <span class="s">"sync"</span>
+    <span class="s">"time"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">OrderCache</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">store</span> <span class="o">*</span><span class="n">Store</span>
+    <span class="n">cache</span> <span class="k">map</span><span class="p">[</span><span class="kt">int64</span><span class="p">]</span><span class="o">*</span><span class="n">Order</span>
+    <span class="n">mutex</span> <span class="n">sync</span><span class="o">.</span><span class="n">RWMutex</span>
+    <span class="n">ttl</span>   <span class="n">time</span><span class="o">.</span><span class="n">Duration</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewOrderCache</span><span class="p">(</span><span class="n">store</span> <span class="o">*</span><span class="n">Store</span><span class="p">,</span> <span class="n">ttl</span> <span class="n">time</span><span class="o">.</span><span class="n">Duration</span><span class="p">)</span> <span class="o">*</span><span class="n">OrderCache</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">OrderCache</span><span class="p">{</span>
+        <span class="n">store</span><span class="o">:</span> <span class="n">store</span><span class="p">,</span>
+        <span class="n">cache</span><span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int64</span><span class="p">]</span><span class="o">*</span><span class="n">Order</span><span class="p">),</span>
+        <span class="n">ttl</span><span class="o">:</span>   <span class="n">ttl</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">OrderCache</span><span class="p">)</span> <span class="n">GetOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">id</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">order</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">c</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">id</span><span class="p">];</span> <span class="n">ok</span> <span class="p">{</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="no">nil</span>
+    <span class="p">}</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">RUnlock</span><span class="p">()</span>
+
+    <span class="n">order</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">c</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">order</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">ttl</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="nb">delete</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">mutex</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+    <span class="p">}()</span>
+
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">order</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This cache implementation stores orders in memory for a specified duration, reducing the need to query the database for frequently accessed orders.</p>
+
+<h2 id="5-implementing-batch-operations">5. Implementing Batch Operations</h2>
+
+<p>Batch operations can significantly improve performance when dealing with large datasets. Let’s implement some batch operations for our order processing system.</p>
+
+<h3 id="designing-batch-insert-operations">Designing Batch Insert Operations</h3>
+
+<p>First, let’s add a batch insert operation for order items:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- name: BatchCreateOrderItems :copyfrom</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">order_items</span> <span class="p">(</span>
+    <span class="n">order_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">price</span>
+<span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span>
+    <span class="err">$</span><span class="mi">1</span><span class="p">,</span> <span class="err">$</span><span class="mi">2</span><span class="p">,</span> <span class="err">$</span><span class="mi">3</span><span class="p">,</span> <span class="err">$</span><span class="mi">4</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>In our Go code, we can use this to insert multiple order items efficiently:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">BatchCreateOrderItems</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">items</span> <span class="p">[]</span><span class="n">OrderItem</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">Queries</span><span class="o">.</span><span class="n">BatchCreateOrderItems</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="handling-large-batch-operations-efficiently">Handling Large Batch Operations Efficiently</h3>
+
+<p>When dealing with very large batches, it’s important to process them in chunks to avoid overwhelming the database or running into memory issues. Here’s an example of how we might do this:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">BatchCreateOrderItemsChunked</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">items</span> <span class="p">[]</span><span class="n">OrderItem</span><span class="p">,</span> <span class="n">chunkSize</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">);</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">chunkSize</span> <span class="p">{</span>
+        <span class="n">end</span> <span class="o">:=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">chunkSize</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">chunk</span> <span class="o">:=</span> <span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="o">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">BatchCreateOrderItems</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="error-handling-and-partial-failure-in-batch-operations">Error Handling and Partial Failure in Batch Operations</h3>
+
+<p>When performing batch operations, it’s important to handle partial failures gracefully. One approach is to use transactions and savepoints:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">BatchCreateOrderItemsWithSavepoints</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">items</span> <span class="p">[]</span><span class="n">OrderItem</span><span class="p">,</span> <span class="n">chunkSize</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">tx</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">BeginTx</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">tx</span><span class="o">.</span><span class="n">Rollback</span><span class="p">()</span>
+
+    <span class="n">qtx</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">WithTx</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">);</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">chunkSize</span> <span class="p">{</span>
+        <span class="n">end</span> <span class="o">:=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">chunkSize</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">chunk</span> <span class="o">:=</span> <span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="o">:</span><span class="n">end</span><span class="p">]</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tx</span><span class="o">.</span><span class="n">ExecContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"SAVEPOINT batch_insert"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="p">}</span>
+
+        <span class="n">err</span> <span class="o">=</span> <span class="n">qtx</span><span class="o">.</span><span class="n">BatchCreateOrderItems</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">rbErr</span> <span class="o">:=</span> <span class="n">tx</span><span class="o">.</span><span class="n">ExecContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ROLLBACK TO SAVEPOINT batch_insert"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rbErr</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"batch insert failed and unable to rollback: %v, %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">rbErr</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="c">// Log the error or handle it as appropriate for your use case</span>
+            <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Failed to insert chunk %d-%d: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">tx</span><span class="o">.</span><span class="n">ExecContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"RELEASE SAVEPOINT batch_insert"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">err</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">tx</span><span class="o">.</span><span class="n">Commit</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This approach allows us to rollback individual chunks if they fail, while still committing the successful chunks.</p>
+
+<h2 id="6-handling-database-migrations-in-a-production-environment">6. Handling Database Migrations in a Production Environment</h2>
+
+<p>As our system evolves, we’ll need to make changes to our database schema. Managing these changes in a production environment requires careful planning and execution.</p>
+
+<h3 id="strategies-for-zero-downtime-migrations">Strategies for Zero-Downtime Migrations</h3>
+
+<p>To achieve zero-downtime migrations, we can follow these steps:</p>
+
+<ol>
+  <li>Make all schema changes backwards compatible</li>
+  <li>Deploy the new application version that supports both old and new schemas</li>
+  <li>Run the schema migration</li>
+  <li>Deploy the final application version that only supports the new schema</li>
+</ol>
+
+<p>Let’s look at an example of a backwards compatible migration:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- migrations/000004_add_order_notes.up.sql</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">notes</span> <span class="nb">TEXT</span><span class="p">;</span>
+
+<span class="c1">-- migrations/000004_add_order_notes.down.sql</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">orders</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">notes</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This migration adds a new column, which is a backwards compatible change. Existing queries will continue to work, and we can update our application to start using the new column.</p>
+
+<h3 id="implementing-and-managing-database-schema-versions">Implementing and Managing Database Schema Versions</h3>
+
+<p>We’re already using golang-migrate for our migrations, which keeps track of the current schema version. We can query this information to ensure our application is compatible with the current database schema:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="n">GetDatabaseVersion</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="n">version</span> <span class="kt">int</span>
+    <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">QueryRowContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1"</span><span class="p">)</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">version</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="m">0</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">version</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="handling-data-transformations-during-migrations">Handling Data Transformations During Migrations</h3>
+
+<p>Sometimes we need to not only change the schema but also transform existing data. Here’s an example of a migration that does both:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- migrations/000005_split_name.up.sql</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">customers</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">first_name</span> <span class="nb">TEXT</span><span class="p">,</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">last_name</span> <span class="nb">TEXT</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">customers</span> <span class="k">SET</span> 
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">split_part</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">' '</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">split_part</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">' '</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">name</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">customers</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">name</span><span class="p">;</span>
+
+<span class="c1">-- migrations/000005_split_name.down.sql</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">customers</span> <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">name</span> <span class="nb">TEXT</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">customers</span> <span class="k">SET</span> <span class="n">name</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="s1">' '</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">first_name</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">OR</span> <span class="n">last_name</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">customers</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">first_name</span><span class="p">,</span> <span class="k">DROP</span> <span class="k">COLUMN</span> <span class="n">last_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This migration splits the <code class="language-plaintext highlighter-rouge">name</code> column into <code class="language-plaintext highlighter-rouge">first_name</code> and <code class="language-plaintext highlighter-rouge">last_name</code>, transforming the existing data in the process.</p>
+
+<h3 id="rolling-back-migrations-safely">Rolling Back Migrations Safely</h3>
+
+<p>It’s crucial to test both the up and down migrations thoroughly before applying them to a production database. Always have a rollback plan ready in case issues are discovered after a migration is applied.</p>
+
+<p>In the next sections, we’ll explore database sharding for scalability and ensuring data consistency in a distributed system.</p>
+
+<h2 id="7-implementing-database-sharding-for-scalability">7. Implementing Database Sharding for Scalability</h2>
+
+<p>As our order processing system grows, we may need to scale beyond what a single database instance can handle. Database sharding is a technique that can help us achieve horizontal scalability by distributing data across multiple database instances.</p>
+
+<h3 id="designing-a-sharding-strategy-for-our-order-processing-system">Designing a Sharding Strategy for Our Order Processing System</h3>
+
+<p>For our order processing system, we’ll implement a simple sharding strategy based on the customer ID. This approach ensures that all orders for a particular customer are on the same shard, which can simplify certain types of queries.</p>
+
+<p>First, let’s create a sharding function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="n">NUM_SHARDS</span> <span class="o">=</span> <span class="m">4</span>
+
+<span class="k">func</span> <span class="n">getShardForCustomer</span><span class="p">(</span><span class="n">customerID</span> <span class="kt">int64</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kt">int</span><span class="p">(</span><span class="n">customerID</span> <span class="o">%</span> <span class="n">NUM_SHARDS</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This function will distribute customers (and their orders) evenly across our shards.</p>
+
+<h3 id="implementing-a-sharding-layer-with-sqlc">Implementing a Sharding Layer with sqlc</h3>
+
+<p>Now, let’s implement a sharding layer that will route queries to the appropriate shard:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">ShardedStore</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">stores</span> <span class="p">[</span><span class="n">NUM_SHARDS</span><span class="p">]</span><span class="o">*</span><span class="n">Store</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewShardedStore</span><span class="p">(</span><span class="n">connStrings</span> <span class="p">[</span><span class="n">NUM_SHARDS</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">ShardedStore</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="n">stores</span> <span class="p">[</span><span class="n">NUM_SHARDS</span><span class="p">]</span><span class="o">*</span><span class="n">Store</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">connString</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">connStrings</span> <span class="p">{</span>
+        <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"postgres"</span><span class="p">,</span> <span class="n">connString</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+        <span class="p">}</span>
+        <span class="n">stores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">NewStore</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">ShardedStore</span><span class="p">{</span><span class="n">stores</span><span class="o">:</span> <span class="n">stores</span><span class="p">},</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">GetOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">customerID</span><span class="p">,</span> <span class="n">orderID</span> <span class="kt">int64</span><span class="p">)</span> <span class="p">(</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">shard</span> <span class="o">:=</span> <span class="n">getShardForCustomer</span><span class="p">(</span><span class="n">customerID</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span><span class="p">[</span><span class="n">shard</span><span class="p">]</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">arg</span> <span class="n">CreateOrderParams</span><span class="p">)</span> <span class="p">(</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">shard</span> <span class="o">:=</span> <span class="n">getShardForCustomer</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">CustomerID</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span><span class="p">[</span><span class="n">shard</span><span class="p">]</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This <code class="language-plaintext highlighter-rouge">ShardedStore</code> maintains connections to all of our database shards and routes queries to the appropriate shard based on the customer ID.</p>
+
+<h3 id="handling-cross-shard-queries-and-transactions">Handling Cross-Shard Queries and Transactions</h3>
+
+<p>Cross-shard queries can be challenging in a sharded database setup. For example, if we need to get all orders across all shards, we’d need to query each shard and combine the results:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">GetAllOrders</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">([]</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="n">allOrders</span> <span class="p">[]</span><span class="n">Order</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">store</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span> <span class="p">{</span>
+        <span class="n">orders</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">ListOrders</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+        <span class="p">}</span>
+        <span class="n">allOrders</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">allOrders</span><span class="p">,</span> <span class="n">orders</span><span class="o">...</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">allOrders</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Cross-shard transactions are even more complex and often require a two-phase commit protocol or a distributed transaction manager. In many cases, it’s better to design your system to avoid the need for cross-shard transactions if possible.</p>
+
+<h3 id="rebalancing-shards-and-handling-shard-growth">Rebalancing Shards and Handling Shard Growth</h3>
+
+<p>As your data grows, you may need to add new shards or rebalance existing ones. This process can be complex and typically involves:</p>
+
+<ol>
+  <li>Adding new shards to the system</li>
+  <li>Gradually migrating data from existing shards to new ones</li>
+  <li>Updating the sharding function to incorporate the new shards</li>
+</ol>
+
+<p>Here’s a simple example of how we might update our sharding function to handle a growing number of shards:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">NUM_SHARDS</span> <span class="o">=</span> <span class="m">4</span>
+
+<span class="k">func</span> <span class="n">updateNumShards</span><span class="p">(</span><span class="n">newNumShards</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NUM_SHARDS</span> <span class="o">=</span> <span class="n">newNumShards</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">getShardForCustomer</span><span class="p">(</span><span class="n">customerID</span> <span class="kt">int64</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kt">int</span><span class="p">(</span><span class="n">customerID</span> <span class="o">%</span> <span class="kt">int64</span><span class="p">(</span><span class="n">NUM_SHARDS</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In a production system, you’d want to implement a more sophisticated approach, possibly using a consistent hashing algorithm to minimize data movement when adding or removing shards.</p>
+
+<h2 id="8-ensuring-data-consistency-in-a-distributed-system">8. Ensuring Data Consistency in a Distributed System</h2>
+
+<p>Maintaining data consistency in a distributed system like our sharded database setup can be challenging. Let’s explore some strategies to ensure consistency.</p>
+
+<h3 id="implementing-distributed-transactions-with-sqlc">Implementing Distributed Transactions with sqlc</h3>
+
+<p>While sqlc doesn’t directly support distributed transactions, we can implement a simple two-phase commit protocol for operations that need to span multiple shards. Here’s a basic example:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">CreateOrderAcrossShards</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">arg</span> <span class="n">CreateOrderParams</span><span class="p">,</span> <span class="n">items</span> <span class="p">[]</span><span class="n">CreateOrderItemParams</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Phase 1: Prepare</span>
+    <span class="k">var</span> <span class="n">preparedTxs</span> <span class="p">[]</span><span class="o">*</span><span class="n">sql</span><span class="o">.</span><span class="n">Tx</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">store</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span> <span class="p">{</span>
+        <span class="n">tx</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">BeginTx</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="c">// Rollback any prepared transactions</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">preparedTx</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">preparedTxs</span> <span class="p">{</span>
+                <span class="n">preparedTx</span><span class="o">.</span><span class="n">Rollback</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="p">}</span>
+        <span class="n">preparedTxs</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">preparedTxs</span><span class="p">,</span> <span class="n">tx</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Phase 2: Commit</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">tx</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">preparedTxs</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Commit</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="c">// If any commit fails, we're in an inconsistent state</span>
+            <span class="c">// In a real system, we'd need a way to recover from this</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This is a simplified example and doesn’t handle many edge cases. In a production system, you’d need more sophisticated error handling and recovery mechanisms.</p>
+
+<h3 id="handling-eventual-consistency-in-database-operations">Handling Eventual Consistency in Database Operations</h3>
+
+<p>In some cases, it may be acceptable (or necessary) to have eventual consistency rather than strong consistency. For example, if we’re generating reports across all shards, we might be okay with slightly out-of-date data:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">GetOrderCountsEventuallyConsistent</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">counts</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+    <span class="k">var</span> <span class="n">wg</span> <span class="n">sync</span><span class="o">.</span><span class="n">WaitGroup</span>
+    <span class="k">var</span> <span class="n">mu</span> <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span>
+    <span class="n">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="n">NUM_SHARDS</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">store</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span> <span class="p">{</span>
+        <span class="n">wg</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+        <span class="k">go</span> <span class="k">func</span><span class="p">(</span><span class="n">store</span> <span class="o">*</span><span class="n">Store</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">defer</span> <span class="n">wg</span><span class="o">.</span><span class="n">Done</span><span class="p">()</span>
+            <span class="n">localCounts</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">GetOrderCounts</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">errCh</span> <span class="o">&lt;-</span> <span class="n">err</span>
+                <span class="k">return</span>
+            <span class="p">}</span>
+            <span class="n">mu</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">status</span><span class="p">,</span> <span class="n">count</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">localCounts</span> <span class="p">{</span>
+                <span class="n">counts</span><span class="p">[</span><span class="n">status</span><span class="p">]</span> <span class="o">+=</span> <span class="n">count</span>
+            <span class="p">}</span>
+            <span class="n">mu</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+        <span class="p">}(</span><span class="n">store</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">wg</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span>
+    <span class="nb">close</span><span class="p">(</span><span class="n">errCh</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">errCh</span><span class="p">;</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">counts</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This function aggregates order counts across all shards concurrently, providing a eventually consistent view of the data.</p>
+
+<h3 id="implementing-compensating-transactions-for-failure-scenarios">Implementing Compensating Transactions for Failure Scenarios</h3>
+
+<p>In distributed systems, it’s important to have mechanisms to handle partial failures. Compensating transactions can help restore the system to a consistent state when a distributed operation fails partway through.</p>
+
+<p>Here’s an example of how we might implement a compensating transaction for a failed order creation:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">ShardedStore</span><span class="p">)</span> <span class="n">CreateOrderWithCompensation</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">arg</span> <span class="n">CreateOrderParams</span><span class="p">)</span> <span class="p">(</span><span class="n">Order</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">shard</span> <span class="o">:=</span> <span class="n">getShardForCustomer</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">CustomerID</span><span class="p">)</span>
+    <span class="n">order</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span><span class="p">[</span><span class="n">shard</span><span class="p">]</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Order</span><span class="p">{},</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Simulate some additional processing that might fail</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">someProcessingThatMightFail</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="c">// If processing fails, we need to compensate by deleting the order</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">stores</span><span class="p">[</span><span class="n">shard</span><span class="p">]</span><span class="o">.</span><span class="n">DeleteOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="c">// Log the error, as we're now in an inconsistent state</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Failed to compensate for failed order creation: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">Order</span><span class="p">{},</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">order</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This function creates an order and then performs some additional processing. If the processing fails, it attempts to delete the order as a compensating action.</p>
+
+<h3 id="strategies-for-maintaining-referential-integrity-across-shards">Strategies for Maintaining Referential Integrity Across Shards</h3>
+
+<p>Maintaining referential integrity across shards can be challenging. One approach is to denormalize data to keep related entities on the same shard. For example, we might store a copy of customer information with each order:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Order</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">ID</span>         <span class="kt">int64</span>
+    <span class="n">CustomerID</span> <span class="kt">int64</span>
+    <span class="c">// Denormalized customer data</span>
+    <span class="n">CustomerName</span>  <span class="kt">string</span>
+    <span class="n">CustomerEmail</span> <span class="kt">string</span>
+    <span class="c">// Other order fields...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This approach trades some data redundancy for easier maintenance of consistency within a shard.</p>
+
+<h2 id="9-testing-and-validation">9. Testing and Validation</h2>
+
+<p>Thorough testing is crucial when working with complex database operations and distributed systems. Let’s explore some strategies for testing our sharded database system.</p>
+
+<h3 id="unit-testing-database-operations-with-sqlc">Unit Testing Database Operations with sqlc</h3>
+
+<p>sqlc generates code that’s easy to unit test. Here’s an example of how we might test our <code class="language-plaintext highlighter-rouge">GetOrder</code> function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestGetOrder</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Set up a test database</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"postgres"</span><span class="p">,</span> <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to connect to test database: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">db</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+    <span class="n">store</span> <span class="o">:=</span> <span class="n">NewStore</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+
+    <span class="c">// Create a test order</span>
+    <span class="n">order</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">CreateOrderParams</span><span class="p">{</span>
+        <span class="n">CustomerID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span>
+        <span class="n">Status</span><span class="o">:</span>     <span class="s">"pending"</span><span class="p">,</span>
+        <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">100.00</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create test order: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Test GetOrder</span>
+    <span class="n">retrievedOrder</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to get order: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">retrievedOrder</span><span class="o">.</span><span class="n">ID</span> <span class="o">!=</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"Expected order ID %d, got %d"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">retrievedOrder</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c">// Add more assertions as needed...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="implementing-integration-tests-for-database-functionality">Implementing Integration Tests for Database Functionality</h3>
+
+<p>Integration tests can help ensure that our sharding logic works correctly with real database instances. Here’s an example:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestShardedStore</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Set up test database instances for each shard</span>
+    <span class="n">connStrings</span> <span class="o">:=</span> <span class="p">[</span><span class="n">NUM_SHARDS</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb1"</span><span class="p">,</span>
+        <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb2"</span><span class="p">,</span>
+        <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb3"</span><span class="p">,</span>
+        <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb4"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">shardedStore</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">NewShardedStore</span><span class="p">(</span><span class="n">connStrings</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create sharded store: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Test creating orders on different shards</span>
+    <span class="n">order1</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">shardedStore</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">CreateOrderParams</span><span class="p">{</span><span class="n">CustomerID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span> <span class="n">Status</span><span class="o">:</span> <span class="s">"pending"</span><span class="p">,</span> <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">100.00</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create order on shard 1: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">order2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">shardedStore</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">CreateOrderParams</span><span class="p">{</span><span class="n">CustomerID</span><span class="o">:</span> <span class="m">2</span><span class="p">,</span> <span class="n">Status</span><span class="o">:</span> <span class="s">"pending"</span><span class="p">,</span> <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">200.00</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create order on shard 2: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Test retrieving orders from different shards</span>
+    <span class="n">retrievedOrder1</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">shardedStore</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="m">1</span><span class="p">,</span> <span class="n">order1</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to get order from shard 1: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">retrievedOrder2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">shardedStore</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="m">2</span><span class="p">,</span> <span class="n">order2</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to get order from shard 2: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Add assertions to check the retrieved orders...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="performance-testing-and-benchmarking-database-operations">Performance Testing and Benchmarking Database Operations</h3>
+
+<p>Performance testing is crucial, especially when working with sharded databases. Here’s an example of how to benchmark our <code class="language-plaintext highlighter-rouge">GetOrder</code> function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">BenchmarkGetOrder</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Set up your database connection</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">sql</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"postgres"</span><span class="p">,</span> <span class="s">"postgresql://testuser:testpass@localhost:5432/testdb"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to connect to test database: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">db</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+    <span class="n">store</span> <span class="o">:=</span> <span class="n">NewStore</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+
+    <span class="c">// Create a test order</span>
+    <span class="n">order</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">CreateOrderParams</span><span class="p">{</span>
+        <span class="n">CustomerID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span>
+        <span class="n">Status</span><span class="o">:</span>     <span class="s">"pending"</span><span class="p">,</span>
+        <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">100.00</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create test order: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Run the benchmark</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">ResetTimer</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Benchmark failed: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This benchmark will help you understand the performance characteristics of your <code class="language-plaintext highlighter-rouge">GetOrder</code> function and can be used to compare different implementations or optimizations.</p>
+
+<h2 id="10-challenges-and-considerations">10. Challenges and Considerations</h2>
+
+<p>As we implement and operate our sharded database system, there are several challenges and considerations to keep in mind:</p>
+
+<ol>
+  <li>
+    <p><strong>Managing Database Connection Pools</strong>: With multiple database instances, it’s crucial to manage connection pools efficiently to avoid overwhelming any single database or running out of connections.</p>
+  </li>
+  <li>
+    <p><strong>Handling Database Failover and High Availability</strong>: In a sharded setup, you need to consider what happens if one of your database instances fails. Implementing read replicas and automatic failover can help ensure high availability.</p>
+  </li>
+  <li>
+    <p><strong>Consistent Backups Across Shards</strong>: Backing up a sharded database system requires careful coordination to ensure consistency across all shards.</p>
+  </li>
+  <li>
+    <p><strong>Query Routing and Optimization</strong>: As your sharding scheme evolves, you may need to implement more sophisticated query routing to optimize performance.</p>
+  </li>
+  <li>
+    <p><strong>Data Rebalancing</strong>: As some shards grow faster than others, you may need to periodically rebalance data across shards.</p>
+  </li>
+  <li>
+    <p><strong>Cross-Shard Joins and Aggregations</strong>: These operations can be particularly challenging in a sharded system and may require implementation at the application level.</p>
+  </li>
+  <li>
+    <p><strong>Maintaining Data Integrity</strong>: Ensuring data integrity across shards, especially for operations that span multiple shards, requires careful design and implementation.</p>
+  </li>
+  <li>
+    <p><strong>Monitoring and Alerting</strong>: With a distributed database system, comprehensive monitoring and alerting become even more critical to quickly identify and respond to issues.</p>
+  </li>
+</ol>
+
+<h2 id="11-next-steps-and-preview-of-part-4">11. Next Steps and Preview of Part 4</h2>
+
+<p>In this post, we’ve delved deep into advanced database operations using sqlc, covering everything from optimizing queries and implementing batch operations to managing database migrations and implementing sharding for scalability.</p>
+
+<p>In the next part of our series, we’ll focus on monitoring and alerting with Prometheus. We’ll cover:</p>
+
+<ol>
+  <li>Setting up Prometheus for monitoring our order processing system</li>
+  <li>Defining and implementing custom metrics</li>
+  <li>Creating dashboards with Grafana</li>
+  <li>Implementing alerting rules</li>
+  <li>Monitoring database performance</li>
+  <li>Monitoring Temporal workflows</li>
+</ol>
+
+<p>Stay tuned as we continue to build out our sophisticated order processing system, focusing next on ensuring we can effectively monitor and maintain our system in a production environment!</p>
+
+<hr />
+
+<h1>Need Help?</h1>
+<p>Are you facing challenging problems, or need an external perspective on a new idea or project? I can help! Whether you're looking to build a technology proof of concept before making a larger investment, or you need guidance on difficult issues, I'm here to assist.</p>
+
+<h2>Services Offered:</h2>
+<ul>
+    <li><strong>Problem-Solving:</strong> Tackling complex issues with innovative solutions.</li>
+    <li><strong>Consultation:</strong> Providing expert advice and fresh viewpoints on your projects.</li>
+    <li><strong>Proof of Concept:</strong> Developing preliminary models to test and validate your ideas.</li>
+</ul>
+
+<p>If you're interested in working with me, please reach out via email at <a href="mailto:hungaikevin@gmail.com">hungaikevin@gmail.com</a>.</p>
+
+<p>Let's turn your challenges into opportunities!</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Golang">Golang</a>,&nbsp;<a href="/tag/PostgreSQL">PostgreSQL</a>,&nbsp;<a href="/tag/sqlc">sqlc</a>,&nbsp;<a href="/tag/Database Sharding">Database Sharding</a>,&nbsp;<a href="/tag/Query Optimization">Query Optimization</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+3+-+Advanced+Database+Operations&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-3-advanced-database-operations%2F&via=Hungai"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Implementing+an+Order+Processing+System%3A+Part+3+-+Advanced+Database+Operations&u=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-3-advanced-database-operations%2F"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-3-advanced-database-operations%2F"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+3+-+Advanced+Database+Operations&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-3-advanced-database-operations%2F"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+3+-+Advanced+Database+Operations&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-3-advanced-database-operations%2F&media=https://www.hungaikev.in/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/') + '&title=Implementing an Order Processing System: Part 3 - Advanced Database Operations'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Hungai Amuhinda</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:hungaikevin@gmail.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">hungaikevin@gmail.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/Hungai" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">Hungai</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/hungaikev" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">hungaikev</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/hungai-amuhinda/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Hungai Amuhinda</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Hungai Amuhinda's Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+<script src="//unpkg.com/popper.js@1"></script>
+<script src="//unpkg.com/tippy.js@5"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+
+	// Enable tooltips via Tippy.js
+	if (Array.isArray(window.tooltips)) {
+		window.tooltips.forEach(function(tooltip) {
+			var selector = tooltip[0];
+			var config = tooltip[1];
+			tippy(selector, config);
+		})
+	}
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-F8PDQT4FG5', 'auto');
+  ga('send', 'pageview', {
+    'page': '/e-commerce-platform/part-3-advanced-database-operations/',
+    'title': 'Implementing an Order Processing System: Part 3 - Advanced Database Operations'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

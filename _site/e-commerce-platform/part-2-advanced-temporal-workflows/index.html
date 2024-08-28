@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows</title>
+  <meta name="description" content="Explore advanced Temporal workflow concepts, including handling long-running processes, implementing saga patterns, and ensuring workflow reliability.">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Explore advanced Temporal workflow concepts, including handling long-running processes, implementing saga patterns, and ensuring workflow reliability." />
+  <meta property="og:url" content="https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/">
+  <meta property="og:site_name" content="Hungai Amuhinda" />
+  <meta property="og:title" content="Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://www.hungaikev.in/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows">
+  <meta name="twitter:description" content="Explore advanced Temporal workflow concepts, including handling long-running processes, implementing saga patterns, and ensuring workflow reliability.">
+  <meta name="twitter:image" content="https://www.hungaikev.in/assets/logo.png">
+  <meta name="twitter:url" content="https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/">
+	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="https://www.hungaikev.in/feed.xml" />
+	
+	<!-- Tooltips -->
+	<script type="text/javascript">
+		window.tooltips = []
+	</script>
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="Hungai Amuhinda">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows</h1>
+      <p class="info">by <strong>Hungai Amuhinda</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">August 2, 2024</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/E-commerce Platform">E-commerce platform</a>, 
+    
+  
+    
+    <a href="/category/Workflow Orchestration">Workflow orchestration</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+
+<p>Welcome back to our series on implementing a sophisticated order processing system! In our previous post, we laid the foundation for our project, setting up a basic CRUD API, integrating with a Postgres database, and implementing a simple Temporal workflow. Today, we’re diving deeper into the world of Temporal workflows to create a robust, scalable order processing system.</p>
+
+<h3 id="recap-of-the-previous-post">Recap of the Previous Post</h3>
+
+<p>In Part 1, we:</p>
+<ul>
+  <li>Set up our project structure</li>
+  <li>Implemented a basic CRUD API using Golang and Gin</li>
+  <li>Integrated with a Postgres database</li>
+  <li>Created a simple Temporal workflow</li>
+  <li>Dockerized our application</li>
+</ul>
+
+<h3 id="goals-for-this-post">Goals for This Post</h3>
+
+<p>In this post, we’ll significantly expand our use of Temporal, exploring advanced concepts and implementing complex workflows. By the end of this article, you’ll be able to:</p>
+
+<ol>
+  <li>Design and implement multi-step order processing workflows</li>
+  <li>Handle long-running processes effectively</li>
+  <li>Implement robust error handling and retry mechanisms</li>
+  <li>Version workflows for safe updates in production</li>
+  <li>Implement saga patterns for distributed transactions</li>
+  <li>Set up monitoring and observability for Temporal workflows</li>
+</ol>
+
+<p>Let’s dive in!</p>
+
+<h2 id="2-theoretical-background-and-concepts">2. Theoretical Background and Concepts</h2>
+
+<p>Before we start coding, let’s review some key Temporal concepts that will be crucial for our advanced implementation.</p>
+
+<h3 id="temporal-workflows-and-activities">Temporal Workflows and Activities</h3>
+
+<p>In Temporal, a Workflow is a durable function that orchestrates long-running business logic. Workflows are fault-tolerant and can survive process and machine failures. They can be thought of as reliable coordination mechanisms for your application’s state transitions.</p>
+
+<p>Activities, on the other hand, are the building blocks of a workflow. They represent a single, well-defined action or task, such as making an API call, writing to a database, or sending an email. Activities can be retried independently of the workflow that invokes them.</p>
+
+<h3 id="workflow-execution-history-and-state-management">Workflow Execution, History, and State Management</h3>
+
+<p>When a workflow is executed, Temporal maintains a history of all the events that occur during its lifetime. This history is the source of truth for the workflow’s state. If a workflow worker fails and restarts, it can reconstruct the workflow’s state by replaying this history.</p>
+
+<p>This event-sourcing approach allows Temporal to provide strong consistency guarantees and enables features like workflow versioning and continue-as-new.</p>
+
+<h3 id="handling-long-running-processes">Handling Long-Running Processes</h3>
+
+<p>Temporal is designed to handle processes that can run for extended periods - from minutes to days or even months. It provides mechanisms like heartbeats for long-running activities and continue-as-new for workflows that generate large histories.</p>
+
+<h3 id="workflow-versioning">Workflow Versioning</h3>
+
+<p>As your system evolves, you may need to update workflow definitions. Temporal provides versioning capabilities that allow you to make non-breaking changes to workflows without affecting running instances.</p>
+
+<h3 id="saga-pattern-for-distributed-transactions">Saga Pattern for Distributed Transactions</h3>
+
+<p>The Saga pattern is a way to manage data consistency across microservices in distributed transaction scenarios. It’s particularly useful when you need to maintain consistency across multiple services without using distributed ACID transactions. Temporal provides an excellent framework for implementing sagas.</p>
+
+<p>Now that we’ve covered these concepts, let’s start implementing our advanced order processing workflow.</p>
+
+<h2 id="3-implementing-complex-order-processing-workflows">3. Implementing Complex Order Processing Workflows</h2>
+
+<p>Let’s design a multi-step order processing workflow that includes order validation, payment processing, inventory management, and shipping arrangement. We’ll implement each of these steps as separate activities coordinated by a workflow.</p>
+
+<p>First, let’s define our activities:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// internal/workflow/activities.go</span>
+
+<span class="k">package</span> <span class="n">workflow</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"context"</span>
+	<span class="s">"errors"</span>
+
+	<span class="s">"go.temporal.io/sdk/activity"</span>
+	<span class="s">"github.com/yourusername/order-processing-system/internal/db"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">OrderActivities</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">queries</span> <span class="o">*</span><span class="n">db</span><span class="o">.</span><span class="n">Queries</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewOrderActivities</span><span class="p">(</span><span class="n">queries</span> <span class="o">*</span><span class="n">db</span><span class="o">.</span><span class="n">Queries</span><span class="p">)</span> <span class="o">*</span><span class="n">OrderActivities</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="n">OrderActivities</span><span class="p">{</span><span class="n">queries</span><span class="o">:</span> <span class="n">queries</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ValidateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c">// Implement order validation logic</span>
+	<span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">TotalAmount</span> <span class="o">&lt;=</span> <span class="m">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"invalid order amount"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="c">// Add more validation as needed</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ProcessPayment</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c">// Implement payment processing logic</span>
+	<span class="c">// This could involve calling a payment gateway API</span>
+	<span class="n">activity</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Processing payment"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"amount"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">TotalAmount</span><span class="p">)</span>
+	<span class="c">// Simulate payment processing</span>
+	<span class="c">// In a real scenario, you'd integrate with a payment gateway here</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">UpdateInventory</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c">// Implement inventory update logic</span>
+	<span class="c">// This could involve updating stock levels in the database</span>
+	<span class="n">activity</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Updating inventory"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="c">// Simulate inventory update</span>
+	<span class="c">// In a real scenario, you'd update your inventory management system here</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ArrangeShipping</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="c">// Implement shipping arrangement logic</span>
+	<span class="c">// This could involve calling a shipping provider's API</span>
+	<span class="n">activity</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Arranging shipping"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="c">// Simulate shipping arrangement</span>
+	<span class="c">// In a real scenario, you'd integrate with a shipping provider here</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now, let’s implement our complex order processing workflow:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// internal/workflow/order_workflow.go</span>
+
+<span class="k">package</span> <span class="n">workflow</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"time"</span>
+
+	<span class="s">"go.temporal.io/sdk/workflow"</span>
+	<span class="s">"github.com/yourusername/order-processing-system/internal/db"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">OrderWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+	<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow started"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+	<span class="c">// Activity options</span>
+	<span class="n">activityOptions</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ActivityOptions</span><span class="p">{</span>
+		<span class="n">StartToCloseTimeout</span><span class="o">:</span> <span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">,</span>
+		<span class="n">RetryPolicy</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">temporal</span><span class="o">.</span><span class="n">RetryPolicy</span><span class="p">{</span>
+			<span class="n">InitialInterval</span><span class="o">:</span>    <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">,</span>
+			<span class="n">BackoffCoefficient</span><span class="o">:</span> <span class="m">2.0</span><span class="p">,</span>
+			<span class="n">MaximumInterval</span><span class="o">:</span>    <span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">,</span>
+			<span class="n">MaximumAttempts</span><span class="o">:</span>    <span class="m">5</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+	<span class="n">ctx</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">WithActivityOptions</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">activityOptions</span><span class="p">)</span>
+
+	<span class="c">// Step 1: Validate Order</span>
+	<span class="n">err</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ValidateOrder</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Order validation failed"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"Error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+
+	<span class="c">// Step 2: Process Payment</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Payment processing failed"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"Error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+
+	<span class="c">// Step 3: Update Inventory</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">UpdateInventory</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Inventory update failed"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"Error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="c">// In case of inventory update failure, we might need to refund the payment</span>
+		<span class="c">// This is where the saga pattern becomes useful, which we'll cover later</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+
+	<span class="c">// Step 4: Arrange Shipping</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ArrangeShipping</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Shipping arrangement failed"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"Error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="c">// If shipping fails, we might need to revert inventory and refund payment</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+
+	<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow completed successfully"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This workflow coordinates multiple activities, each representing a step in our order processing. Note how we’re using <code class="language-plaintext highlighter-rouge">workflow.ExecuteActivity</code> to run each activity, passing the order data as needed.</p>
+
+<p>We’ve also set up activity options with a retry policy. This means if an activity fails (e.g., due to a temporary network issue), Temporal will automatically retry it based on our specified policy.</p>
+
+<p>In the next section, we’ll explore how to handle long-running processes within this workflow structure.</p>
+
+<h2 id="4-handling-long-running-processes-with-temporal">4. Handling Long-Running Processes with Temporal</h2>
+
+<p>In real-world scenarios, some of our activities might take a long time to complete. For example, payment processing might need to wait for bank confirmation, or shipping arrangement might depend on external logistics systems. Temporal provides several mechanisms to handle such long-running processes effectively.</p>
+
+<h3 id="heartbeats-for-long-running-activities">Heartbeats for Long-Running Activities</h3>
+
+<p>For activities that might run for extended periods, it’s crucial to implement heartbeats. Heartbeats allow an activity to report its progress and let Temporal know that it’s still alive and working. If an activity fails to heartbeat within the expected interval, Temporal can mark it as failed and potentially retry it.</p>
+
+<p>Let’s modify our <code class="language-plaintext highlighter-rouge">ArrangeShipping</code> activity to include heartbeats:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ArrangeShipping</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="n">logger</span> <span class="o">:=</span> <span class="n">activity</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+	<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Arranging shipping"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+	<span class="c">// Simulate a long-running process</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="c">// Simulate work</span>
+		<span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+
+		<span class="c">// Record heartbeat</span>
+		<span class="n">activity</span><span class="o">.</span><span class="n">RecordHeartbeat</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+		<span class="c">// Check if we need to cancel</span>
+		<span class="k">if</span> <span class="n">activity</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Attempt</span> <span class="o">&gt;</span> <span class="m">1</span> <span class="p">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Cancelling shipping arrangement due to retry"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+			<span class="k">return</span> <span class="no">nil</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Shipping arranged"</span><span class="p">,</span> <span class="s">"orderId"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+	<span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we’re simulating a long-running process with a loop. We record a heartbeat in each iteration, allowing Temporal to track the activity’s progress.</p>
+
+<h3 id="using-continue-as-new-for-very-long-running-workflows">Using Continue-As-New for Very Long-Running Workflows</h3>
+
+<p>For workflows that run for very long periods or accumulate a large history, Temporal provides the “continue-as-new” feature. This allows you to complete the current workflow execution and immediately start a new execution with the same workflow ID, carrying over any necessary state.</p>
+
+<p>Here’s an example of how we might use continue-as-new in a long-running order tracking workflow:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">LongRunningOrderTrackingWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">orderID</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+	
+	<span class="c">// Set up a timer for how long we want this workflow execution to run</span>
+	<span class="n">timerFired</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">NewTimer</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="m">24</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
+
+	<span class="c">// Set up a selector to wait for either the timer to fire or the order to be delivered</span>
+	<span class="n">selector</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">NewSelector</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+	
+	<span class="k">var</span> <span class="n">orderDelivered</span> <span class="kt">bool</span>
+	<span class="n">selector</span><span class="o">.</span><span class="n">AddFuture</span><span class="p">(</span><span class="n">timerFired</span><span class="p">,</span> <span class="k">func</span><span class="p">(</span><span class="n">f</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Future</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c">// Timer fired, we'll continue-as-new</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"24 hours passed, continuing as new"</span><span class="p">,</span> <span class="s">"orderID"</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+		<span class="n">workflow</span><span class="o">.</span><span class="n">NewContinueAsNewError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">LongRunningOrderTrackingWorkflow</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+	<span class="p">})</span>
+	
+	<span class="n">selector</span><span class="o">.</span><span class="n">AddReceive</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">GetSignalChannel</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"orderDelivered"</span><span class="p">),</span> <span class="k">func</span><span class="p">(</span><span class="n">c</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ReceiveChannel</span><span class="p">,</span> <span class="n">more</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">c</span><span class="o">.</span><span class="n">Receive</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orderDelivered</span><span class="p">)</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Order delivered signal received"</span><span class="p">,</span> <span class="s">"orderID"</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+	<span class="p">})</span>
+
+	<span class="n">selector</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="n">orderDelivered</span> <span class="p">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Order tracking completed, order delivered"</span><span class="p">,</span> <span class="s">"orderID"</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+		<span class="k">return</span> <span class="no">nil</span>
+	<span class="p">}</span>
+
+	<span class="c">// If we reach here, it means we're continuing as new</span>
+	<span class="k">return</span> <span class="n">workflow</span><span class="o">.</span><span class="n">NewContinueAsNewError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">LongRunningOrderTrackingWorkflow</span><span class="p">,</span> <span class="n">orderID</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we set up a workflow that tracks an order for delivery. It runs for 24 hours before using continue-as-new to start a fresh execution. This prevents the workflow history from growing too large over extended periods.</p>
+
+<p>By leveraging these techniques, we can handle long-running processes effectively in our order processing system, ensuring reliability and scalability even for operations that take extended periods to complete.</p>
+
+<p>In the next section, we’ll dive into implementing robust retry logic and error handling in our workflows and activities.</p>
+
+<h2 id="5-implementing-retry-logic-and-error-handling">5. Implementing Retry Logic and Error Handling</h2>
+
+<p>Robust error handling and retry mechanisms are crucial for building resilient systems, especially in distributed environments. Temporal provides powerful built-in retry mechanisms, but it’s important to understand how to use them effectively and when to implement custom retry logic.</p>
+
+<h3 id="configuring-retry-policies-for-activities">Configuring Retry Policies for Activities</h3>
+
+<p>Temporal allows you to configure retry policies at both the workflow and activity level. Let’s update our workflow to include a more sophisticated retry policy:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">OrderWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow started"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="c">// Define a retry policy</span>
+    <span class="n">retryPolicy</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">temporal</span><span class="o">.</span><span class="n">RetryPolicy</span><span class="p">{</span>
+        <span class="n">InitialInterval</span><span class="o">:</span>    <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">,</span>
+        <span class="n">BackoffCoefficient</span><span class="o">:</span> <span class="m">2.0</span><span class="p">,</span>
+        <span class="n">MaximumInterval</span><span class="o">:</span>    <span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">,</span>
+        <span class="n">MaximumAttempts</span><span class="o">:</span>    <span class="m">5</span><span class="p">,</span>
+        <span class="n">NonRetryableErrorTypes</span><span class="o">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"InvalidOrderError"</span><span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c">// Activity options with retry policy</span>
+    <span class="n">activityOptions</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ActivityOptions</span><span class="p">{</span>
+        <span class="n">StartToCloseTimeout</span><span class="o">:</span> <span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">,</span>
+        <span class="n">RetryPolicy</span><span class="o">:</span>         <span class="n">retryPolicy</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">WithActivityOptions</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">activityOptions</span><span class="p">)</span>
+
+    <span class="c">// Execute activities with retry policy</span>
+    <span class="n">err</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ValidateOrder</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ValidateOrder"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// ... (other activities)</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we’ve defined a retry policy that starts with a 1-second interval, doubles the interval with each retry (up to a maximum of 1 minute), and allows up to 5 attempts. We’ve also specified that errors of type “InvalidOrderError” should not be retried.</p>
+
+<h3 id="implementing-custom-retry-logic">Implementing Custom Retry Logic</h3>
+
+<p>While Temporal’s built-in retry mechanisms are powerful, sometimes you need custom retry logic. Here’s an example of implementing custom retry logic for a payment processing activity:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ProcessPaymentWithCustomRetry</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">activity</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="k">var</span> <span class="n">err</span> <span class="kt">error</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="o">:=</span> <span class="m">1</span><span class="p">;</span> <span class="n">attempt</span> <span class="o">&lt;=</span> <span class="m">3</span><span class="p">;</span> <span class="n">attempt</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">processPayment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="no">nil</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">err</span><span class="o">.</span><span class="p">(</span><span class="o">*</span><span class="n">PaymentDeclinedError</span><span class="p">);</span> <span class="n">ok</span> <span class="p">{</span>
+            <span class="c">// Payment was declined, no point in retrying</span>
+            <span class="k">return</span> <span class="n">err</span>
+        <span class="p">}</span>
+        
+        <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Payment processing failed, retrying"</span><span class="p">,</span> <span class="s">"attempt"</span><span class="p">,</span> <span class="n">attempt</span><span class="p">,</span> <span class="s">"error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">attempt</span><span class="p">)</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">err</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">processPayment</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Actual payment processing logic here</span>
+    <span class="c">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we implement a custom retry mechanism that attempts the payment processing up to 3 times, with an increasing delay between attempts. It also handles a specific error type (<code class="language-plaintext highlighter-rouge">PaymentDeclinedError</code>) differently, not retrying in that case.</p>
+
+<h3 id="handling-and-propagating-errors">Handling and Propagating Errors</h3>
+
+<p>Proper error handling is crucial for maintaining the integrity of our workflow. Let’s implement a helper function to handle errors in our workflow:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">activityName</span> <span class="kt">string</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Activity failed"</span><span class="p">,</span> <span class="s">"activity"</span><span class="p">,</span> <span class="n">activityName</span><span class="p">,</span> <span class="s">"orderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s">"error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+    <span class="c">// Depending on the activity and error type, we might want to compensate</span>
+    <span class="k">switch</span> <span class="n">activityName</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="s">"ProcessPayment"</span><span class="o">:</span>
+        <span class="c">// If payment processing failed, we might need to cancel the order</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">CancelOrder</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">case</span> <span class="s">"UpdateInventory"</span><span class="o">:</span>
+        <span class="c">// If inventory update failed after payment, we might need to refund</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RefundPayment</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Create a customer-facing error message</span>
+    <span class="k">return</span> <span class="n">workflow</span><span class="o">.</span><span class="n">NewCustomError</span><span class="p">(</span><span class="s">"OrderProcessingFailed"</span><span class="p">,</span> <span class="s">"Failed to process order due to: "</span><span class="o">+</span><span class="n">err</span><span class="o">.</span><span class="n">Error</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This helper function logs the error, performs any necessary compensating actions, and returns a custom error that can be safely returned to the customer.</p>
+
+<h2 id="6-versioning-workflows-for-safe-updates">6. Versioning Workflows for Safe Updates</h2>
+
+<p>As your system evolves, you’ll need to update your workflow definitions. Temporal provides versioning capabilities that allow you to make changes to workflows without affecting running instances.</p>
+
+<h3 id="implementing-versioned-workflows">Implementing Versioned Workflows</h3>
+
+<p>Here’s an example of how to implement versioning in our order processing workflow:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">OrderWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow started"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="c">// Use GetVersion to handle workflow versioning</span>
+    <span class="n">v</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetVersion</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"OrderWorkflow.PaymentProcessing"</span><span class="p">,</span> <span class="n">workflow</span><span class="o">.</span><span class="n">DefaultVersion</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">workflow</span><span class="o">.</span><span class="n">DefaultVersion</span> <span class="p">{</span>
+        <span class="c">// Old version: process payment before updating inventory</span>
+        <span class="n">err</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessPayment"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">UpdateInventory</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"UpdateInventory"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c">// New version: update inventory before processing payment</span>
+        <span class="n">err</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">UpdateInventory</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"UpdateInventory"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">handleOrderError</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessPayment"</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c">// ... rest of the workflow</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we’ve used <code class="language-plaintext highlighter-rouge">workflow.GetVersion</code> to introduce a change in the order of operations. The new version updates inventory before processing payment, while the old version does the opposite. This allows us to gradually roll out the change without affecting running workflow instances.</p>
+
+<h3 id="strategies-for-updating-workflows-in-production">Strategies for Updating Workflows in Production</h3>
+
+<p>When updating workflows in a production environment, consider the following strategies:</p>
+
+<ol>
+  <li>
+    <p><strong>Incremental Changes</strong>: Make small, incremental changes rather than large overhauls. This makes it easier to manage versions and roll back if needed.</p>
+  </li>
+  <li>
+    <p><strong>Compatibility Periods</strong>: Maintain compatibility with older versions for a certain period to allow running workflows to complete.</p>
+  </li>
+  <li>
+    <p><strong>Feature Flags</strong>: Use feature flags in conjunction with workflow versions to control the rollout of new features.</p>
+  </li>
+  <li>
+    <p><strong>Monitoring and Alerting</strong>: Set up monitoring and alerting for workflow versions to track the progress of updates and quickly identify any issues.</p>
+  </li>
+  <li>
+    <p><strong>Rollback Plan</strong>: Always have a plan to roll back to the previous version if issues are detected with the new version.</p>
+  </li>
+</ol>
+
+<p>By following these strategies and leveraging Temporal’s versioning capabilities, you can safely evolve your workflows over time without disrupting ongoing operations.</p>
+
+<p>In the next section, we’ll explore how to implement the Saga pattern for managing distributed transactions in our order processing system.</p>
+
+<h2 id="7-implementing-saga-patterns-for-distributed-transactions">7. Implementing Saga Patterns for Distributed Transactions</h2>
+
+<p>The Saga pattern is a way to manage data consistency across microservices in distributed transaction scenarios. It’s particularly useful in our order processing system where we need to coordinate actions across multiple services (e.g., inventory, payment, shipping) and provide a mechanism for compensating actions if any step fails.</p>
+
+<h3 id="designing-a-saga-for-our-order-processing-system">Designing a Saga for Our Order Processing System</h3>
+
+<p>Let’s design a saga for our order processing system that includes the following steps:</p>
+
+<ol>
+  <li>Reserve Inventory</li>
+  <li>Process Payment</li>
+  <li>Update Inventory</li>
+  <li>Arrange Shipping</li>
+</ol>
+
+<p>If any of these steps fail, we need to execute compensating actions for the steps that have already completed.</p>
+
+<p>Here’s how we can implement this saga using Temporal:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">OrderSaga</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderSaga started"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="c">// Saga compensations</span>
+    <span class="k">var</span> <span class="n">compensations</span> <span class="p">[]</span><span class="k">func</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">error</span>
+
+    <span class="c">// Step 1: Reserve Inventory</span>
+    <span class="n">err</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ReserveInventory</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"failed to reserve inventory: %w"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">compensations</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">compensations</span><span class="p">,</span> <span class="k">func</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">ReleaseInventoryReservation</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="p">})</span>
+
+    <span class="c">// Step 2: Process Payment</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">compensate</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">compensations</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"failed to process payment: %w"</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="n">compensations</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">compensations</span><span class="p">,</span> <span class="k">func</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">RefundPayment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="p">})</span>
+
+    <span class="c">// Step 3: Update Inventory</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">UpdateInventory</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">compensate</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">compensations</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"failed to update inventory: %w"</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="c">// No compensation needed for this step, as we've already updated the inventory</span>
+
+    <span class="c">// Step 4: Arrange Shipping</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ArrangeShipping</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">compensate</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">compensations</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"failed to arrange shipping: %w"</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+    <span class="p">}</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderSaga completed successfully"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">compensate</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">compensations</span> <span class="p">[]</span><span class="k">func</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">error</span><span class="p">,</span> <span class="n">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Saga failed, executing compensations"</span><span class="p">,</span> <span class="s">"error"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">compensations</span><span class="p">)</span> <span class="o">-</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span> <span class="p">{</span>
+        <span class="n">compensationErr</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">ExecuteActivity</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">compensations</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">compensationErr</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Compensation failed"</span><span class="p">,</span> <span class="s">"error"</span><span class="p">,</span> <span class="n">compensationErr</span><span class="p">)</span>
+            <span class="c">// In a real-world scenario, you might want to implement more sophisticated</span>
+            <span class="c">// error handling for failed compensations, such as retrying or alerting</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">err</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this implementation, we execute each step of the order process as an activity. After each successful step, we add a compensating action to a slice. If any step fails, we call the <code class="language-plaintext highlighter-rouge">compensate</code> function, which executes all the compensating actions in reverse order.</p>
+
+<p>This approach ensures that we maintain data consistency across our distributed system, even in the face of failures.</p>
+
+<h2 id="8-monitoring-and-observability-for-temporal-workflows">8. Monitoring and Observability for Temporal Workflows</h2>
+
+<p>Effective monitoring and observability are crucial for operating Temporal workflows in production. Let’s explore how to implement comprehensive monitoring for our order processing system.</p>
+
+<h3 id="implementing-custom-metrics">Implementing Custom Metrics</h3>
+
+<p>Temporal provides built-in metrics, but we can also implement custom metrics for our specific use cases. Here’s an example of how to add custom metrics to our workflow:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">OrderWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow started"</span><span class="p">,</span> <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+
+    <span class="c">// Define metric</span>
+    <span class="n">orderProcessingTime</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">NewTimer</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">duration</span> <span class="o">:=</span> <span class="n">orderProcessingTime</span><span class="o">.</span><span class="n">ElapsedTime</span><span class="p">()</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">GetMetricsHandler</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">"order_processing_time"</span><span class="p">)</span><span class="o">.</span><span class="n">Record</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+    <span class="p">}()</span>
+
+    <span class="c">// ... rest of the workflow implementation</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this example, we’re recording the total time taken to process an order.</p>
+
+<h3 id="integrating-with-prometheus">Integrating with Prometheus</h3>
+
+<p>To integrate with Prometheus, we need to expose our metrics. Here’s how we can set up a Prometheus endpoint in our main application:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"net/http"</span>
+
+    <span class="s">"github.com/prometheus/client_golang/prometheus/promhttp"</span>
+    <span class="s">"go.temporal.io/sdk/client"</span>
+    <span class="s">"go.temporal.io/sdk/worker"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">// ... Temporal client setup</span>
+
+    <span class="c">// Create a worker</span>
+    <span class="n">w</span> <span class="o">:=</span> <span class="n">worker</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">"order-processing-task-queue"</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">Options</span><span class="p">{})</span>
+
+    <span class="c">// Register workflows and activities</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">RegisterWorkflow</span><span class="p">(</span><span class="n">OrderWorkflow</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">RegisterActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ValidateOrder</span><span class="p">)</span>
+    <span class="c">// ... register other activities</span>
+
+    <span class="c">// Start the worker</span>
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">err</span> <span class="o">:=</span> <span class="n">w</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">InterruptCh</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">"Unable to start worker"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+
+    <span class="c">// Expose Prometheus metrics</span>
+    <span class="n">http</span><span class="o">.</span><span class="n">Handle</span><span class="p">(</span><span class="s">"/metrics"</span><span class="p">,</span> <span class="n">promhttp</span><span class="o">.</span><span class="n">Handler</span><span class="p">())</span>
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">err</span> <span class="o">:=</span> <span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">":2112"</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="s">"Unable to start metrics server"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+
+    <span class="c">// ... rest of your application</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This sets up a <code class="language-plaintext highlighter-rouge">/metrics</code> endpoint that Prometheus can scrape to collect our custom metrics along with the built-in Temporal metrics.</p>
+
+<h3 id="implementing-structured-logging">Implementing Structured Logging</h3>
+
+<p>Structured logging can greatly improve the observability of our system. Let’s update our workflow to use structured logging:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">OrderWorkflow</span><span class="p">(</span><span class="n">ctx</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">GetLogger</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow started"</span><span class="p">,</span>
+        <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+        <span class="s">"CustomerID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">CustomerID</span><span class="p">,</span>
+        <span class="s">"TotalAmount"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">TotalAmount</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c">// ... workflow implementation</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"OrderWorkflow completed"</span><span class="p">,</span>
+        <span class="s">"OrderID"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+        <span class="s">"Duration"</span><span class="p">,</span> <span class="n">workflow</span><span class="o">.</span><span class="n">Now</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">Sub</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">GetInfo</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">.</span><span class="n">WorkflowStartTime</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This approach makes it easier to search and analyze logs, especially when aggregating logs from multiple services.</p>
+
+<h3 id="setting-up-distributed-tracing">Setting Up Distributed Tracing</h3>
+
+<p>Distributed tracing can provide valuable insights into the flow of requests through our system. While Temporal doesn’t natively support distributed tracing, we can implement it in our activities:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"go.opentelemetry.io/otel"</span>
+    <span class="s">"go.opentelemetry.io/otel/trace"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">OrderActivities</span><span class="p">)</span> <span class="n">ProcessPayment</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"order-processing"</span><span class="p">)</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessPayment"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">span</span><span class="o">.</span><span class="n">SetAttributes</span><span class="p">(</span>
+        <span class="n">attribute</span><span class="o">.</span><span class="n">Int64</span><span class="p">(</span><span class="s">"order.id"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">),</span>
+        <span class="n">attribute</span><span class="o">.</span><span class="n">Float64</span><span class="p">(</span><span class="s">"order.amount"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">TotalAmount</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c">// ... payment processing logic</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>By implementing distributed tracing, we can track the entire lifecycle of an order across multiple services and activities.</p>
+
+<h2 id="9-testing-and-validation">9. Testing and Validation</h2>
+
+<p>Thorough testing is crucial for ensuring the reliability of our Temporal workflows. Let’s explore some strategies for testing our order processing system.</p>
+
+<h3 id="unit-testing-workflows">Unit Testing Workflows</h3>
+
+<p>Temporal provides a testing framework that allows us to unit test workflows. Here’s an example of how to test our <code class="language-plaintext highlighter-rouge">OrderWorkflow</code>:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestOrderWorkflow</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">testSuite</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">testsuite</span><span class="o">.</span><span class="n">WorkflowTestSuite</span><span class="p">{}</span>
+    <span class="n">env</span> <span class="o">:=</span> <span class="n">testSuite</span><span class="o">.</span><span class="n">NewTestWorkflowEnvironment</span><span class="p">()</span>
+
+    <span class="c">// Mock activities</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ValidateOrder</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">UpdateInventory</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ArrangeShipping</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+
+    <span class="c">// Execute workflow</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">ExecuteWorkflow</span><span class="p">(</span><span class="n">OrderWorkflow</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span> <span class="n">CustomerID</span><span class="o">:</span> <span class="m">100</span><span class="p">,</span> <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">99.99</span><span class="p">})</span>
+
+    <span class="n">require</span><span class="o">.</span><span class="n">True</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">IsWorkflowCompleted</span><span class="p">())</span>
+    <span class="n">require</span><span class="o">.</span><span class="n">NoError</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">GetWorkflowError</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This test sets up a test environment, mocks the activities, and verifies that the workflow completes successfully.</p>
+
+<h3 id="testing-saga-compensations">Testing Saga Compensations</h3>
+
+<p>It’s important to test that our saga compensations work correctly. Here’s an example test:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestOrderSagaCompensation</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">testSuite</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">testsuite</span><span class="o">.</span><span class="n">WorkflowTestSuite</span><span class="p">{}</span>
+    <span class="n">env</span> <span class="o">:=</span> <span class="n">testSuite</span><span class="o">.</span><span class="n">NewTestWorkflowEnvironment</span><span class="p">()</span>
+
+    <span class="c">// Mock activities</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ReserveInventory</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ProcessPayment</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"payment failed"</span><span class="p">))</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">OnActivity</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ReleaseInventoryReservation</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">Anything</span><span class="p">)</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+
+    <span class="c">// Execute workflow</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">ExecuteWorkflow</span><span class="p">(</span><span class="n">OrderSaga</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Order</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="m">1</span><span class="p">,</span> <span class="n">CustomerID</span><span class="o">:</span> <span class="m">100</span><span class="p">,</span> <span class="n">TotalAmount</span><span class="o">:</span> <span class="m">99.99</span><span class="p">})</span>
+
+    <span class="n">require</span><span class="o">.</span><span class="n">True</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">IsWorkflowCompleted</span><span class="p">())</span>
+    <span class="n">require</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">GetWorkflowError</span><span class="p">())</span>
+
+    <span class="c">// Verify that compensation was called</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">AssertExpectations</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This test verifies that when the payment processing fails, the inventory reservation is released as part of the compensation.</p>
+
+<h2 id="10-challenges-and-considerations">10. Challenges and Considerations</h2>
+
+<p>As we implement and operate our advanced order processing system, there are several challenges and considerations to keep in mind:</p>
+
+<ol>
+  <li>
+    <p><strong>Workflow Complexity</strong>: As workflows grow more complex, they can become difficult to understand and maintain. Regular refactoring and good documentation are crucial.</p>
+  </li>
+  <li>
+    <p><strong>Testing Long-Running Workflows</strong>: Testing workflows that may run for days or weeks can be challenging. Consider implementing mechanisms to speed up time in your tests.</p>
+  </li>
+  <li>
+    <p><strong>Handling External Dependencies</strong>: External services may fail or become unavailable. Implement circuit breakers and fallback mechanisms to handle these scenarios.</p>
+  </li>
+  <li>
+    <p><strong>Monitoring and Alerting</strong>: Set up comprehensive monitoring and alerting to quickly identify and respond to issues in your workflows.</p>
+  </li>
+  <li>
+    <p><strong>Data Consistency</strong>: Ensure that your saga implementations maintain data consistency across services, even in the face of failures.</p>
+  </li>
+  <li>
+    <p><strong>Performance Tuning</strong>: As your system scales, you may need to tune Temporal’s performance settings, such as the number of workflow and activity workers.</p>
+  </li>
+  <li>
+    <p><strong>Workflow Versioning</strong>: Carefully manage workflow versions to ensure smooth updates without breaking running instances.</p>
+  </li>
+</ol>
+
+<h2 id="11-next-steps-and-preview-of-part-3">11. Next Steps and Preview of Part 3</h2>
+
+<p>In this post, we’ve delved deep into advanced Temporal workflow concepts, implementing complex order processing logic, saga patterns, and robust error handling. We’ve also covered monitoring, observability, and testing strategies for our workflows.</p>
+
+<p>In the next part of our series, we’ll focus on advanced database operations with sqlc. We’ll cover:</p>
+
+<ol>
+  <li>Implementing complex database queries and transactions</li>
+  <li>Optimizing database performance</li>
+  <li>Implementing batch operations</li>
+  <li>Handling database migrations in a production environment</li>
+  <li>Implementing database sharding for scalability</li>
+  <li>Ensuring data consistency in a distributed system</li>
+</ol>
+
+<p>Stay tuned as we continue to build out our sophisticated order processing system!</p>
+
+<hr />
+
+<h1>Need Help?</h1>
+<p>Are you facing challenging problems, or need an external perspective on a new idea or project? I can help! Whether you're looking to build a technology proof of concept before making a larger investment, or you need guidance on difficult issues, I'm here to assist.</p>
+
+<h2>Services Offered:</h2>
+<ul>
+    <li><strong>Problem-Solving:</strong> Tackling complex issues with innovative solutions.</li>
+    <li><strong>Consultation:</strong> Providing expert advice and fresh viewpoints on your projects.</li>
+    <li><strong>Proof of Concept:</strong> Developing preliminary models to test and validate your ideas.</li>
+</ul>
+
+<p>If you're interested in working with me, please reach out via email at <a href="mailto:hungaikevin@gmail.com">hungaikevin@gmail.com</a>.</p>
+
+<p>Let's turn your challenges into opportunities!</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Golang">Golang</a>,&nbsp;<a href="/tag/Temporal">Temporal</a>,&nbsp;<a href="/tag/Microservices">Microservices</a>,&nbsp;<a href="/tag/Distributed Systems">Distributed Systems</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+2+-+Advanced+Temporal+Workflows&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-2-advanced-temporal-workflows%2F&via=Hungai"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Implementing+an+Order+Processing+System%3A+Part+2+-+Advanced+Temporal+Workflows&u=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-2-advanced-temporal-workflows%2F"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-2-advanced-temporal-workflows%2F"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+2+-+Advanced+Temporal+Workflows&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-2-advanced-temporal-workflows%2F"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+2+-+Advanced+Temporal+Workflows&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-2-advanced-temporal-workflows%2F&media=https://www.hungaikev.in/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/') + '&title=Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Hungai Amuhinda</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:hungaikevin@gmail.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">hungaikevin@gmail.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/Hungai" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">Hungai</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/hungaikev" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">hungaikev</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/hungai-amuhinda/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Hungai Amuhinda</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Hungai Amuhinda's Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+<script src="//unpkg.com/popper.js@1"></script>
+<script src="//unpkg.com/tippy.js@5"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+
+	// Enable tooltips via Tippy.js
+	if (Array.isArray(window.tooltips)) {
+		window.tooltips.forEach(function(tooltip) {
+			var selector = tooltip[0];
+			var config = tooltip[1];
+			tippy(selector, config);
+		})
+	}
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-F8PDQT4FG5', 'auto');
+  ga('send', 'pageview', {
+    'page': '/e-commerce-platform/part-2-advanced-temporal-workflows/',
+    'title': 'Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

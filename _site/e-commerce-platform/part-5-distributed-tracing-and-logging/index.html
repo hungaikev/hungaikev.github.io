@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging</title>
+  <meta name="description" content="Enhance system observability by implementing distributed tracing with OpenTelemetry and centralized logging with the ELK stack in an e-commerce platform.">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Enhance system observability by implementing distributed tracing with OpenTelemetry and centralized logging with the ELK stack in an e-commerce platform." />
+  <meta property="og:url" content="https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/">
+  <meta property="og:site_name" content="Hungai Amuhinda" />
+  <meta property="og:title" content="Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://www.hungaikev.in/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging">
+  <meta name="twitter:description" content="Enhance system observability by implementing distributed tracing with OpenTelemetry and centralized logging with the ELK stack in an e-commerce platform.">
+  <meta name="twitter:image" content="https://www.hungaikev.in/assets/logo.png">
+  <meta name="twitter:url" content="https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/">
+	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="https://www.hungaikev.in/feed.xml" />
+	
+	<!-- Tooltips -->
+	<script type="text/javascript">
+		window.tooltips = []
+	</script>
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="Hungai Amuhinda">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging</h1>
+      <p class="info">by <strong>Hungai Amuhinda</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">August 5, 2024</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/E-commerce Platform">E-commerce platform</a>, 
+    
+  
+    
+    <a href="/category/Observability">Observability</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+
+<p>Welcome to the fifth installment of our series on implementing a sophisticated order processing system! In our previous posts, we’ve covered everything from setting up the basic architecture to implementing advanced workflows and comprehensive monitoring. Today, we’re diving into the world of distributed tracing and logging, two crucial components for maintaining observability in a microservices architecture.</p>
+
+<h3 id="recap-of-previous-posts">Recap of Previous Posts</h3>
+
+<ol>
+  <li>In Part 1, we set up our project structure and implemented a basic CRUD API.</li>
+  <li>Part 2 focused on expanding our use of Temporal for complex workflows.</li>
+  <li>In Part 3, we delved into advanced database operations, including optimization and sharding.</li>
+  <li>Part 4 covered comprehensive monitoring and alerting using Prometheus and Grafana.</li>
+</ol>
+
+<h3 id="importance-of-distributed-tracing-and-logging-in-microservices-architecture">Importance of Distributed Tracing and Logging in Microservices Architecture</h3>
+
+<p>In a microservices architecture, a single user request often spans multiple services. This distributed nature makes it challenging to understand the flow of requests and to diagnose issues when they arise. Distributed tracing and centralized logging address these challenges by providing:</p>
+
+<ol>
+  <li>End-to-end visibility of request flow across services</li>
+  <li>Detailed insights into the performance of individual components</li>
+  <li>The ability to correlate events across different services</li>
+  <li>A centralized view of system behavior and health</li>
+</ol>
+
+<h3 id="overview-of-opentelemetry-and-the-elk-stack">Overview of OpenTelemetry and the ELK Stack</h3>
+
+<p>To implement distributed tracing and logging, we’ll be using two powerful toolsets:</p>
+
+<ol>
+  <li>
+    <p><strong>OpenTelemetry</strong>: An observability framework for cloud-native software that provides a single set of APIs, libraries, agents, and collector services to capture distributed traces and metrics from your application.</p>
+  </li>
+  <li>
+    <p><strong>ELK Stack</strong>: A collection of three open-source products - Elasticsearch, Logstash, and Kibana - from Elastic, which together provide a robust platform for log ingestion, storage, and visualization.</p>
+  </li>
+</ol>
+
+<h3 id="goals-for-this-part-of-the-series">Goals for this Part of the Series</h3>
+
+<p>By the end of this post, you’ll be able to:</p>
+
+<ol>
+  <li>Implement distributed tracing across your microservices using OpenTelemetry</li>
+  <li>Set up centralized logging using the ELK stack</li>
+  <li>Correlate logs, traces, and metrics for a unified view of system behavior</li>
+  <li>Implement effective log aggregation and analysis strategies</li>
+  <li>Apply best practices for logging in a microservices architecture</li>
+</ol>
+
+<p>Let’s dive in!</p>
+
+<h2 id="2-theoretical-background-and-concepts">2. Theoretical Background and Concepts</h2>
+
+<p>Before we start implementing, let’s review some key concepts that will be crucial for our distributed tracing and logging setup.</p>
+
+<h3 id="introduction-to-distributed-tracing">Introduction to Distributed Tracing</h3>
+
+<p>Distributed tracing is a method of tracking a request as it flows through various services in a distributed system. It provides a way to understand the full lifecycle of a request, including:</p>
+
+<ul>
+  <li>The path a request takes through the system</li>
+  <li>The services and resources it interacts with</li>
+  <li>The time spent in each service</li>
+</ul>
+
+<p>A trace typically consists of one or more spans. A span represents a unit of work or operation. It tracks specific operations that a request makes, recording when the operation started and ended, as well as other data.</p>
+
+<h3 id="understanding-the-opentelemetry-project-and-its-components">Understanding the OpenTelemetry Project and its Components</h3>
+
+<p>OpenTelemetry is an observability framework for cloud-native software. It provides a single set of APIs, libraries, agents, and collector services to capture distributed traces and metrics from your application. Key components include:</p>
+
+<ol>
+  <li><strong>API</strong>: Provides the core data types and operations for tracing and metrics.</li>
+  <li><strong>SDK</strong>: Implements the API, providing a way to configure and customize behavior.</li>
+  <li><strong>Instrumentation Libraries</strong>: Provide automatic instrumentation for popular frameworks and libraries.</li>
+  <li><strong>Collector</strong>: Receives, processes, and exports telemetry data.</li>
+</ol>
+
+<h3 id="overview-of-logging-best-practices-in-distributed-systems">Overview of Logging Best Practices in Distributed Systems</h3>
+
+<p>Effective logging in distributed systems requires careful consideration:</p>
+
+<ol>
+  <li><strong>Structured Logging</strong>: Use a consistent, structured format (e.g., JSON) for log entries to facilitate parsing and analysis.</li>
+  <li><strong>Correlation IDs</strong>: Include a unique identifier in log entries to track requests across services.</li>
+  <li><strong>Contextual Information</strong>: Include relevant context (e.g., user ID, order ID) in log entries.</li>
+  <li><strong>Log Levels</strong>: Use appropriate log levels (DEBUG, INFO, WARN, ERROR) consistently across services.</li>
+  <li><strong>Centralized Logging</strong>: Aggregate logs from all services in a central location for easier analysis.</li>
+</ol>
+
+<h3 id="introduction-to-the-elk-elasticsearch-logstash-kibana-stack">Introduction to the ELK (Elasticsearch, Logstash, Kibana) Stack</h3>
+
+<p>The ELK stack is a popular choice for log management:</p>
+
+<ol>
+  <li><strong>Elasticsearch</strong>: A distributed, RESTful search and analytics engine capable of handling large volumes of data.</li>
+  <li><strong>Logstash</strong>: A server-side data processing pipeline that ingests data from multiple sources, transforms it, and sends it to Elasticsearch.</li>
+  <li><strong>Kibana</strong>: A visualization layer that works on top of Elasticsearch, providing a user interface for searching, viewing, and interacting with the data.</li>
+</ol>
+
+<h3 id="concepts-of-log-aggregation-and-analysis">Concepts of Log Aggregation and Analysis</h3>
+
+<p>Log aggregation involves collecting log data from various sources and storing it in a centralized location. This allows for:</p>
+
+<ol>
+  <li>Easier searching and analysis of logs across multiple services</li>
+  <li>Correlation of events across different components of the system</li>
+  <li>Long-term storage and archiving of log data</li>
+</ol>
+
+<p>Log analysis involves extracting meaningful insights from log data, which can include:</p>
+
+<ol>
+  <li>Identifying patterns and trends</li>
+  <li>Detecting anomalies and errors</li>
+  <li>Monitoring system health and performance</li>
+  <li>Supporting root cause analysis during incident response</li>
+</ol>
+
+<p>With these concepts in mind, let’s move on to implementing distributed tracing in our order processing system.</p>
+
+<h2 id="3-implementing-distributed-tracing-with-opentelemetry">3. Implementing Distributed Tracing with OpenTelemetry</h2>
+
+<p>Let’s start by implementing distributed tracing in our order processing system using OpenTelemetry.</p>
+
+<h3 id="setting-up-opentelemetry-in-our-go-services">Setting up OpenTelemetry in our Go Services</h3>
+
+<p>First, we need to add OpenTelemetry to our Go services. Add the following dependencies to your <code class="language-plaintext highlighter-rouge">go.mod</code> file:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">require</span> <span class="p">(</span>
+    <span class="k">go</span><span class="o">.</span><span class="n">opentelemetry</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">otel</span> <span class="n">v1</span><span class="m">.7.0</span>
+    <span class="k">go</span><span class="o">.</span><span class="n">opentelemetry</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">otel</span><span class="o">/</span><span class="n">exporters</span><span class="o">/</span><span class="n">jaeger</span> <span class="n">v1</span><span class="m">.7.0</span>
+    <span class="k">go</span><span class="o">.</span><span class="n">opentelemetry</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">otel</span><span class="o">/</span><span class="n">sdk</span> <span class="n">v1</span><span class="m">.7.0</span>
+    <span class="k">go</span><span class="o">.</span><span class="n">opentelemetry</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">otel</span><span class="o">/</span><span class="n">trace</span> <span class="n">v1</span><span class="m">.7.0</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Next, let’s set up a tracer provider in our main function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"log"</span>
+
+    <span class="s">"go.opentelemetry.io/otel"</span>
+    <span class="s">"go.opentelemetry.io/otel/attribute"</span>
+    <span class="s">"go.opentelemetry.io/otel/exporters/jaeger"</span>
+    <span class="s">"go.opentelemetry.io/otel/sdk/resource"</span>
+    <span class="n">tracesdk</span> <span class="s">"go.opentelemetry.io/otel/sdk/trace"</span>
+    <span class="n">semconv</span> <span class="s">"go.opentelemetry.io/otel/semconv/v1.4.0"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">initTracer</span><span class="p">()</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">exporter</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">jaeger</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithCollectorEndpoint</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithEndpoint</span><span class="p">(</span><span class="s">"http://jaeger:14268/api/traces"</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">tp</span> <span class="o">:=</span> <span class="n">tracesdk</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+        <span class="n">tracesdk</span><span class="o">.</span><span class="n">WithBatcher</span><span class="p">(</span><span class="n">exporter</span><span class="p">),</span>
+        <span class="n">tracesdk</span><span class="o">.</span><span class="n">WithResource</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">NewWithAttributes</span><span class="p">(</span>
+            <span class="n">semconv</span><span class="o">.</span><span class="n">SchemaURL</span><span class="p">,</span>
+            <span class="n">semconv</span><span class="o">.</span><span class="n">ServiceNameKey</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"order-processing-service"</span><span class="p">),</span>
+            <span class="n">attribute</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"environment"</span><span class="p">,</span> <span class="s">"production"</span><span class="p">),</span>
+        <span class="p">)),</span>
+    <span class="p">)</span>
+    <span class="n">otel</span><span class="o">.</span><span class="n">SetTracerProvider</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Shutdown</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">());</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Error shutting down tracer provider: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">cleanup</span> <span class="o">:=</span> <span class="n">initTracer</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="n">cleanup</span><span class="p">()</span>
+
+    <span class="c">// Rest of your main function...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This sets up a tracer provider that exports traces to Jaeger, a popular distributed tracing backend.</p>
+
+<h3 id="instrumenting-our-order-processing-workflow-with-traces">Instrumenting our Order Processing Workflow with Traces</h3>
+
+<p>Now, let’s add tracing to our order processing workflow. We’ll start with the <code class="language-plaintext highlighter-rouge">CreateOrder</code> function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"context"</span>
+
+    <span class="s">"go.opentelemetry.io/otel"</span>
+    <span class="s">"go.opentelemetry.io/otel/attribute"</span>
+    <span class="s">"go.opentelemetry.io/otel/trace"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">tr</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"order-processing"</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tr</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"CreateOrder"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">span</span><span class="o">.</span><span class="n">SetAttributes</span><span class="p">(</span><span class="n">attribute</span><span class="o">.</span><span class="n">Int64</span><span class="p">(</span><span class="s">"order.id"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">))</span>
+    <span class="n">span</span><span class="o">.</span><span class="n">SetAttributes</span><span class="p">(</span><span class="n">attribute</span><span class="o">.</span><span class="n">Float64</span><span class="p">(</span><span class="s">"order.total"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">Total</span><span class="p">))</span>
+
+    <span class="c">// Validate order</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">validateOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Order validation failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Process payment</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">processPayment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Payment processing failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Update inventory</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">updateInventory</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Inventory update failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Ok</span><span class="p">,</span> <span class="s">"Order created successfully"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This creates a new span for the <code class="language-plaintext highlighter-rouge">CreateOrder</code> function and adds relevant attributes. It also creates child spans for each major step in the process.</p>
+
+<h3 id="propagating-context-across-service-boundaries">Propagating Context Across Service Boundaries</h3>
+
+<p>When making calls to other services, we need to propagate the trace context. Here’s an example of how to do this with an HTTP client:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"net/http"</span>
+
+    <span class="s">"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">callExternalService</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">url</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">client</span> <span class="o">:=</span> <span class="n">http</span><span class="o">.</span><span class="n">Client</span><span class="p">{</span><span class="n">Transport</span><span class="o">:</span> <span class="n">otelhttp</span><span class="o">.</span><span class="n">NewTransport</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">DefaultTransport</span><span class="p">)}</span>
+    <span class="n">req</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">http</span><span class="o">.</span><span class="n">NewRequestWithContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"GET"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">Do</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">err</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This uses the <code class="language-plaintext highlighter-rouge">otelhttp</code> package to automatically propagate trace context in HTTP headers.</p>
+
+<h3 id="handling-asynchronous-operations-and-background-jobs">Handling Asynchronous Operations and Background Jobs</h3>
+
+<p>For asynchronous operations, we need to ensure we’re passing the trace context correctly. Here’s an example using a worker pool:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">processOrderAsync</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">tr</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"order-processing"</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tr</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"processOrderAsync"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">workerPool</span> <span class="o">&lt;-</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">processCtx</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">ContextWithSpan</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">span</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">processOrder</span><span class="p">(</span><span class="n">processCtx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Async order processing failed"</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Ok</span><span class="p">,</span> <span class="s">"Async order processing succeeded"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This creates a new span for the async operation and passes it to the worker function.</p>
+
+<h3 id="integrating-opentelemetry-with-temporal-workflows">Integrating OpenTelemetry with Temporal Workflows</h3>
+
+<p>To integrate OpenTelemetry with Temporal workflows, we can use the <code class="language-plaintext highlighter-rouge">go.opentelemetry.io/contrib/instrumentation/go.temporal.io/temporal/oteltemporalgrpc</code> package:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"go.temporal.io/sdk/client"</span>
+    <span class="s">"go.temporal.io/sdk/worker"</span>
+    <span class="s">"go.opentelemetry.io/contrib/instrumentation/go.temporal.io/temporal/oteltemporalgrpc"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">initTemporalClient</span><span class="p">()</span> <span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">Client</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">NewClient</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">Options</span><span class="p">{</span>
+        <span class="n">HostPort</span><span class="o">:</span> <span class="s">"temporal:7233"</span><span class="p">,</span>
+        <span class="n">ConnectionOptions</span><span class="o">:</span> <span class="n">client</span><span class="o">.</span><span class="n">ConnectionOptions</span><span class="p">{</span>
+            <span class="n">DialOptions</span><span class="o">:</span> <span class="p">[]</span><span class="n">grpc</span><span class="o">.</span><span class="n">DialOption</span><span class="p">{</span>
+                <span class="n">grpc</span><span class="o">.</span><span class="n">WithUnaryInterceptor</span><span class="p">(</span><span class="n">oteltemporalgrpc</span><span class="o">.</span><span class="n">UnaryClientInterceptor</span><span class="p">()),</span>
+                <span class="n">grpc</span><span class="o">.</span><span class="n">WithStreamInterceptor</span><span class="p">(</span><span class="n">oteltemporalgrpc</span><span class="o">.</span><span class="n">StreamClientInterceptor</span><span class="p">()),</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">initTemporalWorker</span><span class="p">(</span><span class="n">c</span> <span class="n">client</span><span class="o">.</span><span class="n">Client</span><span class="p">,</span> <span class="n">taskQueue</span> <span class="kt">string</span><span class="p">)</span> <span class="n">worker</span><span class="o">.</span><span class="n">Worker</span> <span class="p">{</span>
+    <span class="n">w</span> <span class="o">:=</span> <span class="n">worker</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">taskQueue</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">Options</span><span class="p">{</span>
+        <span class="n">WorkerInterceptors</span><span class="o">:</span> <span class="p">[]</span><span class="n">worker</span><span class="o">.</span><span class="n">WorkerInterceptor</span><span class="p">{</span>
+            <span class="n">oteltemporalgrpc</span><span class="o">.</span><span class="n">WorkerInterceptor</span><span class="p">(),</span>
+        <span class="p">},</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">w</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This sets up Temporal clients and workers with OpenTelemetry instrumentation.</p>
+
+<h3 id="exporting-traces-to-a-backend-eg-jaeger">Exporting Traces to a Backend (e.g., Jaeger)</h3>
+
+<p>We’ve already set up Jaeger as our trace backend in the <code class="language-plaintext highlighter-rouge">initTracer</code> function. To visualize our traces, we need to add Jaeger to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">jaeger</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">jaegertracing/all-in-one:1.35</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">16686:16686"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">14268:14268"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">COLLECTOR_OTLP_ENABLED=true</span>
+</code></pre></div></div>
+
+<p>Now you can access the Jaeger UI at <code class="language-plaintext highlighter-rouge">http://localhost:16686</code> to view and analyze your traces.</p>
+
+<p>In the next section, we’ll set up centralized logging using the ELK stack to complement our distributed tracing setup.</p>
+
+<h2 id="4-setting-up-centralized-logging-with-the-elk-stack">4. Setting Up Centralized Logging with the ELK Stack</h2>
+
+<p>Now that we have distributed tracing in place, let’s set up centralized logging using the ELK (Elasticsearch, Logstash, Kibana) stack.</p>
+
+<h3 id="installing-and-configuring-elasticsearch">Installing and Configuring Elasticsearch</h3>
+
+<p>First, let’s add Elasticsearch to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">elasticsearch</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker.elastic.co/elasticsearch/elasticsearch:7.14.0</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">discovery.type=single-node</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">ES_JAVA_OPTS=-Xms512m</span><span class="nv"> </span><span class="s">-Xmx512m"</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">9200:9200"</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">elasticsearch_data:/usr/share/elasticsearch/data</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">elasticsearch_data</span><span class="pi">:</span>
+    <span class="na">driver</span><span class="pi">:</span> <span class="s">local</span>
+</code></pre></div></div>
+
+<p>This sets up a single-node Elasticsearch instance for development purposes.</p>
+
+<h3 id="setting-up-logstash-for-log-ingestion-and-processing">Setting up Logstash for Log Ingestion and Processing</h3>
+
+<p>Next, let’s add Logstash to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">logstash</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker.elastic.co/logstash/logstash:7.14.0</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./logstash/pipeline:/usr/share/logstash/pipeline</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">5000:5000/tcp"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">5000:5000/udp"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">9600:9600"</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">elasticsearch</span>
+</code></pre></div></div>
+
+<p>Create a Logstash pipeline configuration file at <code class="language-plaintext highlighter-rouge">./logstash/pipeline/logstash.conf</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input {
+  tcp {
+    port =&gt; 5000
+    codec =&gt; json
+  }
+}
+
+filter {
+  if [trace_id] {
+    mutate {
+      add_field =&gt; { "[@metadata][trace_id]" =&gt; "%{trace_id}" }
+    }
+  }
+}
+
+output {
+  elasticsearch {
+    hosts =&gt; ["elasticsearch:9200"]
+    index =&gt; "order-processing-logs-%{+YYYY.MM.dd}"
+  }
+}
+</code></pre></div></div>
+
+<p>This configuration sets up Logstash to receive JSON logs over TCP, process them, and forward them to Elasticsearch.</p>
+
+<h3 id="configuring-kibana-for-log-visualization">Configuring Kibana for Log Visualization</h3>
+
+<p>Now, let’s add Kibana to our <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># ... other services ...</span>
+
+  <span class="na">kibana</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker.elastic.co/kibana/kibana:7.14.0</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">5601:5601"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">ELASTICSEARCH_URL</span><span class="pi">:</span> <span class="s">http://elasticsearch:9200</span>
+      <span class="na">ELASTICSEARCH_HOSTS</span><span class="pi">:</span> <span class="s1">'</span><span class="s">["http://elasticsearch:9200"]'</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">elasticsearch</span>
+</code></pre></div></div>
+
+<p>You can access the Kibana UI at <code class="language-plaintext highlighter-rouge">http://localhost:5601</code> once it’s up and running.</p>
+
+<h3 id="implementing-structured-logging-in-our-go-services">Implementing Structured Logging in our Go Services</h3>
+
+<p>To send structured logs to Logstash, we’ll use the <code class="language-plaintext highlighter-rouge">logrus</code> library. First, add it to your <code class="language-plaintext highlighter-rouge">go.mod</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go get github.com/sirupsen/logrus
+</code></pre></div></div>
+
+<p>Now, let’s set up a logger in our main function:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/sirupsen/logrus"</span>
+    <span class="s">"gopkg.in/sohlich/elogrus.v7"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">initLogger</span><span class="p">()</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Logger</span> <span class="p">{</span>
+    <span class="n">log</span> <span class="o">:=</span> <span class="n">logrus</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">SetFormatter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">logrus</span><span class="o">.</span><span class="n">JSONFormatter</span><span class="p">{})</span>
+
+    <span class="n">hook</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">elogrus</span><span class="o">.</span><span class="n">NewElasticHook</span><span class="p">(</span><span class="s">"elasticsearch:9200"</span><span class="p">,</span> <span class="s">"warning"</span><span class="p">,</span> <span class="s">"order-processing-logs"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create Elasticsearch hook: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">AddHook</span><span class="p">(</span><span class="n">hook</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">log</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">log</span> <span class="o">:=</span> <span class="n">initLogger</span><span class="p">()</span>
+
+    <span class="c">// Rest of your main function...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This sets up a JSON formatter for our logs and adds an Elasticsearch hook to send logs directly to Elasticsearch.</p>
+
+<h3 id="sending-logs-from-our-services-to-the-elk-stack">Sending Logs from our Services to the ELK Stack</h3>
+
+<p>Now, let’s update our <code class="language-plaintext highlighter-rouge">CreateOrder</code> function to use structured logging:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">tr</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"order-processing"</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tr</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"CreateOrder"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">logrus</span><span class="o">.</span><span class="n">WithFields</span><span class="p">(</span><span class="n">logrus</span><span class="o">.</span><span class="n">Fields</span><span class="p">{</span>
+        <span class="s">"order_id"</span><span class="o">:</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+        <span class="s">"trace_id"</span><span class="o">:</span> <span class="n">span</span><span class="o">.</span><span class="n">SpanContext</span><span class="p">()</span><span class="o">.</span><span class="n">TraceID</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">(),</span>
+    <span class="p">})</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Starting order creation"</span><span class="p">)</span>
+
+    <span class="c">// Validate order</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">validateOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">WithError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Order validation failed"</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Order validation failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Process payment</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">processPayment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">WithError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Payment processing failed"</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Payment processing failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// Update inventory</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">updateInventory</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">WithError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s">"Inventory update failed"</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">RecordError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="s">"Inventory update failed"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Order created successfully"</span><span class="p">)</span>
+    <span class="n">span</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">Ok</span><span class="p">,</span> <span class="s">"Order created successfully"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This code logs each step of the order creation process, including any errors that occur. It also includes the trace ID in each log entry, which will be crucial for correlating logs with traces.</p>
+
+<h2 id="5-correlating-logs-traces-and-metrics">5. Correlating Logs, Traces, and Metrics</h2>
+
+<p>Now that we have both distributed tracing and centralized logging set up, let’s explore how to correlate this information for a unified view of system behavior.</p>
+
+<h3 id="implementing-correlation-ids-across-logs-and-traces">Implementing Correlation IDs Across Logs and Traces</h3>
+
+<p>We’ve already included the trace ID in our log entries. To make this correlation even more powerful, we can add a custom field to our spans that includes the log index:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">span</span><span class="o">.</span><span class="n">SetAttributes</span><span class="p">(</span><span class="n">attribute</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"log.index"</span><span class="p">,</span> <span class="s">"order-processing-logs-"</span><span class="o">+</span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">Format</span><span class="p">(</span><span class="s">"2006.01.02"</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>This allows us to easily jump from a span in Jaeger to the corresponding logs in Kibana.</p>
+
+<h3 id="adding-trace-ids-to-log-entries">Adding Trace IDs to Log Entries</h3>
+
+<p>We’ve already added trace IDs to our log entries in the previous section. This allows us to search for all log entries related to a particular trace in Kibana.</p>
+
+<h3 id="linking-metrics-to-traces-using-exemplars">Linking Metrics to Traces Using Exemplars</h3>
+
+<p>To link our Prometheus metrics to traces, we can use exemplars. Here’s an example of how to do this:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus"</span>
+    <span class="s">"github.com/prometheus/client_golang/prometheus/promauto"</span>
+    <span class="s">"go.opentelemetry.io/otel/trace"</span>
+<span class="p">)</span>
+
+<span class="k">var</span> <span class="p">(</span>
+    <span class="n">orderProcessingDuration</span> <span class="o">=</span> <span class="n">promauto</span><span class="o">.</span><span class="n">NewHistogramVec</span><span class="p">(</span>
+        <span class="n">prometheus</span><span class="o">.</span><span class="n">HistogramOpts</span><span class="p">{</span>
+            <span class="n">Name</span><span class="o">:</span>    <span class="s">"order_processing_duration_seconds"</span><span class="p">,</span>
+            <span class="n">Help</span><span class="o">:</span>    <span class="s">"Duration of order processing in seconds"</span><span class="p">,</span>
+            <span class="n">Buckets</span><span class="o">:</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">DefBuckets</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">"status"</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// ... existing code ...</span>
+
+    <span class="n">start</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
+    <span class="c">// ... process order ...</span>
+    <span class="n">duration</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Since</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+
+    <span class="n">orderProcessingDuration</span><span class="o">.</span><span class="n">WithLabelValues</span><span class="p">(</span><span class="s">"success"</span><span class="p">)</span><span class="o">.</span><span class="n">Observe</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">Seconds</span><span class="p">(),</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">Labels</span><span class="p">{</span>
+        <span class="s">"trace_id"</span><span class="o">:</span> <span class="n">span</span><span class="o">.</span><span class="n">SpanContext</span><span class="p">()</span><span class="o">.</span><span class="n">TraceID</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">(),</span>
+    <span class="p">})</span>
+
+    <span class="c">// ... rest of the function ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This adds the trace ID as an exemplar to our order processing duration metric.</p>
+
+<h3 id="creating-a-unified-view-of-system-behavior">Creating a Unified View of System Behavior</h3>
+
+<p>With logs, traces, and metrics all correlated, we can create a unified view of our system’s behavior:</p>
+
+<ol>
+  <li>In Grafana, create a dashboard that includes both Prometheus metrics and Elasticsearch logs.</li>
+  <li>Use the trace ID to link from a metric to the corresponding trace in Jaeger.</li>
+  <li>From Jaeger, use the log index attribute to link to the corresponding logs in Kibana.</li>
+</ol>
+
+<p>This allows you to seamlessly navigate between metrics, traces, and logs, providing a comprehensive view of your system’s behavior and making it easier to debug issues.</p>
+
+<h2 id="6-log-aggregation-and-analysis">6. Log Aggregation and Analysis</h2>
+
+<p>With our logs centralized in Elasticsearch, let’s explore some strategies for effective log aggregation and analysis.</p>
+
+<h3 id="designing-effective-log-aggregation-strategies">Designing Effective Log Aggregation Strategies</h3>
+
+<ol>
+  <li><strong>Use Consistent Log Formats</strong>: Ensure all services use the same log format (in our case, JSON) with consistent field names.</li>
+  <li><strong>Include Relevant Context</strong>: Always include relevant context in logs, such as order ID, user ID, and trace ID.</li>
+  <li><strong>Use Log Levels Appropriately</strong>: Use DEBUG for detailed information, INFO for general information, WARN for potential issues, and ERROR for actual errors.</li>
+  <li><strong>Aggregate Logs by Service</strong>: Use different Elasticsearch indices or index patterns for different services to allow for easier analysis.</li>
+</ol>
+
+<h3 id="implementing-log-sampling-for-high-volume-services">Implementing Log Sampling for High-Volume Services</h3>
+
+<p>For high-volume services, logging every event can be prohibitively expensive. Implement log sampling to reduce the volume while still maintaining visibility:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">shouldLog</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">rand</span><span class="o">.</span><span class="n">Float32</span><span class="p">()</span> <span class="o">&lt;</span> <span class="m">0.1</span> <span class="c">// Log 10% of events</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// ... existing code ...</span>
+
+    <span class="k">if</span> <span class="n">shouldLog</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Order created successfully"</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// ... rest of the function ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="creating-kibana-dashboards-for-log-analysis">Creating Kibana Dashboards for Log Analysis</h3>
+
+<p>In Kibana, create dashboards that provide insights into your system’s behavior. Some useful visualizations might include:</p>
+
+<ol>
+  <li>Number of orders created over time</li>
+  <li>Distribution of order processing times</li>
+  <li>Error rate by service</li>
+  <li>Most common error types</li>
+</ol>
+
+<h3 id="implementing-alerting-based-on-log-patterns">Implementing Alerting Based on Log Patterns</h3>
+
+<p>Use Kibana’s alerting features to set up alerts based on log patterns. For example:</p>
+
+<ol>
+  <li>Alert when the error rate exceeds a certain threshold</li>
+  <li>Alert on specific error messages that indicate critical issues</li>
+  <li>Alert when order processing time exceeds a certain duration</li>
+</ol>
+
+<h3 id="using-machine-learning-for-anomaly-detection-in-logs">Using Machine Learning for Anomaly Detection in Logs</h3>
+
+<p>Elasticsearch provides machine learning capabilities that can be used for anomaly detection in logs. You can set up machine learning jobs in Kibana to detect:</p>
+
+<ol>
+  <li>Unusual spikes in error rates</li>
+  <li>Abnormal patterns in order creation</li>
+  <li>Unexpected changes in log volume</li>
+</ol>
+
+<p>These machine learning insights can help you identify issues before they become critical problems.</p>
+
+<p>In the next sections, we’ll cover best practices for logging in a microservices architecture and explore some advanced OpenTelemetry techniques.</p>
+
+<h2 id="7-best-practices-for-logging-in-a-microservices-architecture">7. Best Practices for Logging in a Microservices Architecture</h2>
+
+<p>When implementing logging in a microservices architecture, there are several best practices to keep in mind to ensure your logs are useful, manageable, and secure.</p>
+
+<h3 id="standardizing-log-formats-across-services">Standardizing Log Formats Across Services</h3>
+
+<p>Consistency in log formats across all your services is crucial for effective log analysis. In our Go services, we can create a custom logger that enforces a standard format:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/sirupsen/logrus"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">StandardLogger</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Logger</span>
+    <span class="n">ServiceName</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewStandardLogger</span><span class="p">(</span><span class="n">serviceName</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="n">StandardLogger</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">logrus</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">SetFormatter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">logrus</span><span class="o">.</span><span class="n">JSONFormatter</span><span class="p">{</span>
+        <span class="n">FieldMap</span><span class="o">:</span> <span class="n">logrus</span><span class="o">.</span><span class="n">FieldMap</span><span class="p">{</span>
+            <span class="n">logrus</span><span class="o">.</span><span class="n">FieldKeyTime</span><span class="o">:</span>  <span class="s">"timestamp"</span><span class="p">,</span>
+            <span class="n">logrus</span><span class="o">.</span><span class="n">FieldKeyLevel</span><span class="o">:</span> <span class="s">"severity"</span><span class="p">,</span>
+            <span class="n">logrus</span><span class="o">.</span><span class="n">FieldKeyMsg</span><span class="o">:</span>   <span class="s">"message"</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">StandardLogger</span><span class="p">{</span>
+        <span class="n">Logger</span><span class="o">:</span>      <span class="n">logger</span><span class="p">,</span>
+        <span class="n">ServiceName</span><span class="o">:</span> <span class="n">serviceName</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span><span class="n">StandardLogger</span><span class="p">)</span> <span class="n">WithFields</span><span class="p">(</span><span class="n">fields</span> <span class="n">logrus</span><span class="o">.</span><span class="n">Fields</span><span class="p">)</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="n">WithFields</span><span class="p">(</span><span class="n">logrus</span><span class="o">.</span><span class="n">Fields</span><span class="p">{</span>
+        <span class="s">"service"</span><span class="o">:</span> <span class="n">l</span><span class="o">.</span><span class="n">ServiceName</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">WithFields</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This logger ensures that all log entries include a “service” field and use consistent field names.</p>
+
+<h3 id="implementing-contextual-logging">Implementing Contextual Logging</h3>
+
+<p>Contextual logging involves including relevant context with each log entry. In a microservices architecture, this often means including a request ID or trace ID that can be used to correlate logs across services:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">CreateOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">logger</span> <span class="o">*</span><span class="n">StandardLogger</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">tr</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"order-processing"</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tr</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"CreateOrder"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">WithFields</span><span class="p">(</span><span class="n">logrus</span><span class="o">.</span><span class="n">Fields</span><span class="p">{</span>
+        <span class="s">"order_id"</span><span class="o">:</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+        <span class="s">"trace_id"</span><span class="o">:</span> <span class="n">span</span><span class="o">.</span><span class="n">SpanContext</span><span class="p">()</span><span class="o">.</span><span class="n">TraceID</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">(),</span>
+    <span class="p">})</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Starting order creation"</span><span class="p">)</span>
+
+    <span class="c">// ... rest of the function ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="handling-sensitive-information-in-logs">Handling Sensitive Information in Logs</h3>
+
+<p>It’s crucial to ensure that sensitive information, such as personal data or credentials, is not logged. You can create a custom log hook to redact sensitive information:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">SensitiveDataHook</span> <span class="k">struct</span><span class="p">{}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span><span class="n">SensitiveDataHook</span><span class="p">)</span> <span class="n">Levels</span><span class="p">()</span> <span class="p">[]</span><span class="n">logrus</span><span class="o">.</span><span class="n">Level</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">logrus</span><span class="o">.</span><span class="n">AllLevels</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span><span class="n">SensitiveDataHook</span><span class="p">)</span> <span class="n">Fire</span><span class="p">(</span><span class="n">entry</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">Data</span><span class="p">[</span><span class="s">"credit_card"</span><span class="p">]</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">entry</span><span class="o">.</span><span class="n">Data</span><span class="p">[</span><span class="s">"credit_card"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"REDACTED"</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="c">// In your main function:</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">AddHook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">SensitiveDataHook</span><span class="p">{})</span>
+</code></pre></div></div>
+
+<h3 id="managing-log-retention-and-rotation">Managing Log Retention and Rotation</h3>
+
+<p>In a production environment, you need to manage log retention and rotation to control storage costs and comply with data retention policies. While Elasticsearch can handle this to some extent, you might also want to implement log rotation at the application level:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"gopkg.in/natefinch/lumberjack.v2"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">initLogger</span><span class="p">()</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Logger</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">logrus</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">SetOutput</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lumberjack</span><span class="o">.</span><span class="n">Logger</span><span class="p">{</span>
+        <span class="n">Filename</span><span class="o">:</span>   <span class="s">"/var/log/myapp.log"</span><span class="p">,</span>
+        <span class="n">MaxSize</span><span class="o">:</span>    <span class="m">100</span><span class="p">,</span> <span class="c">// megabytes</span>
+        <span class="n">MaxBackups</span><span class="o">:</span> <span class="m">3</span><span class="p">,</span>
+        <span class="n">MaxAge</span><span class="o">:</span>     <span class="m">28</span><span class="p">,</span> <span class="c">//days</span>
+        <span class="n">Compress</span><span class="o">:</span>   <span class="no">true</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">logger</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="implementing-audit-logging-for-compliance-requirements">Implementing Audit Logging for Compliance Requirements</h3>
+
+<p>For certain operations, you may need to maintain an audit trail for compliance reasons. You can create a separate audit logger for this purpose:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">AuditLogger</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Logger</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewAuditLogger</span><span class="p">()</span> <span class="o">*</span><span class="n">AuditLogger</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="n">logrus</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">SetFormatter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">logrus</span><span class="o">.</span><span class="n">JSONFormatter</span><span class="p">{})</span>
+    <span class="c">// Set up a separate output for audit logs</span>
+    <span class="c">// This could be a different file, database, or even a separate Elasticsearch index</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">AuditLogger</span><span class="p">{</span><span class="n">logger</span><span class="o">:</span> <span class="n">logger</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span><span class="n">AuditLogger</span><span class="p">)</span> <span class="n">LogAuditEvent</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">event</span> <span class="kt">string</span><span class="p">,</span> <span class="n">details</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="n">span</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">SpanFromContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">WithFields</span><span class="p">(</span><span class="n">logrus</span><span class="o">.</span><span class="n">Fields</span><span class="p">{</span>
+        <span class="s">"event"</span><span class="o">:</span>    <span class="n">event</span><span class="p">,</span>
+        <span class="s">"trace_id"</span><span class="o">:</span> <span class="n">span</span><span class="o">.</span><span class="n">SpanContext</span><span class="p">()</span><span class="o">.</span><span class="n">TraceID</span><span class="p">()</span><span class="o">.</span><span class="n">String</span><span class="p">(),</span>
+        <span class="s">"details"</span><span class="o">:</span>  <span class="n">details</span><span class="p">,</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="s">"Audit event"</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c">// Usage:</span>
+<span class="n">auditLogger</span><span class="o">.</span><span class="n">LogAuditEvent</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"OrderCreated"</span><span class="p">,</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{}{</span>
+    <span class="s">"order_id"</span><span class="o">:</span> <span class="n">order</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+    <span class="s">"user_id"</span><span class="o">:</span>  <span class="n">order</span><span class="o">.</span><span class="n">UserID</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h2 id="8-advanced-opentelemetry-techniques">8. Advanced OpenTelemetry Techniques</h2>
+
+<p>Now that we have a solid foundation for distributed tracing, let’s explore some advanced techniques to get even more value from OpenTelemetry.</p>
+
+<h3 id="implementing-custom-span-attributes-and-events">Implementing Custom Span Attributes and Events</h3>
+
+<p>Custom span attributes and events can provide additional context to your traces:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">ProcessPayment</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">otel</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"payment-service"</span><span class="p">)</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessPayment"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="n">span</span><span class="o">.</span><span class="n">SetAttributes</span><span class="p">(</span>
+        <span class="n">attribute</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"payment.method"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">PaymentMethod</span><span class="p">),</span>
+        <span class="n">attribute</span><span class="o">.</span><span class="n">Float64</span><span class="p">(</span><span class="s">"payment.amount"</span><span class="p">,</span> <span class="n">order</span><span class="o">.</span><span class="n">Total</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c">// Process payment...</span>
+
+    <span class="k">if</span> <span class="n">paymentSuccessful</span> <span class="p">{</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">AddEvent</span><span class="p">(</span><span class="s">"PaymentProcessed"</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">WithAttributes</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"transaction_id"</span><span class="p">,</span> <span class="n">transactionID</span><span class="p">),</span>
+        <span class="p">))</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">AddEvent</span><span class="p">(</span><span class="s">"PaymentFailed"</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">WithAttributes</span><span class="p">(</span>
+            <span class="n">attribute</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span> <span class="s">"Insufficient funds"</span><span class="p">),</span>
+        <span class="p">))</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="using-opentelemetrys-baggage-for-cross-cutting-concerns">Using OpenTelemetry’s Baggage for Cross-Cutting Concerns</h3>
+
+<p>Baggage allows you to propagate key-value pairs across service boundaries:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"go.opentelemetry.io/otel/baggage"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">AddUserInfoToBaggage</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">userID</span> <span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span> <span class="p">{</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">baggage</span><span class="o">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"user_id=%s"</span><span class="p">,</span> <span class="n">userID</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">baggage</span><span class="o">.</span><span class="n">ContextWithBaggage</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">GetUserIDFromBaggage</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="o">:=</span> <span class="n">baggage</span><span class="o">.</span><span class="n">FromContext</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span> <span class="n">b</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">:=</span> <span class="n">b</span><span class="o">.</span><span class="n">Member</span><span class="p">(</span><span class="s">"user_id"</span><span class="p">);</span> <span class="n">v</span><span class="o">.</span><span class="n">Key</span><span class="p">()</span> <span class="o">!=</span> <span class="s">""</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">Value</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="s">""</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="implementing-sampling-strategies-for-high-volume-tracing">Implementing Sampling Strategies for High-Volume Tracing</h3>
+
+<p>For high-volume services, tracing every request can be expensive. Implement a sampling strategy to reduce the volume while still maintaining visibility:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"go.opentelemetry.io/otel/sdk/trace"</span>
+    <span class="s">"go.opentelemetry.io/otel/sdk/trace/sampling"</span>
+<span class="p">)</span>
+
+<span class="n">sampler</span> <span class="o">:=</span> <span class="n">sampling</span><span class="o">.</span><span class="n">ParentBased</span><span class="p">(</span>
+    <span class="n">sampling</span><span class="o">.</span><span class="n">TraceIDRatioBased</span><span class="p">(</span><span class="m">0.1</span><span class="p">),</span> <span class="c">// Sample 10% of traces</span>
+<span class="p">)</span>
+
+<span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithSampler</span><span class="p">(</span><span class="n">sampler</span><span class="p">),</span>
+    <span class="c">// ... other options ...</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="creating-custom-opentelemetry-exporters">Creating Custom OpenTelemetry Exporters</h3>
+
+<p>While we’ve been using Jaeger as our tracing backend, you might want to create a custom exporter for a different backend or for special processing:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">CustomExporter</span> <span class="k">struct</span><span class="p">{}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span><span class="n">CustomExporter</span><span class="p">)</span> <span class="n">ExportSpans</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">spans</span> <span class="p">[]</span><span class="n">trace</span><span class="o">.</span><span class="n">ReadOnlySpan</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">spans</span> <span class="p">{</span>
+        <span class="c">// Process or send the span data as needed</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Exporting span: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">span</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span><span class="n">CustomExporter</span><span class="p">)</span> <span class="n">Shutdown</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c">// Cleanup logic here</span>
+    <span class="k">return</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="c">// Use the custom exporter:</span>
+<span class="n">exporter</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">CustomExporter</span><span class="p">{}</span>
+<span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithBatcher</span><span class="p">(</span><span class="n">exporter</span><span class="p">),</span>
+    <span class="c">// ... other options ...</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="integrating-opentelemetry-with-existing-monitoring-tools">Integrating OpenTelemetry with Existing Monitoring Tools</h3>
+
+<p>OpenTelemetry can be integrated with many existing monitoring tools. For example, to send traces to both Jaeger and Zipkin:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">jaegerExporter</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">jaeger</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithCollectorEndpoint</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithEndpoint</span><span class="p">(</span><span class="s">"http://jaeger:14268/api/traces"</span><span class="p">)))</span>
+<span class="n">zipkinExporter</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">zipkin</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"http://zipkin:9411/api/v2/spans"</span><span class="p">)</span>
+
+<span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithBatcher</span><span class="p">(</span><span class="n">jaegerExporter</span><span class="p">),</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithBatcher</span><span class="p">(</span><span class="n">zipkinExporter</span><span class="p">),</span>
+    <span class="c">// ... other options ...</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>These advanced techniques will help you get the most out of OpenTelemetry in your order processing system.</p>
+
+<p>In the next sections, we’ll cover performance considerations, testing and validation strategies, and discuss some challenges and considerations when implementing distributed tracing and logging at scale.</p>
+
+<h2 id="9-performance-considerations">9. Performance Considerations</h2>
+
+<p>When implementing distributed tracing and logging, it’s crucial to consider the performance impact on your system. Let’s explore some strategies to optimize performance.</p>
+
+<h3 id="optimizing-logging-performance-in-high-throughput-systems">Optimizing Logging Performance in High-Throughput Systems</h3>
+
+<ol>
+  <li><strong>Use Asynchronous Logging</strong>: Implement a buffered, asynchronous logger to minimize the impact on request processing:</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">AsyncLogger</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">ch</span> <span class="k">chan</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">NewAsyncLogger</span><span class="p">(</span><span class="n">bufferSize</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="n">AsyncLogger</span> <span class="p">{</span>
+    <span class="n">logger</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">AsyncLogger</span><span class="p">{</span>
+        <span class="n">ch</span><span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span><span class="p">,</span> <span class="n">bufferSize</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">go</span> <span class="n">logger</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">logger</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span><span class="n">AsyncLogger</span><span class="p">)</span> <span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">l</span><span class="o">.</span><span class="n">ch</span> <span class="p">{</span>
+        <span class="n">entry</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="n">Out</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">Bytes</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span><span class="n">AsyncLogger</span><span class="p">)</span> <span class="n">Log</span><span class="p">(</span><span class="n">entry</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">l</span><span class="o">.</span><span class="n">ch</span> <span class="o">&lt;-</span> <span class="n">entry</span><span class="o">:</span>
+    <span class="k">default</span><span class="o">:</span>
+        <span class="c">// Buffer full, log dropped</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong>Log Sampling</strong>: For very high-throughput systems, consider sampling your logs:</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span><span class="n">AsyncLogger</span><span class="p">)</span> <span class="n">SampledLog</span><span class="p">(</span><span class="n">entry</span> <span class="o">*</span><span class="n">logrus</span><span class="o">.</span><span class="n">Entry</span><span class="p">,</span> <span class="n">sampleRate</span> <span class="kt">float32</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">rand</span><span class="o">.</span><span class="n">Float32</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">sampleRate</span> <span class="p">{</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">Log</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="managing-the-performance-impact-of-distributed-tracing">Managing the Performance Impact of Distributed Tracing</h3>
+
+<ol>
+  <li><strong>Use Sampling</strong>: Implement a sampling strategy to reduce the volume of traces:</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sampler</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">ParentBased</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">TraceIDRatioBased</span><span class="p">(</span><span class="m">0.1</span><span class="p">),</span> <span class="c">// Sample 10% of traces</span>
+<span class="p">)</span>
+
+<span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithSampler</span><span class="p">(</span><span class="n">sampler</span><span class="p">),</span>
+    <span class="c">// ... other options ...</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong>Optimize Span Creation</strong>: Only create spans for significant operations to reduce overhead:</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">ProcessOrder</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">order</span> <span class="n">Order</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessOrder"</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="c">// Don't create a span for this quick operation</span>
+    <span class="n">validateOrder</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="c">// Create a span for this potentially slow operation</span>
+    <span class="n">ctx</span><span class="p">,</span> <span class="n">paymentSpan</span> <span class="o">:=</span> <span class="n">tracer</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"ProcessPayment"</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">:=</span> <span class="n">processPayment</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="n">paymentSpan</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// ... rest of the function</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="implementing-buffering-and-batching-for-trace-and-log-export">Implementing Buffering and Batching for Trace and Log Export</h3>
+
+<p>Use the OpenTelemetry SDK’s built-in batching exporter to reduce the number of network calls:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">exporter</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">jaeger</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithCollectorEndpoint</span><span class="p">(</span><span class="n">jaeger</span><span class="o">.</span><span class="n">WithEndpoint</span><span class="p">(</span><span class="s">"http://jaeger:14268/api/traces"</span><span class="p">)))</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create Jaeger exporter: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">WithBatcher</span><span class="p">(</span><span class="n">exporter</span><span class="p">,</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">WithMaxExportBatchSize</span><span class="p">(</span><span class="m">100</span><span class="p">),</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">WithBatchTimeout</span><span class="p">(</span><span class="m">5</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="c">// ... other options ...</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="scaling-the-elk-stack-for-large-scale-systems">Scaling the ELK Stack for Large-Scale Systems</h3>
+
+<ol>
+  <li><strong>Use Index Lifecycle Management</strong>: Configure Elasticsearch to automatically manage index lifecycle:</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">PUT</span><span class="w"> </span><span class="err">_ilm/policy/logs_policy</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"phases"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"hot"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"rollover"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"max_size"</span><span class="p">:</span><span class="w"> </span><span class="s2">"50GB"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"max_age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1d"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"min_age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"30d"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"delete"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<ol>
+  <li><strong>Implement Elasticsearch Clustering</strong>: For large-scale systems, set up Elasticsearch in a multi-node cluster for better performance and reliability.</li>
+</ol>
+
+<h3 id="implementing-caching-strategies-for-frequently-accessed-logs-and-traces">Implementing Caching Strategies for Frequently Accessed Logs and Traces</h3>
+
+<p>Use a caching layer like Redis to store frequently accessed logs and traces:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/go-redis/redis/v8"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">getCachedTrace</span><span class="p">(</span><span class="n">traceID</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">Trace</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">val</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">redisClient</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"trace:"</span><span class="o">+</span><span class="n">traceID</span><span class="p">)</span><span class="o">.</span><span class="n">Bytes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="n">redis</span><span class="o">.</span><span class="n">Nil</span> <span class="p">{</span>
+        <span class="c">// Trace not in cache, fetch from storage and cache it</span>
+        <span class="n">trace</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">fetchTraceFromStorage</span><span class="p">(</span><span class="n">traceID</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+        <span class="p">}</span>
+        <span class="n">redisClient</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">"trace:"</span><span class="o">+</span><span class="n">traceID</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="m">1</span><span class="o">*</span><span class="n">time</span><span class="o">.</span><span class="n">Hour</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">trace</span><span class="p">,</span> <span class="no">nil</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+    <span class="k">var</span> <span class="n">trace</span> <span class="n">Trace</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">Unmarshal</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">trace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">trace</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="10-testing-and-validation">10. Testing and Validation</h2>
+
+<p>Proper testing and validation are crucial to ensure the reliability of your distributed tracing and logging implementation.</p>
+
+<h3 id="unit-testing-trace-instrumentation">Unit Testing Trace Instrumentation</h3>
+
+<p>Use the OpenTelemetry testing package to unit test your trace instrumentation:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"testing"</span>
+
+    <span class="s">"go.opentelemetry.io/otel/sdk/trace/tracetest"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">TestProcessOrder</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sr</span> <span class="o">:=</span> <span class="n">tracetest</span><span class="o">.</span><span class="n">NewSpanRecorder</span><span class="p">()</span>
+    <span class="n">tp</span> <span class="o">:=</span> <span class="n">trace</span><span class="o">.</span><span class="n">NewTracerProvider</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">WithSpanProcessor</span><span class="p">(</span><span class="n">sr</span><span class="p">))</span>
+    <span class="n">otel</span><span class="o">.</span><span class="n">SetTracerProvider</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+
+    <span class="n">ctx</span> <span class="o">:=</span> <span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">()</span>
+    <span class="n">err</span> <span class="o">:=</span> <span class="n">ProcessOrder</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">Order</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="s">"123"</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"ProcessOrder failed: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">spans</span> <span class="o">:=</span> <span class="n">sr</span><span class="o">.</span><span class="n">Ended</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spans</span><span class="p">)</span> <span class="o">!=</span> <span class="m">2</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"Expected 2 spans, got %d"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spans</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">spans</span><span class="p">[</span><span class="m">0</span><span class="p">]</span><span class="o">.</span><span class="n">Name</span><span class="p">()</span> <span class="o">!=</span> <span class="s">"ProcessOrder"</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"Expected span named 'ProcessOrder', got '%s'"</span><span class="p">,</span> <span class="n">spans</span><span class="p">[</span><span class="m">0</span><span class="p">]</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">spans</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="o">.</span><span class="n">Name</span><span class="p">()</span> <span class="o">!=</span> <span class="s">"ProcessPayment"</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"Expected span named 'ProcessPayment', got '%s'"</span><span class="p">,</span> <span class="n">spans</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="integration-testing-for-the-complete-tracing-pipeline">Integration Testing for the Complete Tracing Pipeline</h3>
+
+<p>Set up integration tests that cover your entire tracing pipeline:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestTracingPipeline</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Start a test Jaeger instance</span>
+    <span class="n">jaeger</span> <span class="o">:=</span> <span class="n">startTestJaeger</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="n">jaeger</span><span class="o">.</span><span class="n">Stop</span><span class="p">()</span>
+
+    <span class="c">// Initialize your application with tracing</span>
+    <span class="n">app</span> <span class="o">:=</span> <span class="n">initializeApp</span><span class="p">()</span>
+
+    <span class="c">// Perform some operations that should generate traces</span>
+    <span class="n">resp</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">app</span><span class="o">.</span><span class="n">CreateOrder</span><span class="p">(</span><span class="n">Order</span><span class="p">{</span><span class="n">ID</span><span class="o">:</span> <span class="s">"123"</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to create order: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Wait for traces to be exported</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">Sleep</span><span class="p">(</span><span class="m">5</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Second</span><span class="p">)</span>
+
+    <span class="c">// Query Jaeger for the trace</span>
+    <span class="n">traces</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">jaeger</span><span class="o">.</span><span class="n">QueryTraces</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">TraceID</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Fatalf</span><span class="p">(</span><span class="s">"Failed to query traces: %v"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c">// Validate the trace</span>
+    <span class="n">validateTrace</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">traces</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="validating-log-parsing-and-processing-rules">Validating Log Parsing and Processing Rules</h3>
+
+<p>Test your Logstash configuration to ensure it correctly parses and processes logs:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input</span> <span class="p">{</span>
+  <span class="n">generator</span> <span class="p">{</span>
+    <span class="n">message</span> <span class="o">=&gt;</span> <span class="s1">'{"timestamp":"2023-06-01T10:00:00Z","severity":"INFO","message":"Order created","order_id":"123","trace_id":"abc123"}'</span>
+    <span class="n">count</span> <span class="o">=&gt;</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">filter</span> <span class="p">{</span>
+  <span class="n">json</span> <span class="p">{</span>
+    <span class="n">source</span> <span class="o">=&gt;</span> <span class="s2">"message"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">output</span> <span class="p">{</span>
+  <span class="n">stdout</span> <span class="p">{</span> <span class="n">codec</span> <span class="o">=&gt;</span> <span class="n">rubydebug</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Run this configuration with <code class="language-plaintext highlighter-rouge">logstash -f test_config.conf</code> and verify the output.</p>
+
+<h3 id="load-testing-and-observing-tracing-overhead">Load Testing and Observing Tracing Overhead</h3>
+
+<p>Perform load tests to understand the performance impact of tracing:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">BenchmarkWithTracing</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// Initialize tracing</span>
+    <span class="n">tp</span> <span class="o">:=</span> <span class="n">initTracer</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="n">tp</span><span class="o">.</span><span class="n">Shutdown</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+
+    <span class="n">b</span><span class="o">.</span><span class="n">ResetTimer</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">ctx</span><span class="p">,</span> <span class="n">span</span> <span class="o">:=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="s">"benchmark"</span><span class="p">)</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"operation"</span><span class="p">)</span>
+        <span class="n">performOperation</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">span</span><span class="o">.</span><span class="n">End</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">BenchmarkWithoutTracing</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">performOperation</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Compare the results to understand the overhead introduced by tracing.</p>
+
+<h3 id="implementing-trace-and-log-monitoring-for-quality-assurance">Implementing Trace and Log Monitoring for Quality Assurance</h3>
+
+<p>Set up monitoring for your tracing and logging systems:</p>
+
+<ol>
+  <li>Monitor trace export errors</li>
+  <li>Track log ingestion rates</li>
+  <li>Alert on sudden changes in trace or log volume</li>
+  <li>Monitor Elasticsearch, Logstash, and Kibana health</li>
+</ol>
+
+<h2 id="11-challenges-and-considerations">11. Challenges and Considerations</h2>
+
+<p>As you implement and scale your distributed tracing and logging system, keep these challenges and considerations in mind:</p>
+
+<h3 id="managing-data-retention-and-storage-costs">Managing Data Retention and Storage Costs</h3>
+
+<ul>
+  <li>Implement data retention policies that balance compliance requirements with storage costs</li>
+  <li>Use tiered storage solutions, moving older data to cheaper storage options</li>
+  <li>Regularly review and optimize your data retention strategy</li>
+</ul>
+
+<h3 id="ensuring-data-privacy-and-compliance-in-logs-and-traces">Ensuring Data Privacy and Compliance in Logs and Traces</h3>
+
+<ul>
+  <li>Implement robust data masking for sensitive information</li>
+  <li>Ensure compliance with regulations like GDPR, including the right to be forgotten</li>
+  <li>Regularly audit your logs and traces to ensure no sensitive data is being inadvertently collected</li>
+</ul>
+
+<h3 id="handling-versioning-and-backwards-compatibility-in-trace-data">Handling Versioning and Backwards Compatibility in Trace Data</h3>
+
+<ul>
+  <li>Use semantic versioning for your trace data format</li>
+  <li>Implement backwards-compatible changes when possible</li>
+  <li>When breaking changes are necessary, version your trace data and maintain support for multiple versions during a transition period</li>
+</ul>
+
+<h3 id="dealing-with-clock-skew-in-distributed-trace-timestamps">Dealing with Clock Skew in Distributed Trace Timestamps</h3>
+
+<ul>
+  <li>Use a time synchronization protocol like NTP across all your services</li>
+  <li>Consider using logical clocks in addition to wall-clock time</li>
+  <li>Implement tolerance for small amounts of clock skew in your trace analysis tools</li>
+</ul>
+
+<h3 id="implementing-access-controls-and-security-for-the-elk-stack">Implementing Access Controls and Security for the ELK Stack</h3>
+
+<ul>
+  <li>Use strong authentication for Elasticsearch, Logstash, and Kibana</li>
+  <li>Implement role-based access control (RBAC) for different user types</li>
+  <li>Encrypt data in transit and at rest</li>
+  <li>Regularly update and patch all components of your ELK stack</li>
+</ul>
+
+<h2 id="12-next-steps-and-preview-of-part-6">12. Next Steps and Preview of Part 6</h2>
+
+<p>In this post, we’ve covered comprehensive distributed tracing and logging for our order processing system. We’ve implemented tracing with OpenTelemetry, set up centralized logging with the ELK stack, correlated logs and traces, and explored advanced techniques and considerations.</p>
+
+<p>In the next and final part of our series, we’ll focus on Production Readiness and Scalability. We’ll cover:</p>
+
+<ol>
+  <li>Implementing authentication and authorization</li>
+  <li>Handling configuration management</li>
+  <li>Implementing rate limiting and throttling</li>
+  <li>Optimizing for high concurrency</li>
+  <li>Implementing caching strategies</li>
+  <li>Preparing for horizontal scaling</li>
+  <li>Conducting performance testing and optimization</li>
+</ol>
+
+<p>Stay tuned as we put the finishing touches on our sophisticated order processing system, ensuring it’s ready for production use at scale!</p>
+
+<hr />
+
+<h1>Need Help?</h1>
+<p>Are you facing challenging problems, or need an external perspective on a new idea or project? I can help! Whether you're looking to build a technology proof of concept before making a larger investment, or you need guidance on difficult issues, I'm here to assist.</p>
+
+<h2>Services Offered:</h2>
+<ul>
+    <li><strong>Problem-Solving:</strong> Tackling complex issues with innovative solutions.</li>
+    <li><strong>Consultation:</strong> Providing expert advice and fresh viewpoints on your projects.</li>
+    <li><strong>Proof of Concept:</strong> Developing preliminary models to test and validate your ideas.</li>
+</ul>
+
+<p>If you're interested in working with me, please reach out via email at <a href="mailto:hungaikevin@gmail.com">hungaikevin@gmail.com</a>.</p>
+
+<p>Let's turn your challenges into opportunities!</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Golang">Golang</a>,&nbsp;<a href="/tag/OpenTelemetry">OpenTelemetry</a>,&nbsp;<a href="/tag/ELK Stack">ELK Stack</a>,&nbsp;<a href="/tag/Distributed Tracing">Distributed Tracing</a>,&nbsp;<a href="/tag/Logging">Logging</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+5+-+Distributed+Tracing+and+Logging&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-5-distributed-tracing-and-logging%2F&via=Hungai"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Implementing+an+Order+Processing+System%3A+Part+5+-+Distributed+Tracing+and+Logging&u=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-5-distributed-tracing-and-logging%2F"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-5-distributed-tracing-and-logging%2F"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+5+-+Distributed+Tracing+and+Logging&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-5-distributed-tracing-and-logging%2F"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+5+-+Distributed+Tracing+and+Logging&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-5-distributed-tracing-and-logging%2F&media=https://www.hungaikev.in/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/') + '&title=Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Hungai Amuhinda</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+				
+	
+	<li class="nav-link"><a href="/about/">About</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/posts/">Posts</a>
+	
+
+	
+
+	
+
+	
+
+	
+	<li class="nav-link"><a href="/talks/">Talks</a>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:hungaikevin@gmail.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">hungaikevin@gmail.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/Hungai" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">Hungai</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/hungaikev" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">hungaikev</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/hungai-amuhinda/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Hungai Amuhinda</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Hungai Amuhinda's Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+<script src="//unpkg.com/popper.js@1"></script>
+<script src="//unpkg.com/tippy.js@5"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+
+	// Enable tooltips via Tippy.js
+	if (Array.isArray(window.tooltips)) {
+		window.tooltips.forEach(function(tooltip) {
+			var selector = tooltip[0];
+			var config = tooltip[1];
+			tippy(selector, config);
+		})
+	}
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-F8PDQT4FG5', 'auto');
+  ga('send', 'pageview', {
+    'page': '/e-commerce-platform/part-5-distributed-tracing-and-logging/',
+    'title': 'Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging'
+  });
+</script>
+
+
+
+  </body>
+
+</html>
