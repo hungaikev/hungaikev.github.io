@@ -80,6 +80,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler
   jekyll (~> 4.0)
   jekyll-analytics
   jekyll-archives

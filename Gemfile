@@ -5,7 +5,7 @@ gem 'jekyll-sitemap'
 gem "jekyll-paginate-v2"
 gem 'jekyll-seo-tag'
 gem 'jekyll-analytics'
-
+gem 'bundler'
 
 
 
