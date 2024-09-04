@@ -4,8 +4,8 @@ title: "Implementing an Order Processing System: Part 5 - Distributed Tracing an
 seo_title: "E-commerce Platform: Distributed Tracing and Logging"
 seo_description: "Implement distributed tracing and centralized logging in a Golang-based e-commerce platform using OpenTelemetry and ELK stack."
 date: 2024-08-05 12:00:00
-categories: [E-commerce Platform, Observability]
-tags: [Golang, OpenTelemetry, ELK Stack, Distributed Tracing, Logging]
+categories: [Temporal, E-commerce Platform, Observability]
+tags: [Golang, OpenTelemetry, ELK Stack, Distributed Tracing, Logging, Temporal]
 author: Hungai Amuhinda
 excerpt: "Enhance system observability by implementing distributed tracing with OpenTelemetry and centralized logging with the ELK stack in an e-commerce platform."
 permalink: /e-commerce-platform/part-5-distributed-tracing-and-logging/

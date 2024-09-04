@@ -4,7 +4,7 @@ title: "Implementing an Order Processing System: Part 1 - Setting Up the Foundat
 seo_title: "E-commerce Platform: Setting Up the Foundation"
 seo_description: "Learn how to set up the foundation for a robust e-commerce platform using Golang, Gin, Temporal, and PostgreSQL."
 date: 2024-08-01 12:00:00
-categories: [E-commerce Platform, System Architecture]
+categories: [Temporal,E-commerce Platform, System Architecture]
 tags: [Golang, Gin, Temporal, PostgreSQL, Docker]
 author: Hungai Amuhinda
 excerpt: "Set up the foundation for a sophisticated e-commerce platform, including project structure, basic API, database integration, and simple Temporal workflow."

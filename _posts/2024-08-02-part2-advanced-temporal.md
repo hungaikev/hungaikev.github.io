@@ -4,7 +4,7 @@ title: "Implementing an Order Processing System: Part 2 - Advanced Temporal Work
 seo_title: "E-commerce Platform: Advanced Temporal Workflows"
 seo_description: "Dive deep into implementing complex order processing workflows using Temporal in a Golang-based e-commerce platform."
 date: 2024-08-02 12:00:00
-categories: [E-commerce Platform, Workflow Orchestration]
+categories: [Temporal,E-commerce Platform, Workflow Orchestration]
 tags: [Golang, Temporal, Microservices, Distributed Systems]
 author: Hungai Amuhinda
 excerpt: "Explore advanced Temporal workflow concepts, including handling long-running processes, implementing saga patterns, and ensuring workflow reliability."

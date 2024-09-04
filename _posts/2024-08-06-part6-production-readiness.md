@@ -4,8 +4,8 @@ title: "Implementing an Order Processing System: Part 6 - Production Readiness a
 seo_title: "E-commerce Platform: Production Readiness and Scalability"
 seo_description: "Prepare a Golang-based e-commerce platform for production, addressing scalability, security, and deployment strategies."
 date: 2024-08-06 12:00:00
-categories: [E-commerce Platform, Production Deployment]
-tags: [Golang, Kubernetes, Security, Scalability, DevOps]
+categories: [Temporal, E-commerce Platform, Production Deployment]
+tags: [Golang, Kubernetes, Security, Scalability, DevOps, Temporal]
 author: Hungai Amuhinda
 excerpt: "Ensure production readiness of an e-commerce platform by implementing security measures, scalability strategies, and robust deployment pipelines."
 permalink: /e-commerce-platform/part-6-production-readiness-and-scalability/

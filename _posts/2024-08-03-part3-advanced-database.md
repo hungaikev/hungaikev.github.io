@@ -4,8 +4,8 @@ title: "Implementing an Order Processing System: Part 3 - Advanced Database Oper
 seo_title: "E-commerce Platform: Advanced Database Operations with sqlc"
 seo_description: "Master advanced database operations using sqlc in a Golang-based e-commerce platform, including query optimization and database sharding."
 date: 2024-08-03 12:00:00
-categories: [E-commerce Platform, Database Management]
-tags: [Golang, PostgreSQL, sqlc, Database Sharding, Query Optimization]
+categories: [Temporal, E-commerce Platform, Database Management]
+tags: [Golang, PostgreSQL, sqlc, Database Sharding, Temporal, Query Optimization]
 author: Hungai Amuhinda
 excerpt: "Implement advanced database operations, including complex queries, database sharding, and ensuring data consistency in a distributed e-commerce system."
 permalink: /e-commerce-platform/part-3-advanced-database-operations/

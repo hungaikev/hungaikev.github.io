@@ -4,8 +4,8 @@ title: "Implementing an Order Processing System: Part 4 - Monitoring and Alertin
 seo_title: "E-commerce Platform: Monitoring and Alerting with Prometheus"
 seo_description: "Implement comprehensive monitoring and alerting in a Golang-based e-commerce platform using Prometheus and Grafana."
 date: 2024-08-04 12:00:00
-categories: [E-commerce Platform, DevOps]
-tags: [Golang, Prometheus, Grafana, Monitoring, Alerting]
+categories: [Temporal, E-commerce Platform, DevOps]
+tags: [Golang, Prometheus, Grafana, Monitoring, Alerting, Temporal]
 author: Hungai Amuhinda
 excerpt: "Set up robust monitoring and alerting for an e-commerce platform, including custom metrics, Grafana dashboards, and alerting rules."
 permalink: /e-commerce-platform/part-4-monitoring-and-alerting/
