@@ -6,6 +6,7 @@ plugins:
   - jekyll-paginate-v2
   - jekyll-seo-tag
   - jekyll-analytics
+  - jekyll-feed
 
 exclude:
   - "/vendor/"
@@ -57,6 +58,9 @@ jekyll-archives:
 
 # Google analytics
 # ga_tracking_id: "UA-XXXX-1"
+
+feed:
+  tags: true
 
 # Category descriptions (for archive pages)
 descriptions:

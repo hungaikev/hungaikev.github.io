@@ -6,6 +6,7 @@ gem "jekyll-paginate-v2"
 gem 'jekyll-seo-tag'
 gem 'jekyll-analytics',  github: 'hendrikschneider/jekyll-analytics', branch: 'master'
 gem 'bundler'
+gem 'jekyll-feed'
 
 
 
