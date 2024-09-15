@@ -388,7 +388,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:16
     environment:
       POSTGRES_USER: orderuser
       POSTGRES_PASSWORD: orderpass
