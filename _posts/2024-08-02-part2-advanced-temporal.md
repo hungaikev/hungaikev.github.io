@@ -13,6 +13,18 @@ toc: true
 comments: true
 ---
 
+## "Building a Scalable Order Processing System with Temporal and Go" Series
+
+1. [Part 1 - Setting Up the Foundation]({% post_url 2024-08-01-part1-setting-up %})
+2. [Part 2 - Advanced Temporal Workflows]({% post_url 2024-08-02-part2-advanced-temporal %})
+3. [Part 3 - Advanced Database Operations]({% post_url 2024-08-03-part3-advanced-database %})
+4. [Part 4 - Monitoring and Alerting]({% post_url 2024-08-04-part4-monitoring %})
+5. [Part 5 - Distributed Tracing and Logging]({% post_url 2024-08-05-part5-distributed-tracing %})
+6. [Part 6 - Production Readiness and Scalability]({% post_url 2024-08-06-part6-production-readiness %})
+
+*Current post: Part 2 - Advanced Temporal Workflows*
+
+
 ## 1. Introduction and Goals
 
 Welcome back to our series on implementing a sophisticated order processing system! In our previous post, we laid the foundation for our project, setting up a basic CRUD API, integrating with a Postgres database, and implementing a simple Temporal workflow. Today, we're diving deeper into the world of Temporal workflows to create a robust, scalable order processing system.

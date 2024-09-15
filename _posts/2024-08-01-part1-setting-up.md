@@ -15,21 +15,23 @@ comments: true
 
 
 
+## "Building a Scalable Order Processing System with Temporal and Go" Series
+
+1. [Part 1 - Setting Up the Foundation]({% post_url 2024-08-01-part1-setting-up %})
+2. [Part 2 - Advanced Temporal Workflows]({% post_url 2024-08-02-part2-advanced-temporal %})
+3. [Part 3 - Advanced Database Operations]({% post_url 2024-08-03-part3-advanced-database %})
+4. [Part 4 - Monitoring and Alerting]({% post_url 2024-08-04-part4-monitoring %})
+5. [Part 5 - Distributed Tracing and Logging]({% post_url 2024-08-05-part5-distributed-tracing %})
+6. [Part 6 - Production Readiness and Scalability]({% post_url 2024-08-06-part6-production-readiness %})
+
+*Current post: Part 1 - Setting Up the Foundation*
+
+
 ## 1. Introduction and Goals
 
 Welcome to the first part of our comprehensive blog series on implementing a sophisticated order processing system using Temporal for microservice orchestration. In this series, we'll explore the intricacies of building a robust, scalable, and maintainable system that can handle complex, long-running workflows.
 
 Our journey begins with setting up the foundation for our project. By the end of this post, you'll have a fully functional CRUD REST API implemented in Golang, integrated with Temporal for workflow orchestration, and backed by a Postgres database. We'll use modern tools and best practices to ensure our codebase is clean, efficient, and easy to maintain.
-
-### Goals for this post:
-
-1. Set up a well-structured project using Go modules
-2. Implement a basic CRUD API using Gin and oapi-codegen
-3. Set up a Postgres database and implement migrations
-4. Create a simple Temporal workflow with database interaction
-5. Implement dependency injection for better testability and maintainability
-6. Containerize our application using Docker
-7. Provide a complete local development environment using docker-compose
 
 Let's dive in and start building our order processing system!
 

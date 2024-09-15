@@ -13,6 +13,17 @@ toc: true
 comments: true
 ---
 
+## "Building a Scalable Order Processing System with Temporal and Go" Series
+
+1. [Part 1 - Setting Up the Foundation]({% post_url 2024-08-01-part1-setting-up %})
+2. [Part 2 - Advanced Temporal Workflows]({% post_url 2024-08-02-part2-advanced-temporal %})
+3. [Part 3 - Advanced Database Operations]({% post_url 2024-08-03-part3-advanced-database %})
+4. [Part 4 - Monitoring and Alerting]({% post_url 2024-08-04-part4-monitoring %})
+5. [Part 5 - Distributed Tracing and Logging]({% post_url 2024-08-05-part5-distributed-tracing %})
+6. [Part 6 - Production Readiness and Scalability]({% post_url 2024-08-06-part6-production-readiness %})
+
+*Current post: Part 6 - Production Readiness and Scalability*
+
 ## 1. Introduction and Goals
 
 Welcome to the sixth and final installment of our series on implementing a sophisticated order processing system! Throughout this series, we've built a robust, microservices-based system capable of handling complex workflows. Now, it's time to put the finishing touches on our system and ensure it's ready for production use at scale.

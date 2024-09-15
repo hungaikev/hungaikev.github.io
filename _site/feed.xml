@@ -4,10 +4,10 @@
         <title>Hungai Amuhinda</title>
         <description>Hungai Amuhinda&apos;s Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 </description>
-        <link>https://www.hungaikev.in/</link>
-        <atom:link href="https://www.hungaikev.in/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Wed, 04 Sep 2024 19:14:21 +0300</pubDate>
-        <lastBuildDate>Wed, 04 Sep 2024 19:14:21 +0300</lastBuildDate>
+        <link>http://localhost:4000/</link>
+        <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Sun, 15 Sep 2024 22:14:49 +0300</pubDate>
+        <lastBuildDate>Sun, 15 Sep 2024 22:14:49 +0300</lastBuildDate>
         <generator>Jekyll v4.3.3</generator>
         <language>en-US</language>
         <copyright></copyright>
@@ -16,9 +16,9 @@
         <webMaster> ()</webMaster>
         
         <image>
-            <url>https://www.hungaikev.in/assets/images/logo.png</url>
+            <url>http://localhost:4000/assets/images/logo.png</url>
             <title>Hungai Amuhinda</title>
-            <link>https://www.hungaikev.in/</link>
+            <link>http://localhost:4000/</link>
         </image>
         
         <item>
@@ -551,8 +551,8 @@ go get github.com/FerretDB/FerretDB
 
 ]]></description>
             <pubDate>Wed, 28 Aug 2024 12:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
+            <link>http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
+            <guid isPermaLink="true">http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -581,7 +581,20 @@ go get github.com/FerretDB/FerretDB
         
         <item>
             <title>Implementing an Order Processing System: Part 6 - Production Readiness and Scalability</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 6 - Production Readiness and Scalability</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the sixth and final installment of our series on implementing a sophisticated order processing system! Throughout this series, we’ve built a robust, microservices-based system capable of handling complex workflows. Now, it’s time to put the finishing touches on our system and ensure it’s ready for production use at scale.</p>
 
@@ -2639,8 +2652,8 @@ go get github.com/FerretDB/FerretDB
 
 ]]></description>
             <pubDate>Tue, 06 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -2671,7 +2684,20 @@ go get github.com/FerretDB/FerretDB
         
         <item>
             <title>Implementing an Order Processing System: Part 5 - Distributed Tracing and Logging</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 5 - Distributed Tracing and Logging</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the fifth installment of our series on implementing a sophisticated order processing system! In our previous posts, we’ve covered everything from setting up the basic architecture to implementing advanced workflows and comprehensive monitoring. Today, we’re diving into the world of distributed tracing and logging, two crucial components for maintaining observability in a microservices architecture.</p>
 
@@ -3947,8 +3973,8 @@ output {
 
 ]]></description>
             <pubDate>Mon, 05 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -3979,7 +4005,20 @@ output {
         
         <item>
             <title>Implementing an Order Processing System: Part 4 - Monitoring and Alerting</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 4 - Monitoring and Alerting</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the fourth installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our project, explored advanced Temporal workflows, and delved into advanced database operations. Today, we’re focusing on an equally crucial aspect of any production-ready system: monitoring and alerting.</p>
 
@@ -5210,8 +5249,8 @@ output {
 
 ]]></description>
             <pubDate>Sun, 04 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -5242,7 +5281,20 @@ output {
         
         <item>
             <title>Implementing an Order Processing System: Part 3 - Advanced Database Operations</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 3 - Advanced Database Operations</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the third installment of our series on implementing a sophisticated order processing system! In our previous posts, we laid the foundation for our project and explored advanced Temporal workflows. Today, we’re diving deep into the world of database operations using sqlc, a powerful tool that generates type-safe Go code from SQL.</p>
 
@@ -6135,8 +6187,8 @@ output {
 
 ]]></description>
             <pubDate>Sat, 03 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -6167,7 +6219,20 @@ output {
         
         <item>
             <title>Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 2 - Advanced Temporal Workflows</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome back to our series on implementing a sophisticated order processing system! In our previous post, we laid the foundation for our project, setting up a basic CRUD API, integrating with a Postgres database, and implementing a simple Temporal workflow. Today, we’re diving deeper into the world of Temporal workflows to create a robust, scalable order processing system.</p>
 
@@ -6939,8 +7004,8 @@ output {
 
 ]]></description>
             <pubDate>Fri, 02 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -6967,23 +7032,24 @@ output {
         
         <item>
             <title>Implementing an Order Processing System: Part 1 - Setting Up the Foundation</title>
-            <description><![CDATA[<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+            <description><![CDATA[<h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 1 - Setting Up the Foundation</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the first part of our comprehensive blog series on implementing a sophisticated order processing system using Temporal for microservice orchestration. In this series, we’ll explore the intricacies of building a robust, scalable, and maintainable system that can handle complex, long-running workflows.</p>
 
 <p>Our journey begins with setting up the foundation for our project. By the end of this post, you’ll have a fully functional CRUD REST API implemented in Golang, integrated with Temporal for workflow orchestration, and backed by a Postgres database. We’ll use modern tools and best practices to ensure our codebase is clean, efficient, and easy to maintain.</p>
-
-<h3 id="goals-for-this-post">Goals for this post:</h3>
-
-<ol>
-  <li>Set up a well-structured project using Go modules</li>
-  <li>Implement a basic CRUD API using Gin and oapi-codegen</li>
-  <li>Set up a Postgres database and implement migrations</li>
-  <li>Create a simple Temporal workflow with database interaction</li>
-  <li>Implement dependency injection for better testability and maintainability</li>
-  <li>Containerize our application using Docker</li>
-  <li>Provide a complete local development environment using docker-compose</li>
-</ol>
 
 <p>Let’s dive in and start building our order processing system!</p>
 
@@ -7904,8 +7970,8 @@ go mod init github.com/yourusername/order-processing-system
 
 ]]></description>
             <pubDate>Thu, 01 Aug 2024 15:00:00 +0300</pubDate>
-            <link>https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</link>
-            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
+            <link>http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</link>
+            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             

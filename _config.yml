@@ -27,11 +27,11 @@ cover: "/assets/header_image.jpg"
 logo: "/assets/logo.png"
 lang: en
 email: hungaikevin@gmail.com
-ga_tracking_id: G-N6MP09CN9B
+ga_tracking_id: "G-N6MP09CN9B"
 
 # Build settings
 markdown: kramdown
-inter_post_navigation: false
+inter_post_navigation: true
 highlightjs_theme: "monokai-sublime"
 
 # Pagination Settings
@@ -91,13 +91,6 @@ social:
     username: Hungai
     url: https://twitter.com/Hungai
     desc: Follow me on Twitter
-    share: true
-
-  - name: Facebook
-    icon: facebook
-    username: thebencentra
-    url: ""
-    desc: Friend me on Facebook
     share: true
 
   - name: GitHub

@@ -39,11 +39,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Set up the foundation for a sophisticated e-commerce platform, including project structure, basic API, database integration, and simple Temporal workflow." />
-  <meta property="og:url" content="https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/">
+  <meta property="og:url" content="http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/">
   <meta property="og:site_name" content="Hungai Amuhinda" />
   <meta property="og:title" content="Implementing an Order Processing System: Part 1 - Setting Up the Foundation" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://www.hungaikev.in/assets/logo.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -54,16 +54,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Implementing an Order Processing System: Part 1 - Setting Up the Foundation">
   <meta name="twitter:description" content="Set up the foundation for a sophisticated e-commerce platform, including project structure, basic API, database integration, and simple Temporal workflow.">
-  <meta name="twitter:image" content="https://www.hungaikev.in/assets/logo.png">
-  <meta name="twitter:url" content="https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/">
-	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="https://www.hungaikev.in/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/">
+	<link rel="alternate" type="application/rss+xml" title="Hungai Amuhinda" href="http://localhost:4000/feed.xml" />
 	
 	<!-- Tooltips -->
 	<script type="text/javascript">
@@ -284,23 +284,24 @@
 </section>
 
 <article class="post-content">
-  <h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
+  <h2 id="building-a-scalable-order-processing-system-with-temporal-and-go-series">“Building a Scalable Order Processing System with Temporal and Go” Series</h2>
+
+<ol>
+  <li><a href="/e-commerce-platform/part-1-setting-up-the-foundation/">Part 1 - Setting Up the Foundation</a></li>
+  <li><a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">Part 2 - Advanced Temporal Workflows</a></li>
+  <li><a href="/e-commerce-platform/part-3-advanced-database-operations/">Part 3 - Advanced Database Operations</a></li>
+  <li><a href="/e-commerce-platform/part-4-monitoring-and-alerting/">Part 4 - Monitoring and Alerting</a></li>
+  <li><a href="/e-commerce-platform/part-5-distributed-tracing-and-logging/">Part 5 - Distributed Tracing and Logging</a></li>
+  <li><a href="/e-commerce-platform/part-6-production-readiness-and-scalability/">Part 6 - Production Readiness and Scalability</a></li>
+</ol>
+
+<p><em>Current post: Part 1 - Setting Up the Foundation</em></p>
+
+<h2 id="1-introduction-and-goals">1. Introduction and Goals</h2>
 
 <p>Welcome to the first part of our comprehensive blog series on implementing a sophisticated order processing system using Temporal for microservice orchestration. In this series, we’ll explore the intricacies of building a robust, scalable, and maintainable system that can handle complex, long-running workflows.</p>
 
 <p>Our journey begins with setting up the foundation for our project. By the end of this post, you’ll have a fully functional CRUD REST API implemented in Golang, integrated with Temporal for workflow orchestration, and backed by a Postgres database. We’ll use modern tools and best practices to ensure our codebase is clean, efficient, and easy to maintain.</p>
-
-<h3 id="goals-for-this-post">Goals for this post:</h3>
-
-<ol>
-  <li>Set up a well-structured project using Go modules</li>
-  <li>Implement a basic CRUD API using Gin and oapi-codegen</li>
-  <li>Set up a Postgres database and implement migrations</li>
-  <li>Create a simple Temporal workflow with database interaction</li>
-  <li>Implement dependency injection for better testability and maintainability</li>
-  <li>Containerize our application using Docker</li>
-  <li>Provide a complete local development environment using docker-compose</li>
-</ol>
 
 <p>Let’s dive in and start building our order processing system!</p>
 
@@ -1239,7 +1240,7 @@ go mod init github.com/yourusername/order-processing-system
   
     
     
-      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F&via=Hungai"
+      <a href="//twitter.com/share?text=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=http%3A%2F%2Flocalhost%3A4000%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F&via=Hungai"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -1254,20 +1255,6 @@ go mod init github.com/yourusername/order-processing-system
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&u=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F"
-        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
-        <i class="fa fa-facebook-square fa-lg"></i>
-      </a>
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
     
     
     
@@ -1279,7 +1266,7 @@ go mod init github.com/yourusername/order-processing-system
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -1292,7 +1279,7 @@ go mod init github.com/yourusername/order-processing-system
     
     
     
-      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F"
+      <a href="//plus.google.com/share?title=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=http%3A%2F%2Flocalhost%3A4000%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F"
         onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
         <i class="fa fa-google-plus-square fa-lg"></i>
       </a>
@@ -1326,7 +1313,7 @@ go mod init github.com/yourusername/order-processing-system
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=https%3A%2F%2Fwww.hungaikev.in%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F&media=https://www.hungaikev.in/assets/header_image.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Implementing+an+Order+Processing+System%3A+Part+1+-+Setting+Up+the+Foundation&url=http%3A%2F%2Flocalhost%3A4000%2Fe-commerce-platform%2Fpart-1-setting-up-the-foundation%2F&media=http://localhost:4000/assets/header_image.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -1395,7 +1382,7 @@ go mod init github.com/yourusername/order-processing-system
     
     
     
-      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/') + '&title=Implementing an Order Processing System: Part 1 - Setting Up the Foundation'; return false">
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/') + '&title=Implementing an Order Processing System: Part 1 - Setting Up the Foundation'; return false">
         <i class="fa fa-reddit-square fa-lg"></i>
       </a>
     
@@ -1411,6 +1398,23 @@ go mod init github.com/yourusername/order-processing-system
     
   
 </section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/e-commerce-platform/part-2-advanced-temporal-workflows/">
+					<span class="page-number">Implementing an Order Processing System: Part 2 - Advanced Temporal Workflows</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
 
 
 
@@ -1604,8 +1608,6 @@ go mod init github.com/yourusername/order-processing-system
               <span class="username">Hungai</span>
             </a>
           </li>
-          
-        
           
         
           
