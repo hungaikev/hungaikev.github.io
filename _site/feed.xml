@@ -4,10 +4,10 @@
         <title>Hungai Amuhinda</title>
         <description>Hungai Amuhinda&apos;s Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 </description>
-        <link>http://localhost:4000/</link>
-        <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sun, 15 Sep 2024 22:14:49 +0300</pubDate>
-        <lastBuildDate>Sun, 15 Sep 2024 22:14:49 +0300</lastBuildDate>
+        <link>https://www.hungaikev.in/</link>
+        <atom:link href="https://www.hungaikev.in/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Thu, 10 Oct 2024 13:02:15 +0300</pubDate>
+        <lastBuildDate>Thu, 10 Oct 2024 13:02:15 +0300</lastBuildDate>
         <generator>Jekyll v4.3.3</generator>
         <language>en-US</language>
         <copyright></copyright>
@@ -16,9 +16,9 @@
         <webMaster> ()</webMaster>
         
         <image>
-            <url>http://localhost:4000/assets/images/logo.png</url>
+            <url>https://www.hungaikev.in/assets/images/logo.png</url>
             <title>Hungai Amuhinda</title>
-            <link>http://localhost:4000/</link>
+            <link>https://www.hungaikev.in/</link>
         </image>
         
         <item>
@@ -549,10 +549,18 @@ go get github.com/FerretDB/FerretDB
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Wed, 28 Aug 2024 12:00:00 +0300</pubDate>
-            <link>http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
-            <guid isPermaLink="true">http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
+            <link>https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -2650,10 +2658,18 @@ go get github.com/FerretDB/FerretDB
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Tue, 06 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -3971,10 +3987,18 @@ output {
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Mon, 05 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -5247,10 +5271,18 @@ output {
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Sun, 04 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -6185,10 +6217,18 @@ output {
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Sat, 03 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -7002,10 +7042,18 @@ output {
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
 ]]></description>
             <pubDate>Fri, 02 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -7400,7 +7448,7 @@ go mod init github.com/yourusername/order-processing-system
 
 <span class="na">services</span><span class="pi">:</span>
   <span class="na">postgres</span><span class="pi">:</span>
-    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:13</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:16</span>
     <span class="na">environment</span><span class="pi">:</span>
       <span class="na">POSTGRES_USER</span><span class="pi">:</span> <span class="s">orderuser</span>
       <span class="na">POSTGRES_PASSWORD</span><span class="pi">:</span> <span class="s">orderpass</span>
@@ -7968,10 +8016,19 @@ go mod init github.com/yourusername/order-processing-system
 
 <p>Let's turn your challenges into opportunities!</p>
 
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
+
 ]]></description>
             <pubDate>Thu, 01 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
