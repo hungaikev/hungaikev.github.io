@@ -4,10 +4,10 @@
         <title>Hungai Amuhinda</title>
         <description>Hungai Amuhinda&apos;s Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 </description>
-        <link>http://localhost:4000/</link>
-        <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Thu, 10 Oct 2024 13:15:37 +0300</pubDate>
-        <lastBuildDate>Thu, 10 Oct 2024 13:15:37 +0300</lastBuildDate>
+        <link>https://www.hungaikev.in/</link>
+        <atom:link href="https://www.hungaikev.in/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Sun, 20 Oct 2024 06:33:46 +0300</pubDate>
+        <lastBuildDate>Sun, 20 Oct 2024 06:33:46 +0300</lastBuildDate>
         <generator>Jekyll v4.3.3</generator>
         <language>en-US</language>
         <copyright></copyright>
@@ -16,10 +16,445 @@
         <webMaster> ()</webMaster>
         
         <image>
-            <url>http://localhost:4000/assets/images/logo.png</url>
+            <url>https://www.hungaikev.in/assets/images/logo.png</url>
             <title>Hungai Amuhinda</title>
-            <link>http://localhost:4000/</link>
+            <link>https://www.hungaikev.in/</link>
         </image>
+        
+        <item>
+            <title>Go Database Control: Maximizing SQL Performance</title>
+            <description><![CDATA[<h2 id="introduction">Introduction</h2>
+
+<p>Go developers face challenges with database interactions. ORMs offer convenience but sacrifice control. Raw SQL provides control but lacks safety. <code class="language-plaintext highlighter-rouge">pgx/v5</code> and sqlc bridge this gap.</p>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> acts as a PostgreSQL driver. It offers high performance and low-level control. sqlc generates Go code from SQL queries. It provides type safety and IDE support.</p>
+
+<p>This combination allows you to write efficient, type-safe database code in Go.</p>
+
+<h2 id="why-use-raw-sql">Why Use Raw SQL?</h2>
+
+<p>Raw SQL gives you direct control over database operations.</p>
+
+<p>Benefits include:</p>
+
+<ul>
+  <li>Performance: Write optimized queries for your specific use cases</li>
+  <li>Control: Use all features of your database system</li>
+  <li>Visibility: See exactly what queries run in your code</li>
+  <li>Learning: Improve your SQL skills through practice</li>
+  <li>Optimization: Directly address performance issues in queries</li>
+</ul>
+
+<p>Raw SQL shines in complex scenarios. It allows fine-tuning of database interactions.</p>
+
+<h2 id="getting-started-with-pgxv5">Getting Started with <code class="language-plaintext highlighter-rouge">pgx/v5</code></h2>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> serves as a PostgreSQL driver and toolkit for Go. It offers features beyond a basic driver.</p>
+
+<h3 id="installation">Installation</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> installs easily with Go’s package manager. It integrates smoothly into Go projects.</p>
+
+<p>Install <code class="language-plaintext highlighter-rouge">pgx/v5</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go get github.com/jackc/pgx/v5
+</code></pre></div></div>
+
+<p>Import it:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"context"</span>
+    <span class="s">"fmt"</span>
+    <span class="s">"os"</span>
+    <span class="s">"github.com/jackc/pgx/v5"</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="database-connections">Database Connections</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> simplifies database connections. It handles connection pooling and management. This allows your application to use database resources efficiently.</p>
+
+<p>Connect to PostgreSQL:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">connString</span> <span class="o">:=</span> <span class="s">"postgres://username:password@localhost:5432/database_name"</span>
+<span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">pgx</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">connString</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Unable to connect to database: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="n">conn</span><span class="o">.</span><span class="n">Close</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+</code></pre></div></div>
+
+<h3 id="query-execution">Query Execution</h3>
+
+<p>With <code class="language-plaintext highlighter-rouge">pgx/v5</code>, you execute SQL queries directly. This gives you full control over your database interactions. You can run SELECT, INSERT, UPDATE, and DELETE operations with ease.</p>
+
+<p>Execute a query:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">Query</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"SELECT id, name FROM users WHERE active = true"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Query failed: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="n">rows</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">rows</span><span class="o">.</span><span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="n">id</span> <span class="kt">int</span>
+    <span class="k">var</span> <span class="n">name</span> <span class="kt">string</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">id</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Scan failed: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"User: %d %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="advanced-pgxv5-features">Advanced <code class="language-plaintext highlighter-rouge">pgx/v5</code> Features</h2>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> offers advanced features for complex database operations.</p>
+
+<h3 id="prepared-statements">Prepared Statements</h3>
+
+<p>Prepared statements improve performance for repeated queries. They also protect against SQL injection attacks.</p>
+
+<p>Use prepared statements for repeated queries:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stmt</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">Prepare</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"getUserByID"</span><span class="p">,</span> <span class="s">"SELECT id, name, email FROM users WHERE id = $1"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Unable to prepare statement: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">row</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">QueryRow</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"getUserByID"</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+
+<span class="k">var</span> <span class="n">id</span> <span class="kt">int</span>
+<span class="k">var</span> <span class="n">name</span><span class="p">,</span> <span class="n">email</span> <span class="kt">string</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">id</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">email</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Query failed: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="transactions">Transactions</h3>
+
+<p>Transactions ensure data consistency. They allow you to group multiple operations. These operations succeed or fail as a unit.</p>
+
+<p>Ensure data integrity with transactions:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tx</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">Begin</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Unable to start transaction: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="n">tx</span><span class="o">.</span><span class="n">Rollback</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"INSERT INTO orders (user_id, product_id, quantity) VALUES ($1, $2, $3)"</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Failed to insert order: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Exec</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"UPDATE inventory SET stock = stock - $1 WHERE product_id = $2"</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Failed to update inventory: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">err</span> <span class="o">=</span> <span class="n">tx</span><span class="o">.</span><span class="n">Commit</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Failed to commit transaction: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="batch-operations">Batch Operations</h3>
+
+<p>Batch operations reduce network round trips. They allow you to send multiple queries in one request. This improves performance for multiple related operations.</p>
+
+<p>Execute multiple queries in one round-trip:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">batch</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">pgx</span><span class="o">.</span><span class="n">Batch</span><span class="p">{}</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="s">"INSERT INTO logs (message) VALUES ($1)"</span><span class="p">,</span> <span class="s">"Log message 1"</span><span class="p">)</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="s">"INSERT INTO logs (message) VALUES ($1)"</span><span class="p">,</span> <span class="s">"Log message 2"</span><span class="p">)</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="s">"SELECT count(*) FROM logs"</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">SendBatch</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">batch</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">batch</span><span class="o">.</span><span class="n">Len</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">results</span><span class="o">.</span><span class="n">Exec</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Error executing batch operation %d: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">var</span> <span class="n">count</span> <span class="kt">int</span>
+<span class="n">err</span> <span class="o">:=</span> <span class="n">results</span><span class="o">.</span><span class="n">QueryRow</span><span class="p">()</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">count</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Error scanning result: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Total log count: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Error closing batch: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="null-handling">Null Handling</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> provides robust null handling. It offers types that distinguish between null and zero values. This prevents errors from null database fields.</p>
+
+<p>Handle NULL values with pgx types:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/jackc/pgx/v5/pgtype"</span>
+<span class="p">)</span>
+
+<span class="k">var</span> <span class="n">id</span> <span class="kt">int</span>
+<span class="k">var</span> <span class="n">name</span> <span class="kt">string</span>
+<span class="k">var</span> <span class="n">email</span> <span class="n">pgtype</span><span class="o">.</span><span class="n">Text</span>
+
+<span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">QueryRow</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"SELECT id, name, email FROM users WHERE id = $1"</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span><span class="o">.</span><span class="n">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="n">id</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">email</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Query failed: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"ID: %d, Name: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">email</span><span class="o">.</span><span class="n">Valid</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Email: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">email</span><span class="o">.</span><span class="n">String</span><span class="p">)</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Email: NULL"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="introducing-sqlc">Introducing sqlc</h2>
+
+<p>sqlc generates Go code from SQL queries. It combines the control of raw SQL with the safety of generated code.</p>
+
+<h3 id="benefits-of-sqlc">Benefits of sqlc</h3>
+
+<p>sqlc offers several advantages:</p>
+
+<ul>
+  <li>Type Safety: Catch errors at compile time, not runtime</li>
+  <li>IDE Support: Get autocomplete and refactoring for database code</li>
+  <li>Performance: Avoid runtime reflection and query building</li>
+  <li>SQL First: Write standard SQL, use all database features</li>
+</ul>
+
+<h3 id="installation-1">Installation</h3>
+
+<p>sqlc installs as a command-line tool. It integrates into your development workflow.</p>
+
+<p>Install sqlc:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+</code></pre></div></div>
+
+<p>Create a configuration file <code class="language-plaintext highlighter-rouge">sqlc.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2"</span>
+<span class="na">sql</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">engine</span><span class="pi">:</span> <span class="s2">"</span><span class="s">postgresql"</span>
+    <span class="na">queries</span><span class="pi">:</span> <span class="s2">"</span><span class="s">./sql/queries/"</span>
+    <span class="na">schema</span><span class="pi">:</span> <span class="s2">"</span><span class="s">./sql/schema/"</span>
+    <span class="na">gen</span><span class="pi">:</span>
+      <span class="na">go</span><span class="pi">:</span>
+        <span class="na">package</span><span class="pi">:</span> <span class="s2">"</span><span class="s">database"</span>
+        <span class="na">out</span><span class="pi">:</span> <span class="s2">"</span><span class="s">./database"</span>
+        <span class="na">emit_prepared_queries</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">emit_interface</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">emit_exact_table_names</span><span class="pi">:</span> <span class="kc">false</span>
+</code></pre></div></div>
+
+<h2 id="writing-queries-with-sqlc">Writing Queries with sqlc</h2>
+
+<p>sqlc uses SQL files to generate Go code.</p>
+
+<p>You write schema files to define your database structure. Query files contain the SQL queries you want to execute.</p>
+
+<p>sqlc reads these files and generates corresponding Go functions. These functions are type-safe and easy to use in your Go code.</p>
+
+<p>Create SQL files for schema and queries.</p>
+
+<p>Schema file <code class="language-plaintext highlighter-rouge">./sql/schema/users.sql</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">SERIAL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">name</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">email</span> <span class="nb">TEXT</span> <span class="k">UNIQUE</span><span class="p">,</span>
+    <span class="n">created_at</span> <span class="nb">TIMESTAMP</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="n">NOW</span><span class="p">()</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Query file <code class="language-plaintext highlighter-rouge">./sql/queries/users.sql</code>:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- name: GetUser :one</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span>
+<span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span> <span class="k">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">-- name: ListUsers :many</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">name</span><span class="p">;</span>
+
+<span class="c1">-- name: CreateUser :one</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">,</span> <span class="err">$</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">RETURNING</span> <span class="o">*</span><span class="p">;</span>
+
+<span class="c1">-- name: UpdateUser :one</span>
+<span class="k">UPDATE</span> <span class="n">users</span>
+<span class="k">SET</span> <span class="n">name</span> <span class="o">=</span> <span class="err">$</span><span class="mi">2</span><span class="p">,</span> <span class="n">email</span> <span class="o">=</span> <span class="err">$</span><span class="mi">3</span>
+<span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span>
+<span class="n">RETURNING</span> <span class="o">*</span><span class="p">;</span>
+
+<span class="c1">-- name: DeleteUser :exec</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">users</span>
+<span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Generate Go code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sqlc generate
+</code></pre></div></div>
+
+<p>Use generated code:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">pgx</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="s">"postgres://username:password@localhost:5432/database_name"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="n">conn</span><span class="o">.</span><span class="n">Close</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+
+<span class="n">queries</span> <span class="o">:=</span> <span class="n">database</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+<span class="n">user</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">queries</span><span class="o">.</span><span class="n">CreateUser</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">(),</span> <span class="n">database</span><span class="o">.</span><span class="n">CreateUserParams</span><span class="p">{</span>
+    <span class="n">Name</span><span class="o">:</span>  <span class="s">"John Doe"</span><span class="p">,</span>
+    <span class="n">Email</span><span class="o">:</span> <span class="s">"john@example.com"</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Created user: %+v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+<span class="n">users</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">queries</span><span class="o">.</span><span class="n">ListUsers</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">Background</span><span class="p">())</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">u</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">users</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"User: %s (%s)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Email</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="best-practices">Best Practices</h2>
+
+<p>Effective database operations require good practices.</p>
+
+<p>Key practices include:</p>
+
+<ul>
+  <li>Error handling: Always check and handle errors from database operations</li>
+  <li>Query organization: Group related queries logically</li>
+  <li>Prepared statements: Use for frequently executed queries</li>
+  <li>Batch operations: Group related operations to reduce network traffic</li>
+  <li>Indexing: Create appropriate indexes based on your query patterns</li>
+  <li>Pagination: Use LIMIT and OFFSET for large datasets</li>
+  <li>Query analysis: Use EXPLAIN ANALYZE to understand and optimize query performance</li>
+</ul>
+
+<h2 id="comparison-with-orms">Comparison with ORMs</h2>
+
+<p>Raw SQL with <code class="language-plaintext highlighter-rouge">pgx/v5</code> and sqlc offers advantages in specific scenarios.</p>
+
+<p>It works well for:</p>
+
+<ul>
+  <li>Performance-critical applications</li>
+  <li>Complex queries</li>
+  <li>Using database-specific features</li>
+  <li>Teams with strong SQL skills</li>
+</ul>
+
+<p>ORMs might be preferable for:</p>
+
+<ul>
+  <li>Smaller projects with simple database needs</li>
+  <li>Rapid development scenarios</li>
+  <li>Teams more comfortable with OOP than SQL</li>
+  <li>Projects requiring support for multiple database types</li>
+</ul>
+
+<p>Consider your project’s specific needs when choosing between these approaches.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p><code class="language-plaintext highlighter-rouge">pgx/v5</code> and sqlc offer a powerful combination for Go database operations. They provide the control of raw SQL with the safety of generated code.</p>
+
+<p>This approach requires more initial setup than ORMs. However, it offers long-term benefits for complex projects. It allows fine-grained control over database interactions while maintaining type safety.</p>
+
+<p>Consider your project requirements when deciding between raw SQL and ORMs. Each approach has its place in Go development.</p>
+
+<h2 id="further-resources">Further Resources</h2>
+
+<p>Explore these resources to deepen your understanding:</p>
+
+<ul>
+  <li><a href="https://github.com/jackc/pgx">pgx GitHub Repository</a></li>
+  <li><a href="https://pkg.go.dev/github.com/jackc/`pgx/v5`">pgx Documentation</a></li>
+  <li><a href="https://sqlc.dev/">sqlc Official Website</a></li>
+  <li><a href="https://github.com/sqlc-dev/sqlc">sqlc GitHub Repository</a></li>
+  <li><a href="https://www.postgresql.org/docs/">PostgreSQL Official Documentation</a></li>
+  <li><a href="https://go.dev/doc/tutorial/database-access">Go Database Tutorial</a></li>
+</ul>
+
+<p>Implement these concepts in your projects. Refer to the documentation for detailed information.</p>
+]]></description>
+            <pubDate>Thu, 10 Oct 2024 00:00:00 +0300</pubDate>
+            <link>https://www.hungaikev.in/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</guid>
+            
+            <dc:creator>Hungai Amuhinda</dc:creator>
+            
+            
+            <category>Go</category>
+            
+            <category>PostgreSQL</category>
+            
+            <category>Database</category>
+            
+            <category>pgx</category>
+            
+            <category>sqlc</category>
+            
+            <category>SQL</category>
+            
+            <category>ORM</category>
+            
+            
+            <category>Go</category>
+            
+            <category>PostgreSQL</category>
+            
+            <category>Database</category>
+            
+            <category>pgx</category>
+            
+            <category>sqlc</category>
+            
+            <category>SQL</category>
+            
+            <category>ORM</category>
+            
+            
+            <description>Discover how to leverage `pgx/v5` and sqlc in Go to write performant, type-safe database code. This comprehensive guide takes you beyond ORMs, showing you how to harness the full power of raw SQL while maintaining the benefits of Go&apos;s type system.</description>
+            
+        </item>
         
         <item>
             <title>Building a Blog API with Gin, FerretDB, and oapi-codegen</title>
@@ -559,8 +994,8 @@ go get github.com/FerretDB/FerretDB
 <p><br /></p>
 ]]></description>
             <pubDate>Wed, 28 Aug 2024 12:00:00 +0300</pubDate>
-            <link>http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
-            <guid isPermaLink="true">http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
+            <link>https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -2668,8 +3103,8 @@ go get github.com/FerretDB/FerretDB
 <p><br /></p>
 ]]></description>
             <pubDate>Tue, 06 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -3997,8 +4432,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Mon, 05 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -5281,8 +5716,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Sun, 04 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -6227,8 +6662,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Sat, 03 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -7052,8 +7487,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Fri, 02 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -8027,8 +8462,8 @@ go mod init github.com/yourusername/order-processing-system
 
 ]]></description>
             <pubDate>Thu, 01 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
