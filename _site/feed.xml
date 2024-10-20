@@ -6,8 +6,8 @@
 </description>
         <link>http://localhost:4000/</link>
         <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sun, 20 Oct 2024 06:48:52 +0300</pubDate>
-        <lastBuildDate>Sun, 20 Oct 2024 06:48:52 +0300</lastBuildDate>
+        <pubDate>Sun, 20 Oct 2024 07:02:35 +0300</pubDate>
+        <lastBuildDate>Sun, 20 Oct 2024 07:02:35 +0300</lastBuildDate>
         <generator>Jekyll v4.3.3</generator>
         <language>en-US</language>
         <copyright></copyright>
@@ -38,11 +38,11 @@
 <p>Benefits include:</p>
 
 <ul>
-  <li>Performance: Write optimized queries for your specific use cases</li>
-  <li>Control: Use all features of your database system</li>
-  <li>Visibility: See exactly what queries run in your code</li>
-  <li>Learning: Improve your SQL skills through practice</li>
-  <li>Optimization: Directly address performance issues in queries</li>
+  <li><strong>Performance:</strong> Write optimized queries for your specific use cases</li>
+  <li><strong>Control:</strong> Use all features of your database system</li>
+  <li><strong>Visibility:</strong> See exactly what queries run in your code</li>
+  <li><strong>Learning:</strong> Improve your SQL skills through practice</li>
+  <li><strong>Optimization:</strong> Directly address performance issues in queries</li>
 </ul>
 
 <p>Raw SQL shines in complex scenarios. It allows fine-tuning of database interactions.</p>
@@ -240,10 +240,10 @@
 <p>sqlc offers several advantages:</p>
 
 <ul>
-  <li>Type Safety: Catch errors at compile time, not runtime</li>
-  <li>IDE Support: Get autocomplete and refactoring for database code</li>
-  <li>Performance: Avoid runtime reflection and query building</li>
-  <li>SQL First: Write standard SQL, use all database features</li>
+  <li><strong>Type Safety:</strong> Catch errors at compile time, not runtime</li>
+  <li><strong>IDE Support:</strong> Get autocomplete and refactoring for database code</li>
+  <li><strong>Performance:</strong> Avoid runtime reflection and query building</li>
+  <li><strong>SQL First:</strong> Write standard SQL, use all database features</li>
 </ul>
 
 <h3 id="installation-1">Installation</h3>
