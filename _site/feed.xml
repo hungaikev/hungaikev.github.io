@@ -4,10 +4,10 @@
         <title>Hungai Amuhinda</title>
         <description>Hungai Amuhinda&apos;s Website | Software Engineer, Data Engineer, Engineering Manager, Site Reliability Engineer, DevOps Engineer, Cloud Engineer, and all things in between.
 </description>
-        <link>http://localhost:4000/</link>
-        <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Sun, 20 Oct 2024 07:02:35 +0300</pubDate>
-        <lastBuildDate>Sun, 20 Oct 2024 07:02:35 +0300</lastBuildDate>
+        <link>https://www.hungaikev.in/</link>
+        <atom:link href="https://www.hungaikev.in/feed.xml" rel="self" type="application/rss+xml"/>
+        <pubDate>Sun, 20 Oct 2024 10:50:59 +0300</pubDate>
+        <lastBuildDate>Sun, 20 Oct 2024 10:50:59 +0300</lastBuildDate>
         <generator>Jekyll v4.3.3</generator>
         <language>en-US</language>
         <copyright></copyright>
@@ -16,10 +16,282 @@
         <webMaster> ()</webMaster>
         
         <image>
-            <url>http://localhost:4000/assets/images/logo.png</url>
+            <url>https://www.hungaikev.in/assets/images/logo.png</url>
             <title>Hungai Amuhinda</title>
-            <link>http://localhost:4000/</link>
+            <link>https://www.hungaikev.in/</link>
         </image>
+        
+        <item>
+            <title>Crafting a Robust REST API with Go and GoFr: A Practical Guide</title>
+            <description><![CDATA[<h1 id="crafting-a-robust-rest-api-with-go-and-gofr-a-practical-guide">Crafting a Robust REST API with Go and GoFr: A Practical Guide</h1>
+
+<p>In today’s fast-paced world of web development, creating efficient and scalable APIs is crucial. Go, with its simplicity and performance, has become a popular choice for backend development. In this tutorial, we’ll explore how to build a robust API using Go and the GoFr framework.</p>
+
+<h2 id="why-go-and-gofr">Why Go and GoFr?</h2>
+
+<p>Go’s concurrency model and performance make it an excellent choice for building scalable web services. GoFr, a lightweight and high-performance web framework for Go, simplifies the API development process while maintaining the speed and efficiency Go is known for.</p>
+
+<h2 id="introduction-to-gofr">Introduction to GoFr</h2>
+
+<p>GoFr is a lightweight, high-performance web framework for Go that simplifies the process of building APIs. It provides a clean and intuitive API, making it easy for developers to create scalable web applications quickly.</p>
+
+<h2 id="project-overview-task-management-api">Project Overview: Task Management API</h2>
+
+<p>We’ll build a Task Management API that allows users to create, read, update, and delete tasks. This project will demonstrate the key features of GoFr and how to structure a Go API project.</p>
+
+<h2 id="setting-up-your-development-environment">Setting Up Your Development Environment</h2>
+
+<p>First, ensure you have Go installed on your system. Then, create a new directory for your project and initialize a Go module:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir </span>task-api
+<span class="nb">cd </span>task-api
+go mod init github.com/hungaikev/task-api
+</code></pre></div></div>
+
+<p>Install GoFr and other necessary dependencies:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go get gofr.dev
+go get github.com/rs/zerolog
+</code></pre></div></div>
+
+<h2 id="setting-up-the-project">Setting Up the Project</h2>
+
+<p>First, let’s set up our project structure:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>task-api/
+├── cmd/
+│   └── main.go
+├── internal/
+│   ├── handlers/
+│   │   └── tasks.go
+│   ├── models/
+│   │   └── task.go
+│   ├── store/
+│   │   └── store.go
+│   └── tracing/
+│       └── tracing.go
+├── go.mod
+└── go.sum
+</code></pre></div></div>
+
+<p>Initialize your Go module:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go mod init github.com/hungaikev/task-api
+</code></pre></div></div>
+
+<p>Install GoFr and other dependencies:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go get gofr.dev
+go get github.com/rs/zerolog
+</code></pre></div></div>
+
+<h2 id="implementing-the-store">Implementing the Store</h2>
+
+<p>Let’s look at the <code class="language-plaintext highlighter-rouge">store.go</code> file, which handles database operations:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">store</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"database/sql"</span>
+    <span class="s">"errors"</span>
+    <span class="s">"github.com/hungaikev/task-api/internal/models"</span>
+    <span class="s">"github.com/rs/zerolog/log"</span>
+    <span class="s">"gofr.dev/pkg/gofr"</span>
+    <span class="s">"time"</span>
+<span class="p">)</span>
+
+<span class="k">type</span> <span class="n">TaskStore</span> <span class="k">interface</span> <span class="p">{</span>
+    <span class="n">CreateTask</span><span class="p">(</span><span class="n">ctx</span> <span class="o">*</span><span class="n">gofr</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">task</span> <span class="o">*</span><span class="n">models</span><span class="o">.</span><span class="n">Task</span><span class="p">)</span> <span class="kt">error</span>
+    <span class="n">GetTasks</span><span class="p">(</span><span class="n">ctx</span> <span class="o">*</span><span class="n">gofr</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="p">([]</span><span class="n">models</span><span class="o">.</span><span class="n">Task</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="n">GetTask</span><span class="p">(</span><span class="n">ctx</span> <span class="o">*</span><span class="n">gofr</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">id</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">models</span><span class="o">.</span><span class="n">Task</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="n">UpdateTask</span><span class="p">(</span><span class="n">ctx</span> <span class="o">*</span><span class="n">gofr</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">task</span> <span class="o">*</span><span class="n">models</span><span class="o">.</span><span class="n">Task</span><span class="p">)</span> <span class="kt">error</span>
+    <span class="n">DeleteTask</span><span class="p">(</span><span class="n">ctx</span> <span class="o">*</span><span class="n">gofr</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">id</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">GoFrTaskStore</span> <span class="k">struct</span><span class="p">{}</span>
+
+<span class="k">func</span> <span class="n">NewTaskStore</span><span class="p">()</span> <span class="n">TaskStore</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">GoFrTaskStore</span><span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="c">// Implement CRUD methods here...</span>
+</code></pre></div></div>
+
+<p>This file defines the <code class="language-plaintext highlighter-rouge">TaskStore</code> interface and implements it with <code class="language-plaintext highlighter-rouge">GoFrTaskStore</code>. Each method uses GoFr’s context to access the database.</p>
+
+<h2 id="setting-up-the-main-application">Setting Up the Main Application</h2>
+
+<p>Now, let’s look at the <code class="language-plaintext highlighter-rouge">main.go</code> file:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"github.com/hungaikev/task-api/internal/handlers"</span>
+    <span class="s">"github.com/hungaikev/task-api/internal/store"</span>
+    <span class="s">"github.com/hungaikev/task-api/internal/tracing"</span>
+    <span class="s">"os"</span>
+
+    <span class="s">"github.com/rs/zerolog"</span>
+    <span class="s">"github.com/rs/zerolog/log"</span>
+    <span class="s">"gofr.dev/pkg/gofr"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c">// Configure zerolog</span>
+    <span class="n">zerolog</span><span class="o">.</span><span class="n">TimeFieldFormat</span> <span class="o">=</span> <span class="n">zerolog</span><span class="o">.</span><span class="n">TimeFormatUnix</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">Output</span><span class="p">(</span><span class="n">zerolog</span><span class="o">.</span><span class="n">ConsoleWriter</span><span class="p">{</span><span class="n">Out</span><span class="o">:</span> <span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">})</span>
+
+    <span class="c">// Initialize tracer</span>
+    <span class="n">cleanup</span> <span class="o">:=</span> <span class="n">tracing</span><span class="o">.</span><span class="n">InitTracer</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="n">cleanup</span><span class="p">()</span>
+
+    <span class="c">// Initialize GoFr app</span>
+    <span class="n">app</span> <span class="o">:=</span> <span class="n">gofr</span><span class="o">.</span><span class="n">New</span><span class="p">()</span>
+
+    <span class="c">// Initialize store</span>
+    <span class="n">taskStore</span> <span class="o">:=</span> <span class="n">store</span><span class="o">.</span><span class="n">NewTaskStore</span><span class="p">()</span>
+
+    <span class="c">// Initialize handlers</span>
+    <span class="n">taskHandler</span> <span class="o">:=</span> <span class="n">handlers</span><span class="o">.</span><span class="n">NewTaskHandler</span><span class="p">(</span><span class="n">taskStore</span><span class="p">)</span>
+
+    <span class="c">// Routes</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">POST</span><span class="p">(</span><span class="s">"/tasks"</span><span class="p">,</span> <span class="n">taskHandler</span><span class="o">.</span><span class="n">CreateTask</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/tasks"</span><span class="p">,</span> <span class="n">taskHandler</span><span class="o">.</span><span class="n">GetTasks</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span><span class="s">"/tasks/{id}"</span><span class="p">,</span> <span class="n">taskHandler</span><span class="o">.</span><span class="n">GetTask</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">PUT</span><span class="p">(</span><span class="s">"/tasks/{id}"</span><span class="p">,</span> <span class="n">taskHandler</span><span class="o">.</span><span class="n">UpdateTask</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">DELETE</span><span class="p">(</span><span class="s">"/tasks/{id}"</span><span class="p">,</span> <span class="n">taskHandler</span><span class="o">.</span><span class="n">DeleteTask</span><span class="p">)</span>
+
+    <span class="c">// Start the server</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">Info</span><span class="p">()</span><span class="o">.</span><span class="n">Msg</span><span class="p">(</span><span class="s">"Starting server"</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This file sets up the GoFr application, initializes the store and handlers, defines the routes, and starts the server.</p>
+
+<h2 id="implementing-handlers">Implementing Handlers</h2>
+
+<p>In the <code class="language-plaintext highlighter-rouge">handlers</code> package, you’ll implement the HTTP handlers for each route. Each handler will use the <code class="language-plaintext highlighter-rouge">TaskStore</code> to interact with the database.</p>
+
+<h2 id="running-the-application">Running the Application</h2>
+
+<p>To run your application:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>go run cmd/main.go
+</code></pre></div></div>
+
+<p>Your API will now be running, typically on <code class="language-plaintext highlighter-rouge">http://localhost:8000</code>.</p>
+
+<h2 id="testing-the-api">Testing the API</h2>
+
+<p>You can test your API using curl or any API testing tool. Here are some example requests:</p>
+
+<ol>
+  <li>Create a task:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST http://localhost:8000/tasks <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{"title": "Learn GoFr", "description": "Build an API with GoFr", "status": "TODO"}'</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Get all tasks:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://localhost:8000/tasks
+</code></pre></div>    </div>
+  </li>
+  <li>Get a specific task:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://localhost:8000/tasks/1
+</code></pre></div>    </div>
+  </li>
+  <li>Update a task:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> PUT http://localhost:8000/tasks/1 <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{"title": "Learn GoFr", "description": "Build an API with GoFr", "status": "IN_PROGRESS"}'</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Delete a task:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> DELETE http://localhost:8000/tasks/1
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial, we’ve built a basic Task Management API using Go and the GoFr framework. We’ve covered:</p>
+
+<ul>
+  <li>Setting up a GoFr project</li>
+  <li>Implementing database interactions</li>
+  <li>Creating the main application structure</li>
+  <li>Defining API routes</li>
+</ul>
+
+<p>GoFr simplifies many aspects of API development, allowing you to focus on your business logic rather than boilerplate code. As you continue to develop your API, consider adding features like:</p>
+
+<ul>
+  <li>Authentication and authorization</li>
+  <li>More comprehensive error handling</li>
+  <li>Data validation</li>
+  <li>API documentation using Swagger</li>
+</ul>
+
+<p>The GoFr framework provides a solid foundation for building scalable and maintainable APIs in Go. Happy coding!</p>
+
+<hr />
+
+<h1>Need Help?</h1>
+<p>Are you facing challenging problems, or need an external perspective on a new idea or project? I can help! Whether you're looking to build a technology proof of concept before making a larger investment, or you need guidance on difficult issues, I'm here to assist.</p>
+
+<h2>Services Offered:</h2>
+<ul>
+    <li><strong>Problem-Solving:</strong> Tackling complex issues with innovative solutions.</li>
+    <li><strong>Consultation:</strong> Providing expert advice and fresh viewpoints on your projects.</li>
+    <li><strong>Proof of Concept:</strong> Developing preliminary models to test and validate your ideas.</li>
+</ul>
+
+<p>If you're interested in working with me, please reach out via email at <a href="mailto:hungaikevin@gmail.com">hungaikevin@gmail.com</a>.</p>
+
+<p>Let's turn your challenges into opportunities!</p>
+
+<p><br /></p>
+
+<!-- Buy Me a Coffee Button -->
+<p><a href="https://www.buymeacoffee.com/hungai" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 45px; width: 162px;" />
+</a></p>
+
+<p><br /></p>
+]]></description>
+            <pubDate>Tue, 15 Oct 2024 00:00:00 +0300</pubDate>
+            <link>https://www.hungaikev.in/go/web%20development/api/backend/go-fr.html</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/go/web%20development/api/backend/go-fr.html</guid>
+            
+            <dc:creator>Hungai Amuhinda</dc:creator>
+            
+            
+            <category>Go</category>
+            
+            <category>GoFr</category>
+            
+            <category>REST API</category>
+            
+            <category>Web Development</category>
+            
+            <category>Backend</category>
+            
+            <category>Database</category>
+            
+            
+            <category>Go</category>
+            
+            <category>Web Development</category>
+            
+            <category>API</category>
+            
+            <category>Backend</category>
+            
+            
+            <description>Discover how to leverage Go and GoFr to build a performant and scalable REST API. This comprehensive guide takes you through creating a Task Management API, demonstrating key features of GoFr and best practices in API development.</description>
+            
+        </item>
         
         <item>
             <title>Go Database Control: Maximizing SQL Performance</title>
@@ -439,8 +711,8 @@
 <p><br /></p>
 ]]></description>
             <pubDate>Thu, 10 Oct 2024 00:00:00 +0300</pubDate>
-            <link>http://localhost:4000/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</link>
-            <guid isPermaLink="true">http://localhost:4000/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</guid>
+            <link>https://www.hungaikev.in/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/go/postgresql/database/pgx/sqlc/sql/orm/sqlc.html</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -1017,8 +1289,8 @@ go get github.com/FerretDB/FerretDB
 <p><br /></p>
 ]]></description>
             <pubDate>Wed, 28 Aug 2024 12:00:00 +0300</pubDate>
-            <link>http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
-            <guid isPermaLink="true">http://localhost:4000/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
+            <link>https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/web-development/building-blog-api-gin-ferretdb-oapi-codegen/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -3126,8 +3398,8 @@ go get github.com/FerretDB/FerretDB
 <p><br /></p>
 ]]></description>
             <pubDate>Tue, 06 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-6-production-readiness-and-scalability/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -4455,8 +4727,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Mon, 05 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-5-distributed-tracing-and-logging/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -5739,8 +6011,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Sun, 04 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-4-monitoring-and-alerting/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -6685,8 +6957,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Sat, 03 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-3-advanced-database-operations/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-3-advanced-database-operations/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -7510,8 +7782,8 @@ output {
 <p><br /></p>
 ]]></description>
             <pubDate>Fri, 02 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-2-advanced-temporal-workflows/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
@@ -8485,8 +8757,8 @@ go mod init github.com/yourusername/order-processing-system
 
 ]]></description>
             <pubDate>Thu, 01 Aug 2024 15:00:00 +0300</pubDate>
-            <link>http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</link>
-            <guid isPermaLink="true">http://localhost:4000/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
+            <link>https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</link>
+            <guid isPermaLink="true">https://www.hungaikev.in/e-commerce-platform/part-1-setting-up-the-foundation/</guid>
             
             <dc:creator>Hungai Amuhinda</dc:creator>
             
